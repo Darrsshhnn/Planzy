@@ -1,0 +1,194 @@
+{
+  "me": {
+    "id": "me",
+    "name": "Darshan",
+    "avatar": "/images/avatars/me.png",
+    "city": "Ahmedabad, Gujarat",
+    "prefers": "Evening"
+  },
+  "friends": [
+    {
+      "id": "umang",
+      "name": "Umang",
+      "avatar": "/images/avatars/umang.png",
+      "prefers": "Evening"
+    },
+    {
+      "id": "karan",
+      "name": "Karan",
+      "avatar": "/images/avatars/karan.png",
+      "prefers": "Night"
+    },
+    {
+      "id": "yashraj",
+      "name": "Yashraj",
+      "avatar": "/images/avatars/yashraj.png",
+      "prefers": "Evening"
+    },
+    {
+      "id": "vrushti",
+      "name": "Vrushti",
+      "avatar": "/images/avatars/vrushti.png",
+      "prefers": "Evening"
+    },
+    {
+      "id": "yash",
+      "name": "Yash",
+      "avatar": "/images/avatars/yash.png",
+      "prefers": "Afternoon"
+    },
+    {
+      "id": "dev",
+      "name": "Dev",
+      "avatar": "/images/avatars/dev.png",
+      "prefers": "Night"
+    },
+    {
+      "id": "vipul",
+      "name": "Vipul",
+      "avatar": "/images/avatars/vipul.png",
+      "prefers": "Morning"
+    },
+    {
+      "id": "yuvraj",
+      "name": "Yuvraj",
+      "avatar": "/images/avatars/yuvraj.png",
+      "prefers": "Evening"
+    },
+    {
+      "id": "aryan",
+      "name": "Aryan",
+      "avatar": "",
+      "prefers": "Night"
+    },
+    {
+      "id": "pankaj",
+      "name": "Pankaj",
+      "avatar": "",
+      "prefers": "Afternoon"
+    },
+    {
+      "id": "anjali",
+      "name": "Anjali",
+      "avatar": "",
+      "prefers": "Evening"
+    },
+    {
+      "id": "riya",
+      "name": "Riya",
+      "avatar": "",
+      "prefers": "Evening"
+    },
+    {
+      "id": "krish",
+      "name": "Krish",
+      "avatar": "",
+      "prefers": "Night"
+    },
+    {
+      "id": "meera",
+      "name": "Meera",
+      "avatar": "",
+      "prefers": "Afternoon"
+    },
+    {
+      "id": "harsh",
+      "name": "Harsh",
+      "avatar": "",
+      "prefers": "Evening"
+    },
+    {
+      "id": "nisha",
+      "name": "Nisha",
+      "avatar": "",
+      "prefers": "Morning"
+    },
+    {
+      "id": "parth",
+      "name": "Parth",
+      "avatar": "",
+      "prefers": "Night"
+    },
+    {
+      "id": "zeel",
+      "name": "Zeel",
+      "avatar": "",
+      "prefers": "Evening"
+    },
+    {
+      "id": "kavya",
+      "name": "Kavya",
+      "avatar": "",
+      "prefers": "Afternoon"
+    }
+  ],
+  "groups": [
+    {
+      "id": "college-gang",
+      "name": "College Gang",
+      "image": "/images/groups/g1.png",
+      "memberIds": [
+        "karan",
+        "yashraj",
+        "dev",
+        "vipul"
+      ]
+    },
+    {
+      "id": "weekend-squad",
+      "name": "Weekend Squad",
+      "image": "/images/groups/g2.png",
+      "memberIds": [
+        "vrushti",
+        "yash",
+        "yuvraj",
+        "anjali"
+      ]
+    },
+    {
+      "id": "turf-boys",
+      "name": "Turf Boys",
+      "image": "/images/groups/g3.png",
+      "memberIds": [
+        "umang",
+        "karan",
+        "dev"
+      ]
+    }
+  ],
+  "recents": [
+    {
+      "id": "rc1",
+      "groupName": "Bird Watching Group 3",
+      "placeId": "thol-lake",
+      "rating": 3.8,
+      "memberIds": [
+        "vipul",
+        "umang",
+        "yuvraj"
+      ]
+    },
+    {
+      "id": "rc2",
+      "groupName": "Sparkk Group 1",
+      "placeId": "sparrk",
+      "rating": 4.1,
+      "memberIds": [
+        "vrushti",
+        "yash",
+        "karan"
+      ]
+    },
+    {
+      "id": "rc3",
+      "groupName": "Music Club Group 6",
+      "placeId": "rooftop-jam-cafe",
+      "rating": 4.4,
+      "memberIds": [
+        "yuvraj",
+        "dev",
+        "anjali"
+      ]
+    }
+  ]
+}

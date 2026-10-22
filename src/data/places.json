@@ -1,0 +1,1127 @@
+[
+  {
+    "id": "day-n-night-turf",
+    "name": "Day n' Night Turf",
+    "area": "Gota",
+    "address": "Near Vandematram Cross Road, Gota, Ahmedabad",
+    "distanceKm": 5.7,
+    "rating": 4.2,
+    "reviewsCount": 318,
+    "category": "Sports",
+    "pricePerPerson": 250,
+    "image": "/images/places/day-n-night-turf.jpg",
+    "gallery": [
+      "/images/places/day-n-night-turf-1.jpg",
+      "/images/places/day-n-night-turf-2.jpg",
+      "/images/places/day-n-night-turf-3.jpg"
+    ],
+    "open": "06:00",
+    "close": "01:00",
+    "hours": {
+      "weekday": "Mon-Fri, 7:00 A.M. to 11:00 P.M.",
+      "weekend": "Sat-Sun, 6:00 A.M. to 01:00 A.M."
+    },
+    "popular": true,
+    "nearby": false,
+    "tags": [
+      "Football",
+      "Box cricket",
+      "Floodlights",
+      "Parking"
+    ],
+    "about": "A covered, floodlit 7-a-side turf for football and box cricket. Slots are booked per hour and the price is split across the team. Changing rooms, drinking water and a small snack counter on site.",
+    "phone": "+91 90000 10001",
+    "live": {
+      "crowd": "Moderate",
+      "updatedMinsAgo": 12
+    },
+    "reviews": [
+      {
+        "id": "r1",
+        "author": "Karan",
+        "rating": 5,
+        "text": "Turf is well maintained and the lights are great for late-night games.",
+        "when": "2 days ago",
+        "verified": true,
+        "photos": [
+          "/images/places/day-n-night-turf-1.jpg",
+          "/images/places/day-n-night-turf-2.jpg"
+        ]
+      },
+      {
+        "id": "r2",
+        "author": "Aryan",
+        "rating": 4,
+        "text": "Book in advance on weekends, slots fill up fast.",
+        "when": "1 week ago",
+        "verified": true,
+        "photos": [
+          "/images/places/day-n-night-turf-3.jpg"
+        ]
+      },
+      {
+        "id": "r3",
+        "author": "Pankaj",
+        "rating": 3,
+        "text": "Good turf but parking gets tight after 8 PM.",
+        "when": "3 weeks ago",
+        "verified": false
+      }
+    ],
+    "bestTime": "Weekdays, 6 - 8 AM",
+    "newThisWeek": false,
+    "scores": {
+      "cleanliness": 4.1,
+      "maintenance": 4.2,
+      "value": 4.2,
+      "staff": 3.9
+    }
+  },
+  {
+    "id": "sparrk",
+    "name": "SPARRK",
+    "area": "Thaltej",
+    "address": "3rd Floor, Shivalik Shilp, Thaltej, Ahmedabad",
+    "distanceKm": 7.2,
+    "rating": 4.2,
+    "reviewsCount": 1204,
+    "category": "Arcade",
+    "pricePerPerson": 600,
+    "image": "/images/places/sparrk.jpg",
+    "gallery": [
+      "/images/places/sparrk-1.jpg",
+      "/images/places/sparrk-2.jpg",
+      "/images/places/sparrk-3.jpg"
+    ],
+    "open": "11:00",
+    "close": "01:00",
+    "hours": {
+      "weekday": "Mon-Fri, 11:00 A.M. to 11:00 P.M.",
+      "weekend": "Sat-Sun, 11:00 A.M. to 01:00 A.M."
+    },
+    "popular": true,
+    "nearby": false,
+    "tags": [
+      "Bowling",
+      "Arcade games",
+      "Café",
+      "Neon art"
+    ],
+    "about": "Bowling lanes, arcade machines and a neon-lit graffiti hall under one roof. Great for groups of 4-10. Game cards are pre-loaded and shared across the group.",
+    "phone": "+91 90000 10002",
+    "live": {
+      "crowd": "Busy",
+      "updatedMinsAgo": 5
+    },
+    "reviews": [
+      {
+        "id": "r1",
+        "author": "Vrushti",
+        "rating": 5,
+        "text": "The bowling alley is so much fun with a big group!",
+        "when": "4 days ago",
+        "verified": true,
+        "photos": [
+          "/images/places/sparrk-1.jpg",
+          "/images/places/sparrk-2.jpg"
+        ]
+      },
+      {
+        "id": "r2",
+        "author": "Yash",
+        "rating": 4,
+        "text": "A bit pricey but the vibe is worth it.",
+        "when": "2 weeks ago",
+        "verified": true,
+        "photos": [
+          "/images/places/sparrk-3.jpg"
+        ]
+      },
+      {
+        "id": "r3",
+        "author": "Anjali",
+        "rating": 4,
+        "text": "Very crowded on Saturday nights, go early.",
+        "when": "1 month ago",
+        "verified": true
+      }
+    ],
+    "bestTime": "Weekdays, 12 - 4 PM",
+    "newThisWeek": false,
+    "scores": {
+      "cleanliness": 4,
+      "maintenance": 3.9,
+      "value": 3.9,
+      "staff": 4.2
+    }
+  },
+  {
+    "id": "vechaar-museum",
+    "name": "Vechaar Utensils Museum",
+    "area": "Vasna",
+    "address": "Vishalla Complex, Sarkhej Road, Vasna, Ahmedabad",
+    "distanceKm": 13.1,
+    "rating": 4.4,
+    "reviewsCount": 412,
+    "category": "Museum",
+    "pricePerPerson": 120,
+    "image": "/images/places/vechaar-museum.jpg",
+    "gallery": [
+      "/images/places/vechaar-museum-1.jpg",
+      "/images/places/vechaar-museum-2.jpg",
+      "/images/places/vechaar-museum-3.jpg"
+    ],
+    "open": "10:00",
+    "close": "20:00",
+    "hours": {
+      "weekday": "Mon-Sat, 10:00 A.M. to 8:00 P.M.",
+      "weekend": "Sun, Closed"
+    },
+    "closedOn": "Sunday",
+    "popular": false,
+    "nearby": false,
+    "tags": [
+      "Antiques",
+      "Heritage",
+      "Photography"
+    ],
+    "about": "A quiet museum with over 4,500 antique utensils, radios and curios from across India. Pairs well with a Gujarati thali at Vishalla next door.",
+    "phone": "+91 90000 10003",
+    "live": {
+      "crowd": "Quiet",
+      "updatedMinsAgo": 40
+    },
+    "reviews": [
+      {
+        "id": "r1",
+        "author": "Vipul",
+        "rating": 5,
+        "text": "Peaceful and fascinating. Spent two hours here.",
+        "when": "1 week ago",
+        "verified": true,
+        "photos": [
+          "/images/places/vechaar-museum-1.jpg",
+          "/images/places/vechaar-museum-2.jpg"
+        ]
+      },
+      {
+        "id": "r2",
+        "author": "Yuvraj",
+        "rating": 4,
+        "text": "Small but well curated. Carry cash for tickets.",
+        "when": "1 month ago",
+        "verified": true,
+        "photos": [
+          "/images/places/vechaar-museum-3.jpg"
+        ]
+      }
+    ],
+    "bestTime": "Weekdays, 11 AM - 1 PM",
+    "newThisWeek": false,
+    "scores": {
+      "cleanliness": 4.5,
+      "maintenance": 4.6,
+      "value": 4.6,
+      "staff": 4.3
+    }
+  },
+  {
+    "id": "book-club-nutan",
+    "name": "Book Club by Nutan Publications",
+    "area": "Thaltej",
+    "address": "D-607, Times Square, opp. Thaltej Metro Station, Thaltej, Ahmedabad",
+    "distanceKm": 2.7,
+    "rating": 4.5,
+    "reviewsCount": 96,
+    "category": "Hangout",
+    "pricePerPerson": 150,
+    "image": "/images/places/book-club-nutan.jpg",
+    "gallery": [
+      "/images/places/book-club-nutan-1.jpg",
+      "/images/places/book-club-nutan-2.jpg",
+      "/images/places/book-club-nutan-3.jpg"
+    ],
+    "open": "10:00",
+    "close": "21:00",
+    "hours": {
+      "weekday": "Mon-Fri, 10:00 A.M. to 9:00 P.M.",
+      "weekend": "Sat-Sun, 10:00 A.M. to 9:00 P.M."
+    },
+    "popular": false,
+    "nearby": true,
+    "tags": [
+      "Reading room",
+      "Board games",
+      "Chai"
+    ],
+    "about": "A cosy reading lounge with a lending library, board games and unlimited chai. Weekend book-swap meetups for groups.",
+    "phone": "+91 90000 10004",
+    "live": {
+      "crowd": "Quiet",
+      "updatedMinsAgo": 22
+    },
+    "reviews": [
+      {
+        "id": "r1",
+        "author": "Anjali",
+        "rating": 5,
+        "text": "Perfect spot to sit for hours with friends.",
+        "when": "3 days ago",
+        "verified": true,
+        "photos": [
+          "/images/places/book-club-nutan-1.jpg",
+          "/images/places/book-club-nutan-2.jpg"
+        ]
+      },
+      {
+        "id": "r2",
+        "author": "Dev",
+        "rating": 4,
+        "text": "Love the board game shelf.",
+        "when": "2 weeks ago",
+        "verified": true,
+        "photos": [
+          "/images/places/book-club-nutan-3.jpg"
+        ]
+      }
+    ],
+    "bestTime": "Weekdays, 3 - 6 PM",
+    "newThisWeek": false,
+    "scores": {
+      "cleanliness": 4.8,
+      "maintenance": 4.7,
+      "value": 4.7,
+      "staff": 4.1
+    }
+  },
+  {
+    "id": "ppt-kidhar-hai",
+    "name": "PPT Kidhar hai?",
+    "area": "Thaltej",
+    "address": "B-401, Apparel Arcade, Thaltej, Ahmedabad",
+    "distanceKm": 3.1,
+    "rating": 4.3,
+    "reviewsCount": 141,
+    "category": "Fair",
+    "pricePerPerson": 299,
+    "image": "/images/places/ppt-kidhar-hai.jpg",
+    "gallery": [
+      "/images/places/ppt-kidhar-hai-1.jpg",
+      "/images/places/ppt-kidhar-hai-2.jpg",
+      "/images/places/ppt-kidhar-hai-3.jpg"
+    ],
+    "open": "17:00",
+    "close": "23:30",
+    "hours": {
+      "weekday": "Wed-Fri, 5:00 P.M. to 11:30 P.M.",
+      "weekend": "Sat-Sun, 5:00 P.M. to 11:30 P.M."
+    },
+    "popular": true,
+    "nearby": true,
+    "tags": [
+      "PowerPoint night",
+      "Open mic",
+      "Snacks"
+    ],
+    "about": "A PowerPoint party night: groups sign up, present hilarious slide decks on any topic and the crowd votes for the best one. Snacks included in the entry.",
+    "phone": "+91 90000 10005",
+    "live": {
+      "crowd": "Moderate",
+      "updatedMinsAgo": 18
+    },
+    "reviews": [
+      {
+        "id": "r1",
+        "author": "Yashraj",
+        "rating": 5,
+        "text": "Funniest evening we've had in months.",
+        "when": "5 days ago",
+        "verified": true,
+        "photos": [
+          "/images/places/ppt-kidhar-hai-1.jpg",
+          "/images/places/ppt-kidhar-hai-2.jpg"
+        ]
+      },
+      {
+        "id": "r2",
+        "author": "Karan",
+        "rating": 4,
+        "text": "Come with a prepared deck, it's more fun.",
+        "when": "3 weeks ago",
+        "verified": false,
+        "photos": [
+          "/images/places/ppt-kidhar-hai-3.jpg"
+        ]
+      }
+    ],
+    "bestTime": "Wed - Thu, 6 - 8 PM",
+    "newThisWeek": true,
+    "scores": {
+      "cleanliness": 4.6,
+      "maintenance": 4.5,
+      "value": 4.5,
+      "staff": 3.9
+    }
+  },
+  {
+    "id": "kankaria-lakefront",
+    "name": "Kankaria Lakefront",
+    "area": "Maninagar",
+    "address": "Kankaria Lake, Maninagar, Ahmedabad",
+    "distanceKm": 14.5,
+    "rating": 4.4,
+    "reviewsCount": 5210,
+    "category": "Fair",
+    "pricePerPerson": 150,
+    "image": "/images/places/kankaria-lakefront.jpg",
+    "gallery": [
+      "/images/places/kankaria-lakefront-1.jpg",
+      "/images/places/kankaria-lakefront-2.jpg",
+      "/images/places/kankaria-lakefront-3.jpg"
+    ],
+    "open": "09:00",
+    "close": "22:00",
+    "hours": {
+      "weekday": "Tue-Sun, 9:00 A.M. to 10:00 P.M.",
+      "weekend": "Mon, 2:00 P.M. to 10:00 P.M."
+    },
+    "popular": true,
+    "nearby": false,
+    "tags": [
+      "Toy train",
+      "Rides",
+      "Street food",
+      "Lake walk"
+    ],
+    "about": "A lakeside promenade with a toy train, balloon ride, kids' city and food stalls. Entry passes are booked per person; rides are paid separately.",
+    "phone": "+91 90000 10006",
+    "live": {
+      "crowd": "Busy",
+      "updatedMinsAgo": 9
+    },
+    "reviews": [
+      {
+        "id": "r1",
+        "author": "Yuvraj",
+        "rating": 5,
+        "text": "Evening lights over the lake are beautiful.",
+        "when": "1 week ago",
+        "verified": true,
+        "photos": [
+          "/images/places/kankaria-lakefront-1.jpg",
+          "/images/places/kankaria-lakefront-2.jpg"
+        ]
+      },
+      {
+        "id": "r2",
+        "author": "Pankaj",
+        "rating": 4,
+        "text": "Crowded on weekends but well maintained.",
+        "when": "1 month ago",
+        "verified": true,
+        "photos": [
+          "/images/places/kankaria-lakefront-3.jpg"
+        ]
+      }
+    ],
+    "bestTime": "Weekdays, 5 - 7 PM",
+    "newThisWeek": false,
+    "scores": {
+      "cleanliness": 4.4,
+      "maintenance": 4.5,
+      "value": 4.5,
+      "staff": 4.2
+    }
+  },
+  {
+    "id": "riverfront-flower-park",
+    "name": "Riverfront Flower Park",
+    "area": "Paldi",
+    "address": "Sabarmati Riverfront, near Sardar Bridge, Paldi, Ahmedabad",
+    "distanceKm": 9.8,
+    "rating": 4.3,
+    "reviewsCount": 2870,
+    "category": "Hangout",
+    "pricePerPerson": 50,
+    "image": "/images/places/riverfront-flower-park.jpg",
+    "gallery": [
+      "/images/places/riverfront-flower-park-1.jpg",
+      "/images/places/riverfront-flower-park-2.jpg",
+      "/images/places/riverfront-flower-park-3.jpg"
+    ],
+    "open": "09:00",
+    "close": "21:00",
+    "hours": {
+      "weekday": "Mon-Fri, 9:00 A.M. to 9:00 P.M.",
+      "weekend": "Sat-Sun, 9:00 A.M. to 9:00 P.M."
+    },
+    "popular": false,
+    "nearby": false,
+    "tags": [
+      "Garden",
+      "Riverfront walk",
+      "Photography"
+    ],
+    "about": "A themed flower garden on the Sabarmati Riverfront with walking paths and sunset views. Great for a slow evening walk.",
+    "phone": "+91 90000 10007",
+    "live": {
+      "crowd": "Moderate",
+      "updatedMinsAgo": 31
+    },
+    "reviews": [
+      {
+        "id": "r1",
+        "author": "Vrushti",
+        "rating": 4,
+        "text": "Lovely for photos around sunset.",
+        "when": "6 days ago",
+        "verified": true,
+        "photos": [
+          "/images/places/riverfront-flower-park-1.jpg",
+          "/images/places/riverfront-flower-park-2.jpg"
+        ]
+      },
+      {
+        "id": "r2",
+        "author": "Umang",
+        "rating": 4,
+        "text": "Walk along the riverfront afterwards, it's great.",
+        "when": "2 weeks ago",
+        "verified": true,
+        "photos": [
+          "/images/places/riverfront-flower-park-3.jpg"
+        ]
+      }
+    ],
+    "bestTime": "Daily, 5 - 7 PM",
+    "newThisWeek": false,
+    "scores": {
+      "cleanliness": 4.2,
+      "maintenance": 4.1,
+      "value": 4.1,
+      "staff": 4.4
+    }
+  },
+  {
+    "id": "science-city",
+    "name": "Gujarat Science City",
+    "area": "Sola",
+    "address": "Science City Road, Sola, Ahmedabad",
+    "distanceKm": 6.4,
+    "rating": 4.5,
+    "reviewsCount": 8930,
+    "category": "Museum",
+    "pricePerPerson": 450,
+    "image": "/images/places/science-city.jpg",
+    "gallery": [
+      "/images/places/science-city-1.jpg",
+      "/images/places/science-city-2.jpg",
+      "/images/places/science-city-3.jpg"
+    ],
+    "open": "10:00",
+    "close": "20:00",
+    "hours": {
+      "weekday": "Tue-Fri, 10:00 A.M. to 8:00 P.M.",
+      "weekend": "Sat-Sun, 10:00 A.M. to 8:00 P.M."
+    },
+    "closedOn": "Monday",
+    "popular": true,
+    "nearby": true,
+    "tags": [
+      "Aquatic gallery",
+      "Robotics",
+      "IMAX"
+    ],
+    "about": "Aquatic gallery, robotics gallery and nature park spread across a huge campus. Combo tickets are booked per person.",
+    "phone": "+91 90000 10008",
+    "live": {
+      "crowd": "Moderate",
+      "updatedMinsAgo": 15
+    },
+    "reviews": [
+      {
+        "id": "r1",
+        "author": "Dev",
+        "rating": 5,
+        "text": "The aquarium tunnel is unreal.",
+        "when": "3 days ago",
+        "verified": true,
+        "photos": [
+          "/images/places/science-city-1.jpg",
+          "/images/places/science-city-2.jpg"
+        ]
+      },
+      {
+        "id": "r2",
+        "author": "Aryan",
+        "rating": 4,
+        "text": "Needs a full day. Wear comfortable shoes.",
+        "when": "3 weeks ago",
+        "verified": true,
+        "photos": [
+          "/images/places/science-city-3.jpg"
+        ]
+      }
+    ],
+    "bestTime": "Tue - Fri, 10 AM - 12 PM",
+    "newThisWeek": false,
+    "scores": {
+      "cleanliness": 4.8,
+      "maintenance": 4.7,
+      "value": 4.7,
+      "staff": 4.1
+    }
+  },
+  {
+    "id": "law-garden-market",
+    "name": "Law Garden Night Market",
+    "area": "Navrangpura",
+    "address": "Law Garden, Netaji Road, Navrangpura, Ahmedabad",
+    "distanceKm": 7.9,
+    "rating": 4.1,
+    "reviewsCount": 3402,
+    "category": "Food",
+    "pricePerPerson": 300,
+    "image": "/images/places/law-garden-market.jpg",
+    "gallery": [
+      "/images/places/law-garden-market-1.jpg",
+      "/images/places/law-garden-market-2.jpg",
+      "/images/places/law-garden-market-3.jpg"
+    ],
+    "open": "18:00",
+    "close": "00:30",
+    "hours": {
+      "weekday": "Mon-Fri, 6:00 P.M. to 12:30 A.M.",
+      "weekend": "Sat-Sun, 6:00 P.M. to 12:30 A.M."
+    },
+    "popular": true,
+    "nearby": false,
+    "tags": [
+      "Street food",
+      "Shopping",
+      "Late night"
+    ],
+    "about": "The city's favourite evening food street, with pav bhaji, dabeli and kulfi stalls next to the handicraft market.",
+    "phone": "+91 90000 10009",
+    "live": {
+      "crowd": "Busy",
+      "updatedMinsAgo": 7
+    },
+    "reviews": [
+      {
+        "id": "r1",
+        "author": "Yash",
+        "rating": 4,
+        "text": "Pav bhaji here is a must.",
+        "when": "1 week ago",
+        "verified": true,
+        "photos": [
+          "/images/places/law-garden-market-1.jpg",
+          "/images/places/law-garden-market-2.jpg"
+        ]
+      },
+      {
+        "id": "r2",
+        "author": "Anjali",
+        "rating": 3,
+        "text": "Tasty but hard to find seating.",
+        "when": "1 month ago",
+        "verified": false,
+        "photos": [
+          "/images/places/law-garden-market-3.jpg"
+        ]
+      }
+    ],
+    "bestTime": "Weekdays, 7 - 9 PM",
+    "newThisWeek": false,
+    "scores": {
+      "cleanliness": 4,
+      "maintenance": 3.9,
+      "value": 3.9,
+      "staff": 4.2
+    }
+  },
+  {
+    "id": "manek-chowk",
+    "name": "Manek Chowk Food Street",
+    "area": "Old City",
+    "address": "Manek Chowk, Khadia, Old City, Ahmedabad",
+    "distanceKm": 11.6,
+    "rating": 4.3,
+    "reviewsCount": 6120,
+    "category": "Food",
+    "pricePerPerson": 250,
+    "image": "/images/places/manek-chowk.jpg",
+    "gallery": [
+      "/images/places/manek-chowk-1.jpg",
+      "/images/places/manek-chowk-2.jpg",
+      "/images/places/manek-chowk-3.jpg"
+    ],
+    "open": "20:00",
+    "close": "02:00",
+    "hours": {
+      "weekday": "Mon-Fri, 8:00 P.M. to 2:00 A.M.",
+      "weekend": "Sat-Sun, 8:00 P.M. to 2:00 A.M."
+    },
+    "popular": true,
+    "nearby": false,
+    "tags": [
+      "Night food",
+      "Heritage",
+      "Sandwiches"
+    ],
+    "about": "By day a jewellery market, by night a buzzing food street famous for chocolate sandwiches and pineapple pav bhaji.",
+    "phone": "+91 90000 10010",
+    "live": {
+      "crowd": "Busy",
+      "updatedMinsAgo": 11
+    },
+    "reviews": [
+      {
+        "id": "r1",
+        "author": "Karan",
+        "rating": 5,
+        "text": "Midnight chocolate sandwich, enough said.",
+        "when": "4 days ago",
+        "verified": true,
+        "photos": [
+          "/images/places/manek-chowk-1.jpg",
+          "/images/places/manek-chowk-2.jpg"
+        ]
+      },
+      {
+        "id": "r2",
+        "author": "Vipul",
+        "rating": 4,
+        "text": "Parking is a pain, take a cab.",
+        "when": "2 weeks ago",
+        "verified": true,
+        "photos": [
+          "/images/places/manek-chowk-3.jpg"
+        ]
+      }
+    ],
+    "bestTime": "Weekdays, 9 - 10:30 PM",
+    "newThisWeek": false,
+    "scores": {
+      "cleanliness": 4.7,
+      "maintenance": 4.6,
+      "value": 4.6,
+      "staff": 4
+    }
+  },
+  {
+    "id": "timezone-vastrapur",
+    "name": "Timezone Arcade",
+    "area": "Vastrapur",
+    "address": "Ahmedabad One Mall, Vastrapur, Ahmedabad",
+    "distanceKm": 4.2,
+    "rating": 4,
+    "reviewsCount": 1580,
+    "category": "Arcade",
+    "pricePerPerson": 700,
+    "image": "/images/places/timezone-vastrapur.jpg",
+    "gallery": [
+      "/images/places/timezone-vastrapur-1.jpg",
+      "/images/places/timezone-vastrapur-2.jpg",
+      "/images/places/timezone-vastrapur-3.jpg"
+    ],
+    "open": "11:00",
+    "close": "22:00",
+    "hours": {
+      "weekday": "Mon-Fri, 11:00 A.M. to 10:00 P.M.",
+      "weekend": "Sat-Sun, 10:00 A.M. to 11:00 P.M."
+    },
+    "popular": false,
+    "nearby": true,
+    "tags": [
+      "VR games",
+      "Bumper cars",
+      "Mall"
+    ],
+    "about": "Arcade with VR rides, bumper cars and prize games inside the mall. Shared group cards with bonus credit when booked in advance.",
+    "phone": "+91 90000 10011",
+    "live": {
+      "crowd": "Moderate",
+      "updatedMinsAgo": 20
+    },
+    "reviews": [
+      {
+        "id": "r1",
+        "author": "Yashraj",
+        "rating": 4,
+        "text": "VR zone is the best part.",
+        "when": "1 week ago",
+        "verified": true,
+        "photos": [
+          "/images/places/timezone-vastrapur-1.jpg",
+          "/images/places/timezone-vastrapur-2.jpg"
+        ]
+      },
+      {
+        "id": "r2",
+        "author": "Dev",
+        "rating": 4,
+        "text": "Pre-book the group card for extra credit.",
+        "when": "1 month ago",
+        "verified": true,
+        "photos": [
+          "/images/places/timezone-vastrapur-3.jpg"
+        ]
+      }
+    ],
+    "bestTime": "Weekdays, 11 AM - 2 PM",
+    "newThisWeek": false,
+    "scores": {
+      "cleanliness": 3.8,
+      "maintenance": 3.7,
+      "value": 3.3,
+      "staff": 4
+    }
+  },
+  {
+    "id": "thol-lake",
+    "name": "Thol Bird Sanctuary",
+    "area": "Thol",
+    "address": "Thol Lake, Thol, Ahmedabad, Gujarat",
+    "distanceKm": 24,
+    "rating": 4.4,
+    "reviewsCount": 2210,
+    "category": "Hangout",
+    "pricePerPerson": 150,
+    "image": "/images/places/thol-lake.jpg",
+    "gallery": [
+      "/images/places/thol-lake-1.jpg",
+      "/images/places/thol-lake-2.jpg",
+      "/images/places/thol-lake-3.jpg"
+    ],
+    "open": "06:00",
+    "close": "18:00",
+    "hours": {
+      "weekday": "Mon-Fri, 6:00 A.M. to 6:00 P.M.",
+      "weekend": "Sat-Sun, 6:00 A.M. to 6:00 P.M."
+    },
+    "popular": false,
+    "nearby": false,
+    "tags": [
+      "Bird watching",
+      "Sunrise",
+      "Nature"
+    ],
+    "about": "A wetland sanctuary known for flamingos and cranes in winter. Best visited at sunrise; entry passes are booked per person.",
+    "phone": "+91 90000 10012",
+    "live": {
+      "crowd": "Quiet",
+      "updatedMinsAgo": 55
+    },
+    "reviews": [
+      {
+        "id": "r1",
+        "author": "Vipul",
+        "rating": 5,
+        "text": "Saw flamingos at 7 AM. Worth the early start.",
+        "when": "2 weeks ago",
+        "verified": true,
+        "photos": [
+          "/images/places/thol-lake-1.jpg",
+          "/images/places/thol-lake-2.jpg"
+        ]
+      },
+      {
+        "id": "r2",
+        "author": "Umang",
+        "rating": 4,
+        "text": "Carry binoculars and water.",
+        "when": "1 month ago",
+        "verified": true,
+        "photos": [
+          "/images/places/thol-lake-3.jpg"
+        ]
+      }
+    ],
+    "bestTime": "Winter mornings, 6 - 8 AM",
+    "newThisWeek": false,
+    "scores": {
+      "cleanliness": 4.6,
+      "maintenance": 4.5,
+      "value": 4.5,
+      "staff": 4.8
+    }
+  },
+  {
+    "id": "pitch-perfect-box",
+    "name": "Pitch Perfect Box Cricket",
+    "area": "Sindhu Bhavan Road",
+    "address": "Plot 12, Sindhu Bhavan Road, Bodakdev, Ahmedabad",
+    "distanceKm": 3.4,
+    "rating": 4.3,
+    "reviewsCount": 402,
+    "category": "Sports",
+    "pricePerPerson": 200,
+    "image": "/images/places/pitch-perfect-box.jpg",
+    "gallery": [
+      "/images/places/pitch-perfect-box-1.jpg",
+      "/images/places/pitch-perfect-box-2.jpg",
+      "/images/places/pitch-perfect-box-3.jpg"
+    ],
+    "open": "06:00",
+    "close": "02:00",
+    "hours": {
+      "weekday": "Mon-Fri, 6:00 A.M. to 2:00 A.M.",
+      "weekend": "Sat-Sun, 6:00 A.M. to 2:00 A.M."
+    },
+    "popular": false,
+    "nearby": true,
+    "tags": [
+      "Box cricket",
+      "Pickleball",
+      "Night slots"
+    ],
+    "about": "Two box-cricket arenas and a pickleball court with late-night slots. Bats and balls included.",
+    "phone": "+91 90000 10013",
+    "live": {
+      "crowd": "Moderate",
+      "updatedMinsAgo": 14
+    },
+    "reviews": [
+      {
+        "id": "r1",
+        "author": "Aryan",
+        "rating": 5,
+        "text": "Best box cricket in the west side.",
+        "when": "5 days ago",
+        "verified": true,
+        "photos": [
+          "/images/places/pitch-perfect-box-1.jpg",
+          "/images/places/pitch-perfect-box-2.jpg"
+        ]
+      },
+      {
+        "id": "r2",
+        "author": "Yash",
+        "rating": 4,
+        "text": "Net quality could be better.",
+        "when": "3 weeks ago",
+        "verified": true,
+        "photos": [
+          "/images/places/pitch-perfect-box-3.jpg"
+        ]
+      }
+    ],
+    "bestTime": "Weeknights, 10 PM - 12 AM",
+    "newThisWeek": true,
+    "scores": {
+      "cleanliness": 3.9,
+      "maintenance": 4.7,
+      "value": 4.7,
+      "staff": 4.1
+    }
+  },
+  {
+    "id": "agashiye",
+    "name": "Agashiye",
+    "area": "Lal Darwaja",
+    "address": "The House of MG, Lal Darwaja, Ahmedabad",
+    "distanceKm": 10.9,
+    "rating": 4.6,
+    "reviewsCount": 3890,
+    "category": "Food",
+    "pricePerPerson": 1100,
+    "image": "/images/places/agashiye.jpg",
+    "gallery": [
+      "/images/places/agashiye-1.jpg",
+      "/images/places/agashiye-2.jpg",
+      "/images/places/agashiye-3.jpg"
+    ],
+    "open": "12:00",
+    "close": "23:00",
+    "hours": {
+      "weekday": "Mon-Fri, 12:00 P.M. to 11:00 P.M.",
+      "weekend": "Sat-Sun, 12:00 P.M. to 11:00 P.M."
+    },
+    "popular": true,
+    "nearby": false,
+    "tags": [
+      "Gujarati thali",
+      "Rooftop",
+      "Heritage"
+    ],
+    "about": "Rooftop Gujarati thali restaurant on a 1920s heritage building. Table reservations are required for groups.",
+    "phone": "+91 90000 10014",
+    "live": {
+      "crowd": "Moderate",
+      "updatedMinsAgo": 25
+    },
+    "reviews": [
+      {
+        "id": "r1",
+        "author": "Vrushti",
+        "rating": 5,
+        "text": "Best thali in the city, beautiful rooftop.",
+        "when": "1 week ago",
+        "verified": true,
+        "photos": [
+          "/images/places/agashiye-1.jpg",
+          "/images/places/agashiye-2.jpg"
+        ]
+      },
+      {
+        "id": "r2",
+        "author": "Pankaj",
+        "rating": 4,
+        "text": "Expensive but special-occasion worthy.",
+        "when": "1 month ago",
+        "verified": true,
+        "photos": [
+          "/images/places/agashiye-3.jpg"
+        ]
+      }
+    ],
+    "bestTime": "Weekdays, 12 - 2 PM",
+    "newThisWeek": false,
+    "scores": {
+      "cleanliness": 4.4,
+      "maintenance": 4.3,
+      "value": 3.9,
+      "staff": 4.6
+    }
+  },
+  {
+    "id": "rooftop-jam-cafe",
+    "name": "The Rooftop Jam Café",
+    "area": "Drive-in Road",
+    "address": "Drive-in Road, Memnagar, Ahmedabad",
+    "distanceKm": 4.8,
+    "rating": 4.2,
+    "reviewsCount": 640,
+    "category": "Hangout",
+    "pricePerPerson": 400,
+    "image": "/images/places/rooftop-jam-cafe.jpg",
+    "gallery": [
+      "/images/places/rooftop-jam-cafe-1.jpg",
+      "/images/places/rooftop-jam-cafe-2.jpg",
+      "/images/places/rooftop-jam-cafe-3.jpg"
+    ],
+    "open": "16:00",
+    "close": "00:00",
+    "hours": {
+      "weekday": "Mon-Fri, 4:00 P.M. to 12:00 A.M.",
+      "weekend": "Sat-Sun, 1:00 P.M. to 12:00 A.M."
+    },
+    "popular": false,
+    "nearby": true,
+    "tags": [
+      "Live music",
+      "Jam sessions",
+      "Café"
+    ],
+    "about": "A rooftop café with open jam sessions every evening. Bring your instrument or just sing along.",
+    "phone": "+91 90000 10015",
+    "live": {
+      "crowd": "Moderate",
+      "updatedMinsAgo": 8
+    },
+    "reviews": [
+      {
+        "id": "r1",
+        "author": "Yuvraj",
+        "rating": 4,
+        "text": "Thursday jam nights are the best.",
+        "when": "6 days ago",
+        "verified": true,
+        "photos": [
+          "/images/places/rooftop-jam-cafe-1.jpg",
+          "/images/places/rooftop-jam-cafe-2.jpg"
+        ]
+      },
+      {
+        "id": "r2",
+        "author": "Karan",
+        "rating": 4,
+        "text": "Good food, a little loud for conversation.",
+        "when": "1 month ago",
+        "verified": false,
+        "photos": [
+          "/images/places/rooftop-jam-cafe-3.jpg"
+        ]
+      }
+    ],
+    "bestTime": "Thursdays, 7 - 9 PM",
+    "newThisWeek": true,
+    "scores": {
+      "cleanliness": 3.8,
+      "maintenance": 4.6,
+      "value": 4.6,
+      "staff": 4
+    }
+  },
+  {
+    "id": "vastrapur-fun-fair",
+    "name": "Vastrapur Lake Fun Fair",
+    "area": "Vastrapur",
+    "address": "Vastrapur Lake Garden, Vastrapur, Ahmedabad",
+    "distanceKm": 3.9,
+    "rating": 3.9,
+    "reviewsCount": 720,
+    "category": "Fair",
+    "pricePerPerson": 180,
+    "image": "/images/places/vastrapur-fun-fair.jpg",
+    "gallery": [
+      "/images/places/vastrapur-fun-fair-1.jpg",
+      "/images/places/vastrapur-fun-fair-2.jpg",
+      "/images/places/vastrapur-fun-fair-3.jpg"
+    ],
+    "open": "17:00",
+    "close": "23:00",
+    "hours": {
+      "weekday": "Mon-Fri, 5:00 P.M. to 11:00 P.M.",
+      "weekend": "Sat-Sun, 4:00 P.M. to 11:00 P.M."
+    },
+    "popular": false,
+    "nearby": true,
+    "tags": [
+      "Giant wheel",
+      "Games",
+      "Street food"
+    ],
+    "about": "A small evening fair by Vastrapur Lake with a giant wheel, ring toss and snack stalls.",
+    "phone": "+91 90000 10016",
+    "live": {
+      "crowd": "Moderate",
+      "updatedMinsAgo": 33
+    },
+    "reviews": [
+      {
+        "id": "r1",
+        "author": "Dev",
+        "rating": 4,
+        "text": "Cheap and cheerful evening plan.",
+        "when": "2 weeks ago",
+        "verified": true,
+        "photos": [
+          "/images/places/vastrapur-fun-fair-1.jpg",
+          "/images/places/vastrapur-fun-fair-2.jpg"
+        ]
+      },
+      {
+        "id": "r2",
+        "author": "Anjali",
+        "rating": 3,
+        "text": "Rides are a bit old but fun.",
+        "when": "1 month ago",
+        "verified": true,
+        "photos": [
+          "/images/places/vastrapur-fun-fair-3.jpg"
+        ]
+      }
+    ],
+    "bestTime": "Weekdays, 5 - 7 PM",
+    "newThisWeek": false,
+    "scores": {
+      "cleanliness": 4.3,
+      "maintenance": 3.5,
+      "value": 3.5,
+      "staff": 4.1
+    }
+  }
+]

@@ -1,0 +1,23 @@
+{
+  "greetings": [
+    "Let's goooo 🔥",
+    "Finally a plan! I'm in for anything nearby.",
+    "Keep it under budget please 🙏"
+  ],
+  "replies": [
+    "Sounds good to me 👍",
+    "Is it open that late?",
+    "I can do it if we leave by 6.",
+    "That's a bit far for me, but okay if everyone else wants it.",
+    "Haha yes, let's do it!",
+    "Can we split the cab?",
+    "I voted already, check the shortlist.",
+    "Whatever the group picks, I'm fine."
+  ],
+  "onPlaceAdded": [
+    "Ooh, never been there. Looks fun!",
+    "Checked the reviews, looks legit.",
+    "Is it within budget though?",
+    "Adding my vote now."
+  ]
+}

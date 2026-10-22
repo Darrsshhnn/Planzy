@@ -1,26 +1,124 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+/* Planzy design tokens (from the Figma file) */
+@theme {
+  --color-brand: #e5701b;
+  --color-brand-dark: #c95e12;
+  --color-ink: #242a2f;
+  --color-navy: #19486e;
+  --color-cream: #fef1e8;
+  --color-paper: #fffbf8;
+  --color-muted: #6b7177;
+
+  --font-heading: "Helvetica Neue", Helvetica, Arial, sans-serif;
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --font-sans: var(--font-poppins), ui-sans-serif, system-ui, sans-serif;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+html,
+body {
+  height: 100%;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: #ffffff;
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+  -webkit-tap-highlight-color: transparent;
+}
+
+@media (min-width: 768px) {
+  body {
+    background: #ece6e1;
+  }
+}
+
+/*
+ * One card language for the whole app, taken from the Make a Plan card:
+ * ink stroke + solid 3px bottom shadow. Dark cards keep the cream ring from
+ * the Figma Recents card and get the same bottom shadow.
+ */
+@utility card {
+  border: 1px solid var(--color-ink);
+  border-radius: 12px;
+  background-color: var(--color-paper);
+  box-shadow: 0 3px 0 var(--color-ink);
+}
+
+@utility card-dark {
+  border: 3px solid var(--color-cream);
+  border-radius: 14px;
+  background-color: var(--color-ink);
+  box-shadow: 0 3px 0 var(--color-ink);
+}
+
+/* One line weight for every icon in the app (lucide line icons). */
+svg.lucide {
+  stroke-width: 1.75;
+}
+
+.no-scrollbar {
+  scrollbar-width: none;
+}
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+/* Range slider styled like the Figma track: dark bar, coloured knob */
+.planzy-range {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 12px;
+  border-radius: 999px;
+  background: var(--color-ink);
+  outline: none;
+}
+.planzy-range::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 24px;
+  height: 24px;
+  border-radius: 999px;
+  background: var(--knob, var(--color-brand));
+  border: 3px solid var(--knob-ring, #f6a66c);
+  cursor: pointer;
+}
+.planzy-range::-moz-range-thumb {
+  width: 20px;
+  height: 20px;
+  border-radius: 999px;
+  background: var(--knob, var(--color-brand));
+  border: 3px solid var(--knob-ring, #f6a66c);
+  cursor: pointer;
+}
+
+@keyframes planzy-pop {
+  0% {
+    transform: scale(0.6);
+    opacity: 0;
+  }
+  70% {
+    transform: scale(1.08);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+.animate-pop {
+  animation: planzy-pop 0.45s ease-out both;
+}
+
+@keyframes planzy-rise {
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+.animate-rise {
+  animation: planzy-rise 0.25s ease-out both;
 }
