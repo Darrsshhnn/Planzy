@@ -7,10 +7,10 @@ import { Screen } from "@/components/layout/screen";
 import { PlaceImage } from "@/components/place/place-image";
 import { AvatarStack } from "@/components/ui/avatar";
 import { RatingPill } from "@/components/ui/rating";
-import { getPlace, getRecents } from "@/lib/api/data";
+import { getPlace } from "@/lib/api/data";
 import { formatDateLong } from "@/lib/format";
-import type { Place } from "@/lib/types";
-import { usePlan } from "@/store/plan-store";
+import type { Place, PlanState } from "@/lib/types";
+import { CURRENT_USER_ID, usePlans } from "@/store/plan-store";
 
 function HistoryRow({
   href,
@@ -28,7 +28,7 @@ function HistoryRow({
   badge?: ReactNode;
 }) {
   return (
-    <li>
+    <li className="reveal">
       <Link href={href} className="flex gap-3 card p-2.5">
         {place && <PlaceImage place={place} className="h-[64px] w-[72px] shrink-0 rounded-[8px]" sizes="72px" />}
         <div className="min-w-0 flex-1">
@@ -48,59 +48,52 @@ function HistoryRow({
 
 /** Full history: opened from Home > Recents > See all and Profile > History. */
 export default function HistoryPage() {
-  const plan = usePlan();
-  const booked = plan.booking.status !== "none";
-  const chosen = getPlace(plan.chosenPlaceId);
-  const ongoing = plan.messages.length > 0 && !booked;
+  const { plans } = usePlans();
+  const mine = plans
+    .filter((p) => p.created && p.memberIds.includes(CURRENT_USER_ID))
+    .sort((a, b) => b.createdAt - a.createdAt);
+  const upcoming = mine.filter((p) => !p.archived && p.booking.status !== "none");
+  const ongoing = mine.filter((p) => !p.archived && p.booking.status === "none");
+  const past = mine.filter((p) => p.archived);
+
+  const row = (p: PlanState, badge: ReactNode) => {
+    const place = getPlace(p.chosenPlaceId) ?? getPlace(p.shortlist[0]);
+    return (
+      <HistoryRow
+        key={p.id}
+        href={`/chat/${p.id}`}
+        place={place}
+        title={p.archived || p.booking.status !== "none" ? (place?.name ?? p.groupName) : p.groupName}
+        subtitle={`${p.groupName} · ${formatDateLong(p.date)}`}
+        memberIds={p.memberIds}
+        badge={badge}
+      />
+    );
+  };
+  const pill = (label: string, className: string) => (
+    <span className={`shrink-0 rounded-full px-2 text-[10px] font-semibold leading-[18px] ${className}`}>{label}</span>
+  );
 
   return (
     <Screen>
       <PageHeader title="History" />
-
-      {(booked || ongoing) && (
-        <section>
-          <h2 className="font-heading text-[18px] font-bold">{booked ? "Upcoming" : "Ongoing"}</h2>
-          <ul className="mt-2.5 space-y-3">
-            {booked ? (
-              <HistoryRow
-                href="/locked"
-                place={chosen}
-                title={chosen?.name ?? plan.groupName}
-                subtitle={`${plan.groupName} · ${formatDateLong(plan.date)} · ${plan.booking.slot}`}
-                memberIds={plan.memberIds}
-                badge={<span className="shrink-0 rounded-full bg-brand px-2 text-[10px] font-semibold leading-[18px] text-white">Booked</span>}
-              />
-            ) : (
-              <HistoryRow
-                href="/chat"
-                place={getPlace(plan.shortlist[0])}
-                title={plan.groupName}
-                subtitle={`${plan.shortlist.length} places shortlisted · ${formatDateLong(plan.date)}`}
-                memberIds={plan.memberIds}
-                badge={<span className="shrink-0 rounded-full bg-cream px-2 text-[10px] font-semibold leading-[18px]">Chat</span>}
-              />
-            )}
-          </ul>
+      {upcoming.length > 0 && (
+        <section className="mb-6">
+          <h2 className="font-heading text-[16px] font-bold">Upcoming</h2>
+          <ul className="mt-2.5 space-y-3">{upcoming.map((p) => row(p, pill("Booked", "bg-brand text-white")))}</ul>
         </section>
       )}
-
-      <section className={booked || ongoing ? "mt-7" : ""}>
-        <h2 className="font-heading text-[18px] font-bold">Past outings</h2>
+      {ongoing.length > 0 && (
+        <section className="mb-6">
+          <h2 className="font-heading text-[16px] font-bold">Ongoing</h2>
+          <ul className="mt-2.5 space-y-3">{ongoing.map((p) => row(p, pill("Chat", "bg-cream")))}</ul>
+        </section>
+      )}
+      <section>
+        <h2 className="font-heading text-[16px] font-bold">Past outings</h2>
         <ul className="mt-2.5 space-y-3">
-          {getRecents().map((r) => {
-            const place = getPlace(r.placeId)!;
-            return (
-              <HistoryRow
-                key={r.id}
-                href={`/place/${place.id}`}
-                place={place}
-                title={r.groupName}
-                subtitle={`${place.name} · ${place.area}, Ahmedabad`}
-                memberIds={r.memberIds}
-                badge={<RatingPill value={r.rating} />}
-              />
-            );
-          })}
+          {past.map((p) => row(p, <RatingPill value={getPlace(p.chosenPlaceId)?.rating ?? 4} />))}
+          {past.length === 0 && <li className="text-[13px] text-muted">No past outings yet.</li>}
         </ul>
       </section>
     </Screen>

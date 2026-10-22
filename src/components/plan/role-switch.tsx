@@ -10,8 +10,8 @@ import { setRole, useViewer } from "@/store/viewer-store";
  */
 export function RoleSwitch() {
   const plan = usePlan();
-  const { role, viewerId } = useViewer();
-  if (plan.memberIds.length < 2) return null;
+  const { role, viewerId, ownGroup } = useViewer();
+  if (!ownGroup || plan.memberIds.length < 2) return null;
   return (
     <div className="flex items-center justify-between gap-2 rounded-full border border-ink/15 bg-paper py-1 pl-3 pr-1 text-[11px]">
       <span className="truncate text-muted">

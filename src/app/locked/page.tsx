@@ -31,7 +31,7 @@ export default function LockedInPage() {
           title="Not booked yet"
           body="Once the admin pays for the group, the confirmed plan shows up here."
           action={
-            <ButtonLink href={plan.locked ? "/booking" : "/chat"} block>
+            <ButtonLink href={plan.locked ? "/booking" : plan.id ? `/chat/${plan.id}` : "/chat"} block>
               {plan.locked ? "See booking status" : "Back to Group Chat"}
             </ButtonLink>
           }
@@ -153,11 +153,11 @@ export default function LockedInPage() {
       </PlanCard>
 
       <div className="mt-5 space-y-3 px-1.5">
-        <ButtonLink href="/chat" block>
+        <ButtonLink href={`/chat/${plan.id}`} block>
           Open Group Chat
         </ButtonLink>
         <ButtonLink
-          href="/plan/start"
+          href="/plan/new"
           variant="ghost"
           size="md"
           block

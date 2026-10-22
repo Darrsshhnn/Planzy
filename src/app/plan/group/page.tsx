@@ -5,11 +5,11 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useRef } from "react";
 import { PlanStep } from "@/components/plan/plan-step";
-import { AvatarStack } from "@/components/ui/avatar";
+import { InviteStatusList } from "@/components/plan/invite-status";
 import { FieldBox, FieldLabel } from "@/components/ui/card";
 import { Chip } from "@/components/ui/chip";
-import { CATEGORIES, getPerson } from "@/lib/api/data";
-import { formatDateShort, joinNames } from "@/lib/format";
+import { CATEGORIES } from "@/lib/api/data";
+import { formatDateShort } from "@/lib/format";
 import { defaultGroupName, planActions, usePlan } from "@/store/plan-store";
 
 function todayIso() {
@@ -21,7 +21,6 @@ export default function GroupDetailsPage() {
   const router = useRouter();
   const plan = usePlan();
   const dateRef = useRef<HTMLInputElement>(null);
-  const friendIds = plan.memberIds.filter((id) => id !== plan.adminId);
 
   const openPicker = () => {
     const el = dateRef.current;
@@ -48,27 +47,27 @@ export default function GroupDetailsPage() {
         <input
           value={plan.groupName}
           onChange={(e) => planActions.setGroupName(e.target.value)}
-          placeholder={defaultGroupName(plan.memberIds)}
+          placeholder={defaultGroupName(Object.keys(plan.invites))}
           aria-label="Group name"
           maxLength={40}
           className="min-w-0 flex-1 bg-transparent text-[15px] outline-none placeholder:text-ink/35"
         />
       </FieldBox>
 
-      <h3 className="mt-5 font-heading text-[18px] font-bold">Selected Partners</h3>
-      <div className="mt-2.5 flex items-center gap-2">
-        <AvatarStack ids={friendIds} size={50} max={5} />
+      <div className="mt-5 flex items-center justify-between">
+        <h3 className="font-heading text-[16px] font-bold">Invited friends</h3>
         <Link
           href="/plan/friends"
-          aria-label="Add more friends"
-          className="flex h-[44px] w-[44px] items-center justify-center rounded-full border-[1.5px] border-ink"
+          aria-label="Invite more friends"
+          className="flex h-8 items-center gap-1 rounded-full border border-ink bg-paper px-3 text-[12px] font-semibold"
         >
-          <Plus size={26} />
+          <Plus size={14} /> Add
         </Link>
       </div>
-      <p className="mt-1.5 text-[14px]">{joinNames(friendIds.map((id) => getPerson(id).name))}</p>
+      <p className="text-[11px] text-muted">They get a notification and can accept or decline.</p>
+      <InviteStatusList plan={plan} />
 
-      <h3 className="mt-5 font-heading text-[18px] font-bold">Categories</h3>
+      <h3 className="mt-5 font-heading text-[16px] font-bold">Categories</h3>
       <div className="mt-2.5 flex flex-wrap gap-x-2.5 gap-y-2.5">
         {CATEGORIES.map((c) => (
           <Chip key={c} selected={plan.categories.includes(c)} onClick={() => planActions.toggleCategory(c)}>
@@ -77,7 +76,7 @@ export default function GroupDetailsPage() {
         ))}
       </div>
 
-      <h3 className="mt-5 font-heading text-[18px] font-bold">Date</h3>
+      <h3 className="mt-5 font-heading text-[16px] font-bold">Date</h3>
       <FieldBox className="relative mt-2.5 flex h-[48px] items-center px-4">
         <span className={`flex-1 text-[17px] font-semibold ${plan.date ? "text-ink" : "text-ink/35"}`}>
           {plan.date ? formatDateShort(plan.date) : "01/01/2025"}

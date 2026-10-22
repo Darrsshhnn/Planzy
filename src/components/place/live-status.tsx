@@ -45,7 +45,7 @@ export function LivePill({ place, className = "" }: { place: Place; className?: 
 export function AvailabilityChip({ place, className = "" }: { place: Place; className?: string }) {
   const a = availability(place);
   return (
-    <span className={`inline-flex items-center rounded-full px-2 py-0.5 text-[10px] font-semibold ${TONE[a.tone]} ${className}`}>
+    <span className={`inline-flex items-center whitespace-nowrap rounded-full px-2 py-0.5 text-[10px] font-semibold ${TONE[a.tone]} ${className}`}>
       {a.label}
     </span>
   );

@@ -4,17 +4,21 @@ import type { ComponentProps, ReactNode } from "react";
 type Variant = "dark" | "brand" | "outline" | "cream" | "ghost";
 type Size = "lg" | "md" | "sm";
 
+/**
+ * Every button shares the card language: ink outline + a solid bottom edge
+ * that presses down when tapped. Dark buttons get an orange edge so it shows.
+ */
+const PRESS = "border-[1.5px] border-ink active:translate-y-[2px]";
 const variants: Record<Variant, string> = {
-  dark: "bg-ink text-white ring-2 ring-cream hover:bg-[#1b2024]",
-  brand:
-    "bg-gradient-to-b from-[#ef8331] to-[#d9640f] text-white border-[1.5px] border-cream/80 hover:from-[#e9782a] hover:to-[#c95e12]",
-  outline: "bg-paper text-ink border-[1.5px] border-ink hover:bg-white",
-  cream: "bg-cream text-ink border border-ink/15 hover:bg-[#fde6d6]",
+  dark: `${PRESS} bg-ink text-white shadow-[0_3px_0_#E5701B] active:shadow-[0_1px_0_#E5701B] hover:bg-[#1b2024]`,
+  brand: `${PRESS} bg-gradient-to-b from-[#ef8331] to-[#d9640f] text-white shadow-[0_3px_0_#242a2f] active:shadow-[0_1px_0_#242a2f] hover:from-[#e9782a] hover:to-[#c95e12]`,
+  outline: `${PRESS} bg-paper text-ink shadow-[0_3px_0_#242a2f] active:shadow-[0_1px_0_#242a2f] hover:bg-white`,
+  cream: `${PRESS} bg-cream text-ink shadow-[0_3px_0_#242a2f] active:shadow-[0_1px_0_#242a2f] hover:bg-[#fde6d6]`,
   ghost: "bg-transparent text-ink hover:bg-ink/5",
 };
 
 const sizes: Record<Size, string> = {
-  lg: "h-[48px] px-6 text-[18px] rounded-[10px]",
+  lg: "h-[48px] px-6 text-[17px] rounded-[12px]",
   md: "h-[44px] px-5 text-[15px] rounded-[12px]",
   sm: "h-[34px] px-3.5 text-[13px] rounded-[10px]",
 };
@@ -29,7 +33,7 @@ interface BaseProps {
 
 function classes({ variant = "dark", size = "lg", block, className = "" }: Omit<BaseProps, "children">) {
   return [
-    "inline-flex select-none items-center justify-center gap-2 font-semibold transition active:scale-[0.98]",
+    "inline-flex select-none items-center justify-center gap-2 font-semibold transition-[transform,box-shadow,background-color] duration-150",
     "disabled:pointer-events-none disabled:opacity-45",
     variants[variant],
     sizes[size],

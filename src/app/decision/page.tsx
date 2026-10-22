@@ -40,13 +40,13 @@ export default function FinalDecisionPage() {
   if (!plan.decided) {
     return (
       <Screen>
-        <PageHeader title="Final Decision" backHref="/chat" />
+        <PageHeader title="Final Decision" backHref={plan.id ? `/chat/${plan.id}` : "/chat"} />
         <EmptyState
           icon={Scale}
           title="Voting is still open"
           body="When the group has voted, the admin taps Decide in the chat to compare the top places here."
           action={
-            <ButtonLink href="/chat" block>
+            <ButtonLink href={plan.id ? `/chat/${plan.id}` : "/chat"} block>
               Back to Group Chat
             </ButtonLink>
           }
@@ -127,7 +127,7 @@ export default function FinalDecisionPage() {
 
   return (
     <Screen>
-      <PageHeader title="Final Decision" backHref="/chat" subtitle={plan.groupName} />
+      <PageHeader title="Final Decision" backHref={`/chat/${plan.id}`} subtitle={plan.groupName} />
       <RoleSwitch />
 
       <PlanCard className="mt-3 !px-3">
@@ -229,7 +229,7 @@ export default function FinalDecisionPage() {
               size="md"
               onClick={() => {
                 planActions.reopenVoting();
-                router.push("/chat");
+                router.push(`/chat/${plan.id}`);
               }}
             >
               Reopen voting

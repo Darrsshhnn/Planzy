@@ -5,10 +5,11 @@ import Link from "next/link";
 import { PlaceImage } from "@/components/place/place-image";
 import { AvatarStack } from "@/components/ui/avatar";
 import { SectionTitle } from "@/components/ui/card";
-import { getPerson, getPlace } from "@/lib/api/data";
+import { getPlace } from "@/lib/api/data";
+import { previewMessage } from "@/lib/chat-preview";
 import { formatDateLong } from "@/lib/format";
-import type { ChatMessage, PlanState } from "@/lib/types";
-import { usePlan } from "@/store/plan-store";
+import type { PlanState } from "@/lib/types";
+import { CURRENT_USER_ID, planActions, usePlans } from "@/store/plan-store";
 
 /** Where the plan stands, and which screen continues it. */
 function stageOf(plan: PlanState) {
@@ -19,23 +20,19 @@ function stageOf(plan: PlanState) {
   if (status === "paid") return { title: "Confirmed Booking", label: "Booked", href: "/locked", cta: "View booking" };
   if (plan.locked) return { title: "Ongoing Chat", label: "Booking in progress", href: "/booking", cta: "Continue booking" };
   if (plan.decided) return { title: "Ongoing Chat", label: "Final decision", href: "/decision", cta: "Compare places" };
-  return { title: "Ongoing Chat", label: "Voting open", href: "/chat", cta: "Open chat" };
-}
-
-function preview(m: ChatMessage | undefined) {
-  if (!m) return "";
-  if (m.kind === "system" || m.kind === "alert") return m.text;
-  const who = getPerson(m.authorId).name;
-  if (m.kind === "text") return `${who}: ${m.text}`;
-  if (m.kind === "image") return `${who} shared a photo`;
-  if (m.kind === "location") return `${who} shared a location`;
-  return `${who} added ${getPlace(m.placeId)?.name ?? "a place"}`;
+  return { title: "Ongoing Chat", label: "Voting open", href: `/chat/${plan.id}`, cta: "Open chat" };
 }
 
 /** Top of Home: the confirmed booking, or the group chat still in progress. Hidden when there's no plan. */
 export function ActivePlanCard() {
-  const plan = usePlan();
-  if (plan.messages.length === 0) return null;
+  const { plans } = usePlans();
+  const live = plans.filter((p) => p.created && !p.archived && p.memberIds.includes(CURRENT_USER_ID));
+  const lastAt = (p: PlanState) => p.messages.at(-1)?.at ?? p.createdAt;
+  // Upcoming bookings first, then the chat with the latest activity.
+  const plan = [...live].sort(
+    (x, y) => Number(y.booking.status !== "none") - Number(x.booking.status !== "none") || lastAt(y) - lastAt(x),
+  )[0];
+  if (!plan) return null;
 
   const stage = stageOf(plan);
   const booked = plan.booking.status !== "none";
@@ -46,7 +43,8 @@ export function ActivePlanCard() {
       <SectionTitle>{stage.title}</SectionTitle>
       <Link
         href={stage.href}
-        className="mx-5 mt-3 block overflow-hidden card-dark text-white"
+        onClick={() => planActions.select(plan.id)}
+        className="reveal card-dark mx-5 mt-3 block overflow-hidden text-white"
       >
         <div className="flex gap-3 p-3">
           {place ? (
@@ -72,7 +70,7 @@ export function ActivePlanCard() {
                 : `${plan.shortlist.length} places shortlisted · ${formatDateLong(plan.date)}`}
             </p>
             <p className="mt-1 truncate text-[11px] text-white/60">
-              {booked ? `${plan.groupName}${plan.booking.status === "walk-in" ? " · No booking needed" : ` · Ref ${plan.booking.reference}`}` : preview(plan.messages.at(-1))}
+              {booked ? `${plan.groupName}${plan.booking.status === "walk-in" ? " · No booking needed" : ` · Ref ${plan.booking.reference}`}` : previewMessage(plan.messages.at(-1))}
             </p>
           </div>
         </div>

@@ -3,12 +3,13 @@ import type { ReactNode } from "react";
 import { rupees } from "@/lib/format";
 import type { Place } from "@/lib/types";
 import { AvailabilityChip, LivePill } from "./live-status";
+import { MapLink } from "./place-cards";
 import { PlaceImage } from "./place-image";
 
 /** Compact list row: thumbnail, name, key facts and an optional trailing action. */
 export function PlaceListRow({ place, trailing }: { place: Place; trailing?: ReactNode }) {
   return (
-    <li className="flex items-center gap-3 py-3">
+    <li className="reveal flex items-center gap-3 py-3">
       <Link href={`/place/${place.id}`} className="flex min-w-0 flex-1 items-center gap-3">
         <div className="relative h-[72px] w-[80px] shrink-0 overflow-hidden rounded-[8px]">
           <PlaceImage place={place} className="h-full w-full" sizes="80px" />
@@ -25,7 +26,7 @@ export function PlaceListRow({ place, trailing }: { place: Place; trailing?: Rea
           <AvailabilityChip place={place} className="mt-1" />
         </div>
       </Link>
-      {trailing}
+      {trailing ?? <MapLink place={place} className="h-9 w-9 border-ink! bg-paper!" />}
     </li>
   );
 }

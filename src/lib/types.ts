@@ -20,6 +20,8 @@ export interface Place {
   name: string;
   area: string;
   address: string;
+  lat: number;
+  lng: number;
   distanceKm: number;
   rating: number;
   reviewsCount: number;
@@ -55,6 +57,15 @@ export interface Friend {
   avatar: string;
   /** Usual outing time, used for the group timing suggestion. */
   prefers?: TimeSlot;
+  /** Usual budget per person and travel distance; sent when they accept an invite. */
+  budget?: number;
+  distance?: number;
+}
+
+export interface Area {
+  name: string;
+  lat: number;
+  lng: number;
 }
 
 export interface SavedGroup {
@@ -103,39 +114,71 @@ export interface Booking {
 
 export type PaymentMethod = "upi" | "card" | "netbanking" | "cash";
 
-export interface PlanState {
-  flow: PlanFlow | null;
-  /** The person who created the group. Only they can Decide and pay. */
-  adminId: string;
-  /** Everyone in the group, including the admin. */
-  memberIds: string[];
-  groupName: string;
-  categories: Category[];
-  date: string;
+/** One member's budget / distance / timing input for a plan. */
+export interface MemberPrefs {
   budget: number;
   distance: number;
   timeSlot: TimeSlot;
+}
+
+/** invited: waiting for a reply. accepted / declined: replied to the invite. */
+export type MemberStatus = "invited" | "accepted" | "declined";
+
+export interface PlanState {
+  id: string;
+  createdAt: number;
+  flow: PlanFlow | null;
+  /** The person who created the group. Only they can add people, Decide and book. */
+  adminId: string;
+  /** Admin plus everyone who accepted. Votes and bookings count these people. */
+  memberIds: string[];
+  /** Invite status for everyone the admin added (not the admin). */
+  invites: Record<string, MemberStatus>;
+  /** Budget / distance / timing each member sent; null = they skipped it. */
+  memberPrefs: Record<string, MemberPrefs | null>;
+  groupName: string;
+  categories: Category[];
+  date: string;
+  /** The admin's own budget / distance / timing (also the group defaults). */
+  budget: number;
+  distance: number;
+  timeSlot: TimeSlot;
+  /** Admin skipped the budget / distance / timing screen. */
+  prefsSkipped: boolean;
   onlyOpen: boolean;
   shortlist: string[];
   /** placeId -> memberId -> vote */
   votes: Record<string, Record<string, Vote>>;
   messages: ChatMessage[];
+  /** The group chat exists (created after Recommendation). */
+  created: boolean;
+  /** Finished outing, shown under Old chats. */
+  archived: boolean;
   decided: boolean;
   /** Admin locked the final place; booking can start. */
   locked: boolean;
   chosenPlaceId: string | null;
   booking: Booking;
-  favourites: string[];
 }
 
-export type SocialId = "instagram" | "whatsapp" | "snapchat" | "facebook";
+export interface AppNotification {
+  id: string;
+  kind: "invite" | "response" | "alert";
+  planId: string;
+  text: string;
+  at: number;
+  read: boolean;
+}
 
 export interface Profile {
   name: string;
-  /** Area / city shown under the name, e.g. "Ahmedabad, Gujarat". */
+  age: number | null;
+  /** Area / city shown under the name, e.g. "Bodakdev, Ahmedabad". */
   location: string;
   /** Image path or a data: URL from a photo the user picked. */
   avatar: string;
-  /** Connected accounts: handle (or phone number for WhatsApp). Missing = not connected. */
-  socials: Partial<Record<SocialId, string>>;
+  phone: string;
+  email: string;
+  /** Defaults used when you make or join a plan. */
+  preferences: { categories: Category[]; budget: number; distance: number; timeSlot: TimeSlot };
 }

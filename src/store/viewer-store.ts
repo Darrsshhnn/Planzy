@@ -7,7 +7,7 @@
  * With real auth this becomes the signed-in user.
  */
 import { useSyncExternalStore } from "react";
-import { usePlan } from "@/store/plan-store";
+import { CURRENT_USER_ID, usePlan } from "@/store/plan-store";
 
 export type Role = "admin" | "member";
 
@@ -44,11 +44,17 @@ function subscribe(l: () => void) {
 export function useViewer() {
   const current = useSyncExternalStore(subscribe, getSnapshot, () => "admin" as Role);
   const plan = usePlan();
+  // Groups someone else runs: you are simply a member.
+  if (plan.adminId !== CURRENT_USER_ID) {
+    return { role: "member" as Role, isAdmin: false, viewerId: CURRENT_USER_ID, ownGroup: false };
+  }
+  // Your own groups: the demo switch lets you preview a member's view.
   const memberId = plan.memberIds.find((id) => id !== plan.adminId);
   const isAdmin = current === "admin" || !memberId;
   return {
     role: isAdmin ? ("admin" as Role) : ("member" as Role),
     isAdmin,
     viewerId: isAdmin ? plan.adminId : memberId!,
+    ownGroup: true,
   };
 }

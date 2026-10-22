@@ -11,16 +11,16 @@ export function GroupsRow() {
   const router = useRouter();
   const startWith = (memberIds: string[]) => {
     planActions.start("new", memberIds);
-    router.push("/plan/start");
+    router.push("/plan/friends");
   };
   return (
-    <div className="no-scrollbar flex items-center gap-2.5 overflow-x-auto px-5 pb-1">
+    <div className="carousel items-center">
       {getGroups().map((g) => (
         <button
           key={g.id}
           onClick={() => startWith(g.memberIds)}
           aria-label={`Plan with ${g.name}`}
-          className="shrink-0 rounded-full transition active:scale-95"
+          className="reveal-x shrink-0 rounded-full transition active:scale-95"
         >
           <Image
             src={g.image}

@@ -1,30 +1,17 @@
 "use client";
 
-import { Camera, MapPin, Trash2 } from "lucide-react";
+import { Camera, Mail, MapPin, Phone, Trash2 } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useRef, useState, useSyncExternalStore } from "react";
+import { useRef, useState, useSyncExternalStore, type ReactNode } from "react";
 import { PageHeader } from "@/components/layout/page-header";
 import { Screen } from "@/components/layout/screen";
 import { ProfilePhoto } from "@/components/profile/profile-photo";
-import { SocialIcon } from "@/components/profile/social-icon";
 import { Button } from "@/components/ui/button";
 import { FieldBox, PlanCard } from "@/components/ui/card";
+import { getAreas } from "@/lib/geo";
 import { toAvatarDataUrl } from "@/lib/image";
-import type { Profile, SocialId } from "@/lib/types";
-import { cleanSocial, defaultProfile, saveProfile, SOCIALS, useProfile } from "@/store/profile-store";
-
-const AREAS = [
-  "Thaltej, Ahmedabad",
-  "Bodakdev, Ahmedabad",
-  "Satellite, Ahmedabad",
-  "Vastrapur, Ahmedabad",
-  "Navrangpura, Ahmedabad",
-  "Gota, Ahmedabad",
-  "Maninagar, Ahmedabad",
-  "Paldi, Ahmedabad",
-  "Prahlad Nagar, Ahmedabad",
-  "Ahmedabad, Gujarat",
-];
+import type { Profile } from "@/lib/types";
+import { cleanPhone, isEmail, saveProfile, useProfile } from "@/store/account-store";
 
 const noop = () => () => {};
 
@@ -35,45 +22,48 @@ export default function EditProfilePage() {
   if (!hydrated) {
     return (
       <Screen>
-        <PageHeader title="Edit Profile" backHref="/profile" />
+        <PageHeader title="Personal details" backHref="/profile" />
       </Screen>
     );
   }
   return <EditForm key={JSON.stringify(profile)} initial={profile} />;
 }
 
+function Field({ label, error, children }: { label: string; error?: string; children: ReactNode }) {
+  return (
+    <label className="mt-4 block">
+      <span className="text-[14px] font-semibold">{label}</span>
+      <FieldBox className="mt-1.5 flex h-[46px] items-center gap-2 px-4">{children}</FieldBox>
+      {error && <span className="mt-1 block text-[12px] text-red-600">{error}</span>}
+    </label>
+  );
+}
+
 function EditForm({ initial }: { initial: Profile }) {
   const router = useRouter();
   const fileRef = useRef<HTMLInputElement>(null);
   const [name, setName] = useState(initial.name);
+  const [age, setAge] = useState(initial.age ? String(initial.age) : "");
   const [location, setLocation] = useState(initial.location);
+  const [phone, setPhone] = useState(initial.phone);
+  const [email, setEmail] = useState(initial.email);
   const [avatar, setAvatar] = useState(initial.avatar);
-  const [socials, setSocials] = useState<Record<SocialId, string>>({
-    instagram: initial.socials.instagram ?? "",
-    whatsapp: initial.socials.whatsapp ?? "",
-    snapchat: initial.socials.snapchat ?? "",
-    facebook: initial.socials.facebook ?? "",
-  });
   const [photoError, setPhotoError] = useState("");
   const [submitted, setSubmitted] = useState(false);
 
-  const nameError = name.trim().length < 2 ? "Enter at least 2 characters" : "";
-  const locationError = !location.trim() ? "Enter your area or city" : "";
-  const socialErrors = Object.fromEntries(
-    SOCIALS.map(({ id }) => [
-      id,
-      cleanSocial(id, socials[id]) === null
-        ? id === "whatsapp"
-          ? "Enter a valid 10-digit Indian mobile number"
-          : "Use letters, numbers, dots or underscores"
-        : "",
-    ]),
-  ) as Record<SocialId, string>;
-  const valid = !nameError && !locationError && Object.values(socialErrors).every((e) => !e);
+  const ageNum = Number(age);
+  const errors = {
+    name: name.trim().length < 2 ? "Enter at least 2 characters" : "",
+    age: age && (!Number.isInteger(ageNum) || ageNum < 13 || ageNum > 100) ? "Enter an age between 13 and 100" : "",
+    location: !location.trim() ? "Enter your area or city" : "",
+    phone: cleanPhone(phone) ? "" : "Enter a valid 10-digit mobile number",
+    email: isEmail(email) ? "" : "Enter a valid email address",
+  };
+  const valid = Object.values(errors).every((e) => !e);
+  const show = (key: keyof typeof errors) => (submitted ? errors[key] : "");
 
   const pickPhoto = async (file: File | undefined) => {
     if (!file) return;
-    if (!file.type.startsWith("image/")) return setPhotoError("Please choose an image file");
     try {
       setAvatar(await toAvatarDataUrl(file));
       setPhotoError("");
@@ -85,25 +75,26 @@ function EditForm({ initial }: { initial: Profile }) {
   const save = () => {
     setSubmitted(true);
     if (!valid) return;
-    const cleaned: Profile["socials"] = {};
-    for (const { id } of SOCIALS) {
-      const v = cleanSocial(id, socials[id]);
-      if (v) cleaned[id] = v;
-    }
-    saveProfile({ name: name.trim(), location: location.trim(), avatar, socials: cleaned });
+    saveProfile({
+      ...initial,
+      name: name.trim(),
+      age: age ? ageNum : null,
+      location: location.trim(),
+      phone: cleanPhone(phone)!,
+      email: email.trim().toLowerCase(),
+      avatar,
+    });
     router.push("/profile");
   };
 
-  const showError = (msg: string) => submitted && msg && <p className="mt-1 text-[12px] text-red-600">{msg}</p>;
-
   return (
     <Screen>
-      <PageHeader title="Edit Profile" backHref="/profile" />
+      <PageHeader title="Personal details" backHref="/profile" />
 
       <PlanCard>
         <div className="flex flex-col items-center">
           <div className="relative">
-            <ProfilePhoto src={avatar} alt="Profile photo" size={104} className="border-[3px] border-white" />
+            <ProfilePhoto src={avatar} alt="Profile photo" size={100} className="border-[3px] border-white" />
             <button
               onClick={() => fileRef.current?.click()}
               aria-label="Change photo"
@@ -126,8 +117,8 @@ function EditForm({ initial }: { initial: Profile }) {
             <button onClick={() => fileRef.current?.click()} className="text-brand">
               Change photo
             </button>
-            {avatar !== defaultProfile.avatar && (
-              <button onClick={() => setAvatar(defaultProfile.avatar)} className="flex items-center gap-1 text-muted">
+            {avatar && (
+              <button onClick={() => setAvatar("")} className="flex items-center gap-1 text-muted">
                 <Trash2 size={13} /> Remove
               </button>
             )}
@@ -135,101 +126,68 @@ function EditForm({ initial }: { initial: Profile }) {
           {photoError && <p className="mt-1 text-[12px] text-red-600">{photoError}</p>}
         </div>
 
-        <label className="mt-5 block">
-          <span className="font-heading text-[17px] font-bold">Name</span>
-          <FieldBox className="mt-2 flex h-[46px] items-center px-4">
-            <input
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              maxLength={30}
-              autoComplete="name"
-              className="min-w-0 flex-1 bg-transparent text-[15px] outline-none"
-            />
-          </FieldBox>
-          {showError(nameError)}
-        </label>
-
-        <label className="mt-4 block">
-          <span className="font-heading text-[17px] font-bold">Location</span>
-          <FieldBox className="mt-2 flex h-[46px] items-center gap-2 px-4">
-            <MapPin size={18} className="shrink-0 text-brand" />
-            <input
-              value={location}
-              onChange={(e) => setLocation(e.target.value)}
-              list="planzy-areas"
-              maxLength={40}
-              placeholder="Area, City"
-              className="min-w-0 flex-1 bg-transparent text-[15px] outline-none"
-            />
-            <datalist id="planzy-areas">
-              {AREAS.map((a) => (
-                <option key={a} value={a} />
-              ))}
-            </datalist>
-          </FieldBox>
-          {showError(locationError)}
-        </label>
-
-        <div id="socials" className="mt-6 scroll-mt-4">
-          <h2 className="font-heading text-[17px] font-bold">Social connections</h2>
-          <p className="text-[12px] text-muted">Leave a field empty to disconnect it.</p>
-          <div className="mt-3 space-y-3">
-            {SOCIALS.map(({ id, label, placeholder, hint }) => (
-              <div key={id}>
-                <FieldBox className="flex items-center gap-3 py-2 pl-2 pr-3">
-                  <SocialIcon id={id} size={36} />
-                  <div className="min-w-0 flex-1">
-                    <p className="text-[11px] font-semibold text-muted">
-                      {label} · <span className="font-normal">{hint}</span>
-                    </p>
-                    <input
-                      value={socials[id]}
-                      onChange={(e) => setSocials((s) => ({ ...s, [id]: e.target.value }))}
-                      placeholder={placeholder}
-                      inputMode={id === "whatsapp" ? "tel" : "text"}
-                      aria-label={label}
-                      className="w-full bg-transparent text-[14px] outline-none placeholder:text-ink/35"
-                    />
-                  </div>
-                  {socials[id].trim() && (
-                    <button
-                      onClick={() => setSocials((s) => ({ ...s, [id]: "" }))}
-                      className="shrink-0 text-[11px] font-semibold text-muted"
-                    >
-                      Disconnect
-                    </button>
-                  )}
-                </FieldBox>
-                {showError(socialErrors[id])}
-              </div>
+        <Field label="Name" error={show("name")}>
+          <input
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            maxLength={30}
+            autoComplete="name"
+            className="min-w-0 flex-1 bg-transparent text-[15px] outline-none"
+          />
+        </Field>
+        <Field label="Age" error={show("age")}>
+          <input
+            value={age}
+            onChange={(e) => setAge(e.target.value.replace(/\D/g, "").slice(0, 3))}
+            inputMode="numeric"
+            placeholder="e.g. 21"
+            className="min-w-0 flex-1 bg-transparent text-[15px] outline-none placeholder:text-ink/35"
+          />
+        </Field>
+        <Field label="Location" error={show("location")}>
+          <MapPin size={18} className="shrink-0 text-brand" />
+          <input
+            value={location}
+            onChange={(e) => setLocation(e.target.value)}
+            list="planzy-areas"
+            maxLength={40}
+            placeholder="Area, City"
+            className="min-w-0 flex-1 bg-transparent text-[15px] outline-none"
+          />
+          <datalist id="planzy-areas">
+            {getAreas().map((a) => (
+              <option key={a.name} value={`${a.name}, Ahmedabad`} />
             ))}
-          </div>
-        </div>
+          </datalist>
+        </Field>
+        <Field label="Mobile number" error={show("phone")}>
+          <Phone size={18} className="shrink-0 text-brand" />
+          <span className="text-[15px] text-ink/70">+91</span>
+          <input
+            value={phone}
+            onChange={(e) => setPhone(e.target.value)}
+            inputMode="tel"
+            autoComplete="tel-national"
+            className="min-w-0 flex-1 bg-transparent text-[15px] outline-none"
+          />
+        </Field>
+        <Field label="Email" error={show("email")}>
+          <Mail size={18} className="shrink-0 text-brand" />
+          <input
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            type="email"
+            autoComplete="email"
+            className="min-w-0 flex-1 bg-transparent text-[15px] outline-none"
+          />
+        </Field>
       </PlanCard>
 
       <div className="mt-5 space-y-2 px-1.5">
         <Button block onClick={save}>
           Save changes
         </Button>
-        <Button
-          block
-          variant="ghost"
-          size="md"
-          onClick={() => {
-            // This screen stays mounted between visits, so drop unsaved edits.
-            setName(initial.name);
-            setLocation(initial.location);
-            setAvatar(initial.avatar);
-            setSocials({
-              instagram: initial.socials.instagram ?? "",
-              whatsapp: initial.socials.whatsapp ?? "",
-              snapchat: initial.socials.snapchat ?? "",
-              facebook: initial.socials.facebook ?? "",
-            });
-            setSubmitted(false);
-            router.push("/profile");
-          }}
-        >
+        <Button block variant="ghost" size="md" onClick={() => router.push("/profile")}>
           Cancel
         </Button>
       </div>

@@ -11,115 +11,153 @@
       "id": "umang",
       "name": "Umang",
       "avatar": "/images/avatars/umang.png",
-      "prefers": "Evening"
+      "prefers": "Evening",
+      "budget": 400,
+      "distance": 8
     },
     {
       "id": "karan",
       "name": "Karan",
       "avatar": "/images/avatars/karan.png",
-      "prefers": "Night"
+      "prefers": "Night",
+      "budget": 600,
+      "distance": 12
     },
     {
       "id": "yashraj",
       "name": "Yashraj",
       "avatar": "/images/avatars/yashraj.png",
-      "prefers": "Evening"
+      "prefers": "Evening",
+      "budget": 500,
+      "distance": 10
     },
     {
       "id": "vrushti",
       "name": "Vrushti",
       "avatar": "/images/avatars/vrushti.png",
-      "prefers": "Evening"
+      "prefers": "Evening",
+      "budget": 350,
+      "distance": 6
     },
     {
       "id": "yash",
       "name": "Yash",
       "avatar": "/images/avatars/yash.png",
-      "prefers": "Afternoon"
+      "prefers": "Afternoon",
+      "budget": 700,
+      "distance": 15
     },
     {
       "id": "dev",
       "name": "Dev",
       "avatar": "/images/avatars/dev.png",
-      "prefers": "Night"
+      "prefers": "Night",
+      "budget": 450,
+      "distance": 10
     },
     {
       "id": "vipul",
       "name": "Vipul",
       "avatar": "/images/avatars/vipul.png",
-      "prefers": "Morning"
+      "prefers": "Morning",
+      "budget": 300,
+      "distance": 20
     },
     {
       "id": "yuvraj",
       "name": "Yuvraj",
       "avatar": "/images/avatars/yuvraj.png",
-      "prefers": "Evening"
+      "prefers": "Evening",
+      "budget": 500,
+      "distance": 8
     },
     {
       "id": "aryan",
       "name": "Aryan",
       "avatar": "",
-      "prefers": "Night"
+      "prefers": "Night",
+      "budget": 800,
+      "distance": 12
     },
     {
       "id": "pankaj",
       "name": "Pankaj",
       "avatar": "",
-      "prefers": "Afternoon"
+      "prefers": "Afternoon",
+      "budget": 400,
+      "distance": 7
     },
     {
       "id": "anjali",
       "name": "Anjali",
       "avatar": "",
-      "prefers": "Evening"
+      "prefers": "Evening",
+      "budget": 550,
+      "distance": 9
     },
     {
       "id": "riya",
       "name": "Riya",
       "avatar": "",
-      "prefers": "Evening"
+      "prefers": "Evening",
+      "budget": 300,
+      "distance": 5
     },
     {
       "id": "krish",
       "name": "Krish",
       "avatar": "",
-      "prefers": "Night"
+      "prefers": "Night",
+      "budget": 650,
+      "distance": 14
     },
     {
       "id": "meera",
       "name": "Meera",
       "avatar": "",
-      "prefers": "Afternoon"
+      "prefers": "Afternoon",
+      "budget": 400,
+      "distance": 6
     },
     {
       "id": "harsh",
       "name": "Harsh",
       "avatar": "",
-      "prefers": "Evening"
+      "prefers": "Evening",
+      "budget": 500,
+      "distance": 10
     },
     {
       "id": "nisha",
       "name": "Nisha",
       "avatar": "",
-      "prefers": "Morning"
+      "prefers": "Morning",
+      "budget": 350,
+      "distance": 8
     },
     {
       "id": "parth",
       "name": "Parth",
       "avatar": "",
-      "prefers": "Night"
+      "prefers": "Night",
+      "budget": 700,
+      "distance": 12
     },
     {
       "id": "zeel",
       "name": "Zeel",
       "avatar": "",
-      "prefers": "Evening"
+      "prefers": "Evening",
+      "budget": 450,
+      "distance": 6
     },
     {
       "id": "kavya",
       "name": "Kavya",
       "avatar": "",
-      "prefers": "Afternoon"
+      "prefers": "Afternoon",
+      "budget": 600,
+      "distance": 9
     }
   ],
   "groups": [

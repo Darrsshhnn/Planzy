@@ -32,7 +32,7 @@ export default function HomePage() {
       >
         Recents
       </SectionTitle>
-      <div className="no-scrollbar mt-3 flex gap-3 overflow-x-auto px-5 pb-1">
+      <div className="carousel mt-3">
         {getRecents().map((r) => (
           <RecentCard key={r.id} outing={r} place={getPlace(r.placeId)!} />
         ))}
@@ -41,7 +41,7 @@ export default function HomePage() {
       <div className="mt-[22px]">
         <SectionTitle action={filterLink}>Recommendation</SectionTitle>
       </div>
-      <div className="mt-4 space-y-5 px-5">
+      <div className="mt-3 space-y-5 px-5">
         {getFeaturedPlaces().map((p, i) => (
           <FeaturedPlaceCard key={p.id} place={p} priority={i === 0} />
         ))}
@@ -51,8 +51,8 @@ export default function HomePage() {
       </div>
 
       <div className="mt-[26px]">
-        <Link href="/profile#groups" className="flex items-center gap-1 px-5">
-          <h2 className="font-heading text-[22px] font-bold">Groups</h2>
+        <Link href="/profile/groups" className="flex items-center gap-1 px-5">
+          <h2 className="font-heading text-[19px] font-bold">Groups</h2>
           <ChevronRight size={24} />
         </Link>
       </div>
@@ -61,9 +61,9 @@ export default function HomePage() {
       </div>
 
       <div className="mt-[26px]">
-        <SectionTitle action={filterLink}>Nearby Places</SectionTitle>
+        <SectionTitle>Nearby Places</SectionTitle>
       </div>
-      <div className="no-scrollbar mt-3 flex gap-3 overflow-x-auto px-5 pb-2">
+      <div className="carousel mt-3">
         {getNearbyPlaces().map((p) => (
           <NearbyCard key={p.id} place={p} />
         ))}

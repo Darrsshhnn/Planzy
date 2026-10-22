@@ -9,7 +9,7 @@ import { Sheet } from "@/components/ui/sheet";
 import { toReviewPhotoDataUrl } from "@/lib/image";
 import type { Place, Review } from "@/lib/types";
 import { usePlan } from "@/store/plan-store";
-import { useProfile } from "@/store/profile-store";
+import { useProfile } from "@/store/account-store";
 import { addReview, useMyReviews } from "@/store/reviews-store";
 import { Photo, type ViewerPhoto } from "./photo";
 
@@ -79,7 +79,7 @@ export function ReviewsSection({
         {shown.map((r) => {
           const photos: ViewerPhoto[] = (r.photos ?? []).map((src) => ({ src, caption: `${r.author} · ${r.when}` }));
           return (
-            <li key={r.id} className="card p-3">
+            <li key={r.id} className="reveal card p-3">
               <div className="flex items-center justify-between">
                 <span className="flex items-center gap-1.5 text-[13px] font-semibold">
                   {r.author}

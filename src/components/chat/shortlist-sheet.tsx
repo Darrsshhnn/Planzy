@@ -17,7 +17,7 @@ export function ShortlistBar({ plan, onOpen }: { plan: PlanState; onOpen: () => 
       className="card mx-5 mt-3 flex w-[calc(100%-2.5rem)] items-center gap-3 px-3 py-2 text-left"
       aria-label="Open shortlist"
     >
-      <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-ink text-brand">
+      <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-ink text-cream">
         <ListChecks size={18} />
       </span>
       <span className="min-w-0 flex-1">
@@ -44,6 +44,7 @@ export function ShortlistSheet({
   plan,
   viewerId,
   isAdmin,
+  canVote = true,
   onVote,
   onAddPlace,
 }: {
@@ -52,6 +53,8 @@ export function ShortlistSheet({
   plan: PlanState;
   viewerId: string;
   isAdmin: boolean;
+  /** False for invites not yet accepted and old chats. */
+  canVote?: boolean;
   onVote: (placeId: string, vote: Vote) => void;
   onAddPlace: () => void;
 }) {
@@ -60,7 +63,9 @@ export function ShortlistSheet({
   return (
     <Sheet open={open} onClose={onClose} title={`Shortlist (${plan.shortlist.length})`}>
       <p className="-mt-1 mb-3 text-[12px] text-muted">
-        {plan.decided
+        {!canVote
+          ? "Join the group to vote."
+          : plan.decided
           ? "Voting is closed."
           : isAdmin
             ? "Vote on each place. Tap Decide in the chat when the group is ready."
@@ -76,12 +81,12 @@ export function ShortlistSheet({
             total={plan.memberIds.length}
             myVote={plan.votes[place.id]?.[viewerId]}
             onVote={(v) => onVote(place.id, v)}
-            locked={plan.decided}
+            locked={plan.decided || !canVote}
             leading={place.id === leaderId}
           />
         ))}
       </div>
-      {!plan.decided && (
+      {!plan.decided && canVote && (
         <button
           onClick={onAddPlace}
           className="mt-3 flex h-[46px] w-full items-center justify-center gap-2 rounded-[12px] border-[1.5px] border-dashed border-brand bg-cream text-[14px] font-semibold"

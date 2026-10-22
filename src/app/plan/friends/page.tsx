@@ -23,14 +23,14 @@ export default function AddFriendsPage() {
   const topPicks = friends.slice(0, TOP_PICKS);
   const others = friends.slice(TOP_PICKS);
   const results = friends.filter((f) => f.name.toLowerCase().includes(q));
-  const selectedCount = plan.memberIds.length - 1;
-  const isSelected = (id: string) => plan.memberIds.includes(id);
+  const selectedCount = Object.keys(plan.invites).length;
+  const isSelected = (id: string) => !!plan.invites[id];
 
   const invite = async () => {
     const data = {
       title: "Join my Planzy plan",
       text: "Help us pick a place! Join my group on Planzy.",
-      url: `${window.location.origin}/plan/start`,
+      url: `${window.location.origin}/auth`,
     };
     try {
       if (navigator.share) {
@@ -47,11 +47,15 @@ export default function AddFriendsPage() {
 
   return (
     <PlanStep
-      backHref={plan.flow === "popular" ? "/plan/popular" : "/plan/start"}
-      onContinue={() => router.push("/plan/group")}
+      backHref={plan.flow === "popular" && plan.shortlist[0] ? `/place/${plan.shortlist[0]}` : "/"}
+      onContinue={() => {
+        // Invites go out now: each friend gets a notification to accept or decline.
+        planActions.sendInvites();
+        router.push("/plan/group");
+      }}
       canContinue={selectedCount > 0}
       hint="Add at least one friend"
-      continueLabel={selectedCount > 0 ? `Continue (${selectedCount})` : "Continue"}
+      continueLabel={selectedCount > 0 ? `Invite ${selectedCount} & continue` : "Continue"}
       overlay={
         toast && (
           <div className="absolute inset-x-0 bottom-[110px] z-40 flex justify-center">
@@ -74,7 +78,7 @@ export default function AddFriendsPage() {
 
       {q ? (
         <>
-          <h3 className="mt-5 font-heading text-[18px] font-bold">Results</h3>
+          <h3 className="mt-5 font-heading text-[16px] font-bold">Results</h3>
           <FriendList friends={results} isSelected={isSelected} />
           {results.length === 0 && (
             <p className="py-4 text-center text-[13px] text-muted">
@@ -84,14 +88,14 @@ export default function AddFriendsPage() {
         </>
       ) : (
         <>
-          <h3 className="mt-5 font-heading text-[18px] font-bold">Top Picks</h3>
+          <h3 className="mt-5 font-heading text-[16px] font-bold">Top Picks</h3>
           <div className="mt-3 grid grid-cols-4 gap-x-2 gap-y-3">
             {topPicks.map((f) => {
               const selected = isSelected(f.id);
               return (
                 <button
                   key={f.id}
-                  onClick={() => planActions.toggleMember(f.id)}
+                  onClick={() => planActions.toggleInvite(f.id)}
                   aria-pressed={selected}
                   className="flex min-w-0 flex-col items-center gap-1"
                 >
@@ -113,7 +117,7 @@ export default function AddFriendsPage() {
             })}
           </div>
 
-          <h3 className="mt-6 font-heading text-[18px] font-bold">More friends</h3>
+          <h3 className="mt-6 font-heading text-[16px] font-bold">More friends</h3>
           <FriendList friends={others} isSelected={isSelected} />
         </>
       )}
@@ -140,7 +144,7 @@ function FriendList({ friends, isSelected }: { friends: Friend[]; isSelected: (i
             <Avatar personId={f.id} size={44} />
             <span className="min-w-0 flex-1 truncate text-[15px]">{f.name}</span>
             <button
-              onClick={() => planActions.toggleMember(f.id)}
+              onClick={() => planActions.toggleInvite(f.id)}
               aria-pressed={selected}
               aria-label={`${selected ? "Remove" : "Add"} ${f.name}`}
               className={[

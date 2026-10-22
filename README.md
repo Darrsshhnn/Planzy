@@ -28,27 +28,37 @@ Lint: `npm run lint`
 
 | Step | Route | Notes |
 | --- | --- | --- |
-| Home | `/` | Recents, recommendations, saved groups, nearby places |
-| Start a Plan | `/plan/start` | New group outing or Popular places |
-| Popular places | `/plan/popular` | Only in the Popular flow; pick one place up front |
-| Add Friends | `/plan/friends` | Top picks, search, invite link |
-| Group Details | `/plan/group` | Group name (Skip = auto name), categories, date |
-| Plan Preferences | `/plan/preferences` | Budget, distance, timing, open-at-that-time toggle |
-| Recommendation | `/plan/recommendations` | At least 3 places; skipped in the Popular flow |
-| Group Chat | `/chat` | Shortlist mini screen (In / Maybe / Can't votes, add place by search or from liked places), + menu to share a photo or location, Decide (admin) |
-| Final Decision | `/decision` | Side-by-side comparison of the top 3. The group's vote decides: if the admin tries to pick a lower-voted place it is blocked and the group gets a notification. Food places lock as walk-in (no booking) |
-| Contact & Booking | `/booking` | In-app message to the venue (no calls), location, slots, people, price; members see a waiting state |
-| Review & Confirm | `/booking/review` | Booking summary ticket; pay now (UPI / card / net banking, mocked) or pay on reach (cash / UPI at the venue); admin only |
+| Welcome / Log in | `/auth`, `/auth/login` | Log in with mobile number or email + password; Forgot password |
+| Sign up | `/auth/signup` | Name → mobile number → password → email → location preference |
+| Forgot password | `/auth/forgot` | Number/email → 4-digit code (demo code **1234**) → new password |
+| Home | `/` | Confirmed booking / ongoing chat, recents, recommendations, groups, nearby places |
+| Notifications | `/notifications` | Group invites to accept/decline, replies to your invites (Home bell) |
+| Add Friends | `/plan/friends` | The + tab starts here. Top picks, more friends, search; Continue sends invites |
+| Group Details | `/plan/group` | Group name, invited friends with live Accepted / Waiting / Declined, categories, date |
+| Plan Preferences | `/plan/preferences` | Your budget, distance, timing (or Skip); shows the group average so far |
+| Recommendation | `/plan/recommendations` | Places for the group average; picking is optional. Creates the group chat |
+| Chats | `/chat` | Search; All / Groups / Personal; Invites, Running plans, Personal, Old chats; new chat with a friend |
+| Group Chat | `/chat/[id]` | Shortlist mini screen, votes, + menu (photo, location, group link), Decide (admin). Back goes to Chats |
+| Group info | `/chat/[id]/details` | Name (rename), people with status, add/remove (admin), created time, details, delete or leave |
+| Personal chat | `/chat/dm/[friendId]` | One-to-one chat with a friend |
+| Final Decision | `/decision` | Top 3 compared. The group's vote decides; an admin override is blocked and the group is notified. Food = walk-in |
+| Contact & Booking | `/booking` | In-app message to the venue (no calls), in-app map, slots, people, price |
+| Review & Confirm | `/booking/review` | Booking summary; pay now (mocked) or pay on reach (cash / UPI) |
 | Locked In | `/locked` | Confirmation, timing, price details, directions, share |
-| Place Detail | `/place/[id]` | Live status, reviews with rating filter, add to chat |
-| Explore | `/search` | Search with category, distance, time and open-now filters |
-| History | `/history` | Upcoming booking, ongoing chat and past outings (Recents → See all) |
-| Profile | `/profile` | Name, location, social connections, favourites, groups; opened from the Home photo or the nav |
-| Edit Profile | `/profile/edit` | Change photo, name, location; connect Instagram, WhatsApp, Snapchat, Facebook |
+| Place Detail | `/place/[id]` | Photos, live status, rating breakdown, reviews with photos, Location opens the map |
+| Explore | `/search` | Search, filter mini screen, map, new spots, new areas |
+| Map | `/map`, `/map?place=id` | OpenStreetMap: your live location, search an area, places within 3 km |
+| History | `/history` | Upcoming, ongoing and past outings |
+| Profile | `/profile` | Photo, name, age, location, number, email; sections below open their own screens |
+| Profile sections | `/profile/edit`, `/profile/preferences`, `/profile/favourites`, `/profile/groups`, `/profile/settings` | Personal details, default preferences, liked places, saved groups and group chats, password / notifications / log out |
+
+### Invites and the group average
+
+When you add friends to a plan, each gets an invite. Mock friends accept or decline after a few seconds; those who accept send their budget, distance and timing (some skip). Recommendations use the average budget and distance and the most popular time slot. A sample invite from Karan ("Sunday Box Cricket") is waiting in Notifications: accept it to see the member side, where Karan (simulated) closes voting and books once everyone has voted.
 
 ### Trying the admin and member views
 
-The person who creates the group is the admin; only they can Decide, lock the place and pay. To see the member side, use the **Admin / Member** switch on the chat, decision and booking screens (or in Profile). The role is stored per browser tab, so you can open two tabs, set one to Member, and watch its waiting screen flip to "booked" the moment the admin pays in the other tab.
+In your own groups, the **Admin / Member** switch (chat, decision, booking, or Profile → Settings) previews what a member sees. The role is stored per browser tab.
 
 ## Features from the research (FigJam)
 
@@ -92,13 +102,16 @@ src/
 ## Mocked parts and where a backend plugs in
 
 - **Places and people:** read from `src/data/*.json` through `src/lib/api/data.ts`. Replace those functions with API calls.
+- **Accounts:** `src/store/account-store.ts` keeps one account per browser (password stored as a SHA-256 hash). Replace with a real auth service.
+- **Plans, invites, notifications:** `src/store/plan-store.ts` (multi-plan, simulated friends and admins).
+- **Personal chats:** `src/store/dm-store.ts`.
 - **Venue messages:** `src/store/venue-chat-store.ts` keeps in-app conversations with venues; replies are mocked.
 - **Chat:** messages live in the plan store; friend replies and votes are simulated (`src/lib/api/chat.ts`, `simulatedVote` in `src/lib/votes.ts`, and the effect in `src/app/chat/page.tsx`). Swap in a realtime channel.
 - **Payment:** `processPayment` in `src/lib/api/payments.ts` waits 1.6 s and returns a fake reference. Swap in Razorpay/Stripe; the UI only depends on its signature.
 - **Plan state:** `src/store/plan-store.ts` exposes `usePlan()` and `planActions`. Keep the action names and have each call the API.
 - **Identity:** the signed-in user is `me` in `people.json`; `viewer-store.ts` stands in for auth.
 
-Sharing a location uses the browser's GPS, which only works on https (or localhost). Over a plain LAN address it falls back to the area in your profile.
+The map uses OpenStreetMap tiles (Leaflet) and Nominatim for area search; no API key needed. Sharing a location and the map's live position use the browser's GPS, which only works on https (or localhost). Over a plain LAN address it falls back to the area in your profile.
 
 Clear the demo state any time with **Profile → Reset plan** (or clear the site's localStorage).
 

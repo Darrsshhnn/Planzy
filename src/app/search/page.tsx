@@ -1,6 +1,6 @@
 "use client";
 
-import { Compass, Search, SlidersHorizontal, Sparkles, X } from "lucide-react";
+import { Compass, Map, Search, SlidersHorizontal, Sparkles, X } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
 import { PageHeader } from "@/components/layout/page-header";
@@ -80,6 +80,13 @@ export default function SearchPage() {
             className="min-w-0 flex-1 bg-transparent text-[15px] outline-none placeholder:text-ink/40"
           />
         </FieldBox>
+        <Link
+          href="/map"
+          aria-label="Look at the map"
+          className="card flex h-[48px] w-[48px] shrink-0 items-center justify-center bg-cream!"
+        >
+          <Map size={22} />
+        </Link>
         <button
           onClick={() => setFiltersOpen(true)}
           aria-label={`Filters${activeFilters ? `, ${activeFilters} active` : ""}`}
@@ -109,16 +116,25 @@ export default function SearchPage() {
 
       {!query && activeFilters === 0 && (
         <>
+          <Link href="/map" className="card-dark mt-4 flex items-center gap-3 p-3 text-white">
+            <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-brand">
+              <Map size={22} />
+            </span>
+            <span className="min-w-0 flex-1">
+              <span className="block text-[15px] font-semibold">Explore on the map</span>
+              <span className="block text-[12px] text-white/75">Your live location and what&apos;s on around you</span>
+            </span>
+          </Link>
           <section className="mt-4">
             <h2 className="flex items-center gap-1.5 font-heading text-[17px] font-bold">
               <Sparkles size={17} className="text-brand" /> New spots this week
             </h2>
-            <div className="no-scrollbar -mx-5 mt-2 flex gap-3 overflow-x-auto px-5">
+            <div className="carousel -mx-5 mt-2">
               {getNewPlaces().map((p) => (
                 <Link
                   key={p.id}
                   href={`/place/${p.id}`}
-                  className="relative block h-[110px] w-[180px] shrink-0 overflow-hidden card-dark"
+                  className="reveal-x card-dark relative block h-[110px] w-[180px] shrink-0 overflow-hidden"
                 >
                   <PlaceImage place={p} className="absolute inset-0 h-full w-full" sizes="180px" />
                   <div className="absolute inset-0 bg-gradient-to-t from-ink via-ink/30 to-transparent" />

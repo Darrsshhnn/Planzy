@@ -13,7 +13,7 @@ export function LiveSection({ place, onOpenPhoto }: { place: Place; onOpenPhoto:
   const ages = photoAges(place);
   const level = CROWD_BARS[place.live.crowd];
   return (
-    <section className="card-dark mt-5 p-3.5 text-white">
+    <section className="reveal card-dark mt-5 p-3.5 text-white">
       <div className="flex items-center justify-between">
         <h2 className="flex items-center gap-2 font-heading text-[17px] font-bold">
           <span className="relative flex h-2 w-2">
@@ -61,7 +61,7 @@ export function LiveSection({ place, onOpenPhoto }: { place: Place; onOpenPhoto:
       <p className="mt-3 flex items-center gap-1.5 text-[12px] font-semibold">
         <Camera size={14} /> Recent visitor photos
       </p>
-      <div className="no-scrollbar -mx-3.5 mt-2 flex gap-2 overflow-x-auto px-3.5">
+      <div className="no-scrollbar -mx-3.5 mt-2 flex snap-x snap-mandatory scroll-px-3.5 gap-2 overflow-x-auto px-3.5 [&>*]:snap-start">
         {place.gallery.map((src, i) => (
           <button
             key={src}

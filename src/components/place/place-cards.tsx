@@ -1,4 +1,4 @@
-import { Check, Images, Navigation, Sparkles } from "lucide-react";
+import { Check, Images, MapPin, Navigation, Sparkles } from "lucide-react";
 import Link from "next/link";
 import { ButtonLink } from "@/components/ui/button";
 import { MemberDots } from "@/components/ui/avatar";
@@ -24,7 +24,7 @@ function PhotoCount({ place, className = "" }: { place: Place; className?: strin
 /** Large dark card from Home > Recommendation. */
 export function FeaturedPlaceCard({ place, priority }: { place: Place; priority?: boolean }) {
   return (
-    <article className="card-dark relative overflow-hidden">
+    <article className="reveal card-dark relative overflow-hidden">
       <div>
         <Link href={`/place/${place.id}`} aria-label={place.name} className="block">
           <PlaceImage place={place} className="h-[220px] w-full" priority={priority} />
@@ -58,9 +58,12 @@ export function FeaturedPlaceCard({ place, priority }: { place: Place; priority?
               </p>
               <AvailabilityChip place={place} className="mt-1.5" />
             </div>
-            <ButtonLink href={`/place/${place.id}`} variant="brand" size="md" className="w-[150px] shrink-0">
-              Visit
-            </ButtonLink>
+            <div className="flex shrink-0 gap-2">
+              <MapLink place={place} className="h-[44px] w-[44px]" />
+              <ButtonLink href={`/place/${place.id}`} variant="brand" size="md" className="w-[96px]">
+                Visit
+              </ButtonLink>
+            </div>
           </div>
         </div>
       </div>
@@ -74,7 +77,7 @@ export function RecentCard({ outing, place }: { outing: RecentOuting; place: Pla
     <Link
       href={`/place/${place.id}`}
       aria-label={`${outing.groupName}, ${place.name}`}
-      className="card-dark flex h-[160px] w-[135px] shrink-0 flex-col overflow-hidden"
+      className="reveal-x card-dark flex h-[160px] w-[135px] shrink-0 flex-col overflow-hidden"
     >
       <PlaceImage place={place} className="h-[72px] w-full shrink-0" sizes="140px" />
       <div className="flex min-h-0 flex-1 flex-col px-2 pb-2 pt-1.5 text-white">
@@ -96,9 +99,10 @@ export function RecentCard({ outing, place }: { outing: RecentOuting; place: Pla
 /** Dark card in the Home "Nearby Places" carousel. */
 export function NearbyCard({ place }: { place: Place }) {
   return (
+    <div className="reveal-x relative w-[248px] shrink-0">
     <Link
       href={`/place/${place.id}`}
-      className="card-dark block w-[248px] shrink-0 overflow-hidden"
+      className="card-dark block overflow-hidden"
     >
       <div className="relative">
         <PlaceImage place={place} className="h-[96px] w-full" sizes="250px" />
@@ -115,6 +119,21 @@ export function NearbyCard({ place }: { place: Place }) {
         <p className="mt-1.5 line-clamp-1 text-[9px] leading-[11px] text-white/85">{place.address}</p>
         <AvailabilityChip place={place} className="mt-1.5" />
       </div>
+    </Link>
+    <MapLink place={place} className="absolute right-2.5 top-[62px] h-8 w-8 shadow-[0_2px_0_#242a2f]" />
+    </div>
+  );
+}
+
+/** Opens the in-app map centred on this place. */
+export function MapLink({ place, className = "" }: { place: Place; className?: string }) {
+  return (
+    <Link
+      href={`/map?place=${place.id}`}
+      aria-label={`${place.name} on the map`}
+      className={`pointer-events-auto flex items-center justify-center rounded-full border border-cream/60 bg-cream text-brand ${className}`}
+    >
+      <MapPin size={16} />
     </Link>
   );
 }
@@ -137,7 +156,7 @@ export function PlaceRowCard({
   return (
     <div
       className={[
-        "card relative flex gap-2.5 p-[9px] transition",
+        "reveal card relative flex gap-2.5 p-[9px] transition",
         selected ? "border-brand! ring-2 ring-brand/70" : "",
       ].join(" ")}
     >
@@ -170,14 +189,22 @@ export function PlaceRowCard({
             {formatTimeShort(place.open)} – {formatTimeShort(place.close)}
           </span>
         </p>
-        <div className="mt-1 flex items-center justify-between gap-1">
+        <div className="mt-1 flex flex-wrap items-center justify-between gap-x-1 gap-y-1">
           <AvailabilityChip place={place} />
-          <Link
-            href={`/place/${place.id}`}
-            className="pointer-events-auto text-[11px] font-medium text-navy underline underline-offset-2"
-          >
-            Details
-          </Link>
+          <span className="flex items-center gap-2">
+            <Link
+              href={`/map?place=${place.id}`}
+              className="pointer-events-auto flex items-center gap-0.5 text-[11px] font-medium text-navy underline underline-offset-2"
+            >
+              <MapPin size={11} /> Map
+            </Link>
+            <Link
+              href={`/place/${place.id}`}
+              className="pointer-events-auto text-[11px] font-medium text-navy underline underline-offset-2"
+            >
+              Details
+            </Link>
+          </span>
         </div>
       </div>
       {selected && (

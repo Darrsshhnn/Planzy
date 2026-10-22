@@ -21,14 +21,14 @@ export function FieldBox({ className = "", ...rest }: ComponentProps<"div">) {
 }
 
 export function FieldLabel({ children, className = "" }: { children: ReactNode; className?: string }) {
-  return <h2 className={`font-heading text-[20px] font-bold text-ink ${className}`}>{children}</h2>;
+  return <h2 className={`font-heading text-[17px] font-bold text-ink ${className}`}>{children}</h2>;
 }
 
 /** Section heading on the Home screen ("Recents", "Recommendation", ...). */
 export function SectionTitle({ children, action }: { children: ReactNode; action?: ReactNode }) {
   return (
     <div className="flex items-center justify-between px-5">
-      <h2 className="font-heading text-[22px] font-bold text-ink">{children}</h2>
+      <h2 className="font-heading text-[19px] font-bold text-ink">{children}</h2>
       {action}
     </div>
   );

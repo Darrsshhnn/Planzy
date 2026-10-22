@@ -1,11 +1,13 @@
 "use client";
 
 import { CalendarCheck, Loader2, MapPin, MessageSquareText, Minus, Plus, ShieldCheck, Utensils } from "lucide-react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { PriceSummary } from "@/components/booking/price-summary";
 import { PageHeader } from "@/components/layout/page-header";
 import { Screen } from "@/components/layout/screen";
+import { StickyFooter } from "@/components/layout/sticky-footer";
 import { PlaceImage } from "@/components/place/place-image";
 import { VenueChatSheet } from "@/components/place/venue-chat-sheet";
 import { RoleSwitch } from "@/components/plan/role-switch";
@@ -15,7 +17,7 @@ import { Chip } from "@/components/ui/chip";
 import { EmptyState } from "@/components/ui/empty-state";
 import { RatingBadge } from "@/components/ui/rating";
 import { getPerson, getPlace } from "@/lib/api/data";
-import { formatDateLong, hash, mapsUrl, rupees } from "@/lib/format";
+import { formatDateLong, hash, rupees } from "@/lib/format";
 import { quote } from "@/lib/pricing";
 import { bookingSlots } from "@/lib/time";
 import { planActions, usePlan } from "@/store/plan-store";
@@ -37,7 +39,7 @@ export default function ContactBookingPage() {
           title="No place locked yet"
           body="The admin locks the final place on the Final Decision screen, then books it here."
           action={
-            <ButtonLink href="/chat" block>
+            <ButtonLink href={plan.id ? `/chat/${plan.id}` : "/chat"} block>
               Back to Group Chat
             </ButtonLink>
           }
@@ -71,7 +73,39 @@ export default function ContactBookingPage() {
   const isFull = (slot: string) => hash(place.id + plan.date + slot) % 4 === 0;
 
   return (
-    <Screen overlay={<VenueChatSheet place={place} open={messaging} onClose={() => setMessaging(false)} />}>
+    <Screen
+      withFooter
+      overlay={
+        <>
+          <StickyFooter>
+        {confirmed ? (
+          <ButtonLink href="/locked" block>
+            View booking
+          </ButtonLink>
+        ) : isAdmin ? (
+          <>
+            <Button block disabled={!booking.slot} onClick={() => router.push("/booking/review")}>
+              Review booking · {rupees(quote(place, booking.people).total)}
+            </Button>
+            {!booking.slot && <p className="mt-2 text-center text-[12px] text-muted">Pick an available time slot</p>}
+          </>
+        ) : (
+          <div className="card flex items-center gap-3 bg-cream! p-4" role="status">
+            <Loader2 size={26} className="shrink-0 animate-spin text-brand" />
+            <div>
+              <p className="text-[14px] font-semibold">Waiting for {admin.name} to book</p>
+              <p className="text-[12px] text-ink/80">
+                Only the group admin can book. Your share will be about{" "}
+                {rupees(quote(place, booking.people).perPerson)}. This updates as soon as it&apos;s booked.
+              </p>
+            </div>
+          </div>
+        )}
+</StickyFooter>
+          <VenueChatSheet place={place} open={messaging} onClose={() => setMessaging(false)} />
+        </>
+      }
+    >
       <PageHeader title="Contact & Booking" backHref="/decision" subtitle={plan.groupName} />
       <RoleSwitch />
 
@@ -95,14 +129,9 @@ export default function ContactBookingPage() {
           >
             <MessageSquareText size={20} className="text-brand" /> Message
           </button>
-          <a
-            href={mapsUrl(place.name, place.address)}
-            target="_blank"
-            rel="noreferrer"
-            className="card flex h-[48px] items-center justify-center gap-2 text-[13px] font-medium"
-          >
+          <Link href={`/map?place=${place.id}`} className="card flex h-[48px] items-center justify-center gap-2 text-[13px] font-medium">
             <MapPin size={20} className="text-brand" /> Location
-          </a>
+          </Link>
         </div>
 
         <h3 className="mt-5 font-heading text-[17px] font-bold">Availability</h3>
@@ -160,31 +189,6 @@ export default function ContactBookingPage() {
         </p>
       </PlanCard>
 
-      <div className="mt-5 px-1.5">
-        {confirmed ? (
-          <ButtonLink href="/locked" block>
-            View booking
-          </ButtonLink>
-        ) : isAdmin ? (
-          <>
-            <Button block disabled={!booking.slot} onClick={() => router.push("/booking/review")}>
-              Review booking · {rupees(quote(place, booking.people).total)}
-            </Button>
-            {!booking.slot && <p className="mt-2 text-center text-[12px] text-muted">Pick an available time slot</p>}
-          </>
-        ) : (
-          <div className="card flex items-center gap-3 bg-cream! p-4" role="status">
-            <Loader2 size={26} className="shrink-0 animate-spin text-brand" />
-            <div>
-              <p className="text-[14px] font-semibold">Waiting for {admin.name} to book</p>
-              <p className="text-[12px] text-ink/80">
-                Only the group admin can book. Your share will be about{" "}
-                {rupees(quote(place, booking.people).perPerson)}. This updates as soon as it&apos;s booked.
-              </p>
-            </div>
-          </div>
-        )}
-      </div>
     </Screen>
   );
 }

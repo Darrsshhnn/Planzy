@@ -1,32 +1,38 @@
 "use client";
 
 import { useRouter } from "next/navigation";
+import { GroupPrefsPanel } from "@/components/plan/group-prefs-panel";
 import { PlanStep } from "@/components/plan/plan-step";
 import { PlaceRowCard } from "@/components/place/place-cards";
+import { groupPrefs } from "@/lib/group-prefs";
 import { recommend } from "@/lib/recommend";
 import { planActions, usePlan } from "@/store/plan-store";
 
 export default function RecommendationPage() {
   const router = useRouter();
   const plan = usePlan();
-  const recs = recommend(plan);
+  // Suggestions follow the group's average budget / distance / timing, live.
+  const recs = recommend({ ...plan, ...groupPrefs(plan) });
   const count = plan.shortlist.length;
+
+  const create = () => {
+    const id = planActions.openGroupChat();
+    // Replace, so Back from the new chat goes to Chats, not this screen.
+    router.replace(`/chat/${id}`);
+  };
 
   return (
     <PlanStep
       backHref="/plan/preferences"
-      onContinue={() => {
-        planActions.openGroupChat();
-        router.push("/chat");
-      }}
-      canContinue={count > 0}
-      hint="Select at least one place for the shortlist"
-      continueLabel={count ? `Share ${count} with group` : "Continue"}
+      onContinue={create}
+      continueLabel={count ? `Create group · share ${count}` : "Create group"}
     >
-      <h2 className="font-heading text-[20px] font-bold">Recommendation</h2>
+      <h2 className="font-heading text-[17px] font-bold">Recommendation</h2>
       <p className="mt-1 text-[12px] text-muted">
-        Matched to your group&apos;s budget, distance and timing. Tap a card to add or remove it from the shortlist.
+        Matched to the group&apos;s average budget, distance and timing. Tap a card to add or remove it. You can also
+        skip picking and add places later in the chat.
       </p>
+      <GroupPrefsPanel plan={plan} />
       <div className="mt-4 space-y-4">
         {recs.map((r) => (
           <PlaceRowCard

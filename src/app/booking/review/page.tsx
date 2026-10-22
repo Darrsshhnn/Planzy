@@ -20,6 +20,7 @@ import { useState } from "react";
 import { PriceSummary } from "@/components/booking/price-summary";
 import { PageHeader } from "@/components/layout/page-header";
 import { Screen } from "@/components/layout/screen";
+import { StickyFooter } from "@/components/layout/sticky-footer";
 import { PlaceImage } from "@/components/place/place-image";
 import { AvatarStack } from "@/components/ui/avatar";
 import { Button, ButtonLink } from "@/components/ui/button";
@@ -139,14 +140,38 @@ export default function ReviewConfirmPage() {
 
   return (
     <Screen
+      withFooter
       overlay={
-        paying && (
+        <>
+          <StickyFooter>
+        {isAdmin ? (
+          <Button block onClick={confirm} disabled={paying}>
+            {atVenue ? (
+              <>
+                <Store size={18} /> Confirm · pay {rupees(q.total)} at venue
+              </>
+            ) : (
+              <>
+                <Lock size={18} /> Pay {rupees(q.total)} &amp; Confirm
+              </>
+            )}
+          </Button>
+        ) : (
+          <p className="rounded-[10px] bg-cream p-3 text-center text-[13px]">
+            Only {getPerson(plan.adminId).name} (admin) can confirm for the group.
+          </p>
+        )}
+        {error && <p className="mt-2 text-center text-[12px] text-red-600">{error}</p>}
+        <p className="mt-3 text-center text-[11px] text-muted">Free cancellation up to 2 hours before the booking.</p>
+</StickyFooter>
+          {paying && (
           <div className="absolute inset-0 z-40 flex flex-col items-center justify-center gap-3 bg-white/85 backdrop-blur-sm">
             <Loader2 size={40} className="animate-spin text-brand" />
             <p className="text-[15px] font-semibold">Processing {rupees(q.total)}…</p>
             <p className="text-[12px] text-muted">Mock payment, no real money is charged</p>
           </div>
-        )
+          )}
+        </>
       }
     >
       <PageHeader title="Review & Confirm" backHref="/booking" />
@@ -248,27 +273,6 @@ export default function ReviewConfirmPage() {
         </p>
       )}
 
-      <div className="mt-5 px-1.5">
-        {isAdmin ? (
-          <Button block onClick={confirm} disabled={paying}>
-            {atVenue ? (
-              <>
-                <Store size={18} /> Confirm · pay {rupees(q.total)} at venue
-              </>
-            ) : (
-              <>
-                <Lock size={18} /> Pay {rupees(q.total)} &amp; Confirm
-              </>
-            )}
-          </Button>
-        ) : (
-          <p className="rounded-[10px] bg-cream p-3 text-center text-[13px]">
-            Only {getPerson(plan.adminId).name} (admin) can confirm for the group.
-          </p>
-        )}
-        {error && <p className="mt-2 text-center text-[12px] text-red-600">{error}</p>}
-        <p className="mt-3 text-center text-[11px] text-muted">Free cancellation up to 2 hours before the booking.</p>
-      </div>
     </Screen>
   );
 }

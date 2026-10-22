@@ -12,15 +12,17 @@ import {
   Send,
   Sparkles,
 } from "lucide-react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { Screen } from "@/components/layout/screen";
+import { StickyFooter } from "@/components/layout/sticky-footer";
 import { Button } from "@/components/ui/button";
 import { Stars } from "@/components/ui/rating";
 import { getPhotoCredit } from "@/lib/api/data";
-import { mapsUrl, rupees } from "@/lib/format";
+import { rupees } from "@/lib/format";
 import type { Place } from "@/lib/types";
-import { planActions, usePlan } from "@/store/plan-store";
+import { CURRENT_USER_ID, planActions, usePlan } from "@/store/plan-store";
 import { useViewer } from "@/store/viewer-store";
 import { FavouriteButton } from "./favourite-button";
 import { LivePill } from "./live-status";
@@ -46,7 +48,8 @@ export function PlaceDetail({ place }: { place: Place }) {
   const [messaging, setMessaging] = useState(false);
   const verifiedVisit = useVisitedViaPlanzy(place.id);
 
-  const chatOpen = plan.messages.length > 0 && !plan.decided;
+  // The open group chat (if any) can take this place into its shortlist.
+  const chatOpen = plan.created && !plan.archived && !plan.decided && plan.memberIds.includes(CURRENT_USER_ID);
   const inShortlist = plan.shortlist.includes(place.id);
   const gallery = [...(place.image ? [place.image] : []), ...place.gallery];
   const galleryPhotos: ViewerPhoto[] = gallery.map((src) => ({ src, caption: creditCaption(src) }));
@@ -73,21 +76,21 @@ export function PlaceDetail({ place }: { place: Place }) {
   const primary = () => {
     if (chatOpen) {
       if (!inShortlist) planActions.addPlaceFromChat(place.id, viewerId);
-      router.push("/chat");
+      router.push(`/chat/${plan.id}`);
       return;
     }
     // No active group: start a "Popular Places" plan with this place picked.
-    planActions.start("popular");
-    planActions.choosePopularPlace(place.id);
+    planActions.start("popular", [], place.id);
     router.push("/plan/friends");
   };
 
   return (
     <Screen
       padded={false}
+      withFooter
       overlay={
         <>
-          <div className="absolute inset-x-0 bottom-[96px] z-20 bg-gradient-to-t from-white via-white/95 to-transparent px-5 pb-3 pt-6">
+          <StickyFooter>
             <Button block onClick={primary} variant={chatOpen && inShortlist ? "outline" : "dark"}>
               {chatOpen ? (
                 inShortlist ? (
@@ -101,7 +104,7 @@ export function PlaceDetail({ place }: { place: Place }) {
                 "Plan with friends"
               )}
             </Button>
-          </div>
+          </StickyFooter>
           {toast && (
             <div className="absolute inset-x-0 bottom-[190px] z-40 flex justify-center">
               <span className="rounded-full bg-ink px-4 py-2 text-[13px] text-white">{toast}</span>
@@ -196,14 +199,9 @@ export function PlaceDetail({ place }: { place: Place }) {
           >
             <MessageSquareText size={20} className="text-brand" /> Message
           </button>
-          <a
-            href={mapsUrl(place.name, place.address)}
-            target="_blank"
-            rel="noreferrer"
-            className="card flex h-[50px] items-center justify-center gap-2 bg-cream! text-[13px] font-medium"
-          >
+          <Link href={`/map?place=${place.id}`} className="card flex h-[50px] items-center justify-center gap-2 bg-cream! text-[13px] font-medium">
             <MapPin size={20} className="text-brand" /> Location
-          </a>
+          </Link>
         </div>
 
         <LiveSection
@@ -242,8 +240,6 @@ export function PlaceDetail({ place }: { place: Place }) {
           onWrite={() => setWriting(true)}
         />
 
-        {/* Room for the action bar that sits above the bottom nav. */}
-        <div className="h-20" />
       </div>
     </Screen>
   );
