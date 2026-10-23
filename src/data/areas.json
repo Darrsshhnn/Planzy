@@ -1,112 +1,644 @@
 [
   {
     "name": "Thaltej",
+    "city": "Ahmedabad",
     "lat": 23.05,
     "lng": 72.517
   },
   {
     "name": "Bodakdev",
+    "city": "Ahmedabad",
     "lat": 23.039,
     "lng": 72.509
   },
   {
     "name": "Satellite",
+    "city": "Ahmedabad",
     "lat": 23.03,
     "lng": 72.517
   },
   {
     "name": "Vastrapur",
+    "city": "Ahmedabad",
     "lat": 23.037,
     "lng": 72.529
   },
   {
     "name": "Navrangpura",
+    "city": "Ahmedabad",
     "lat": 23.036,
     "lng": 72.561
   },
   {
     "name": "Gota",
+    "city": "Ahmedabad",
     "lat": 23.104,
     "lng": 72.545
   },
   {
     "name": "Maninagar",
+    "city": "Ahmedabad",
     "lat": 22.996,
     "lng": 72.603
   },
   {
     "name": "Paldi",
+    "city": "Ahmedabad",
     "lat": 23.012,
     "lng": 72.564
   },
   {
     "name": "Prahlad Nagar",
+    "city": "Ahmedabad",
     "lat": 23.012,
     "lng": 72.508
   },
   {
     "name": "Vasna",
+    "city": "Ahmedabad",
     "lat": 22.999,
     "lng": 72.545
   },
   {
     "name": "Sola",
+    "city": "Ahmedabad",
     "lat": 23.07,
     "lng": 72.517
   },
   {
     "name": "Old City",
+    "city": "Ahmedabad",
     "lat": 23.026,
-    "lng": 72.585
+    "lng": 72.59
   },
   {
     "name": "Drive-in Road",
+    "city": "Ahmedabad",
     "lat": 23.048,
     "lng": 72.533
   },
   {
     "name": "Sindhu Bhavan Road",
+    "city": "Ahmedabad",
     "lat": 23.043,
     "lng": 72.5
   },
   {
     "name": "Lal Darwaja",
+    "city": "Ahmedabad",
     "lat": 23.025,
     "lng": 72.58
   },
   {
     "name": "Thol",
+    "city": "Ahmedabad",
     "lat": 23.135,
     "lng": 72.39
   },
   {
     "name": "Memnagar",
+    "city": "Ahmedabad",
     "lat": 23.05,
     "lng": 72.535
   },
   {
     "name": "Ellisbridge",
+    "city": "Ahmedabad",
     "lat": 23.02,
     "lng": 72.565
   },
   {
     "name": "Bopal",
+    "city": "Ahmedabad",
     "lat": 23.032,
     "lng": 72.465
   },
   {
+    "name": "South Bopal",
+    "city": "Ahmedabad",
+    "lat": 23.02,
+    "lng": 72.47
+  },
+  {
+    "name": "Ghuma",
+    "city": "Ahmedabad",
+    "lat": 23.035,
+    "lng": 72.445
+  },
+  {
+    "name": "Shela",
+    "city": "Ahmedabad",
+    "lat": 23.003,
+    "lng": 72.455
+  },
+  {
     "name": "Chandkheda",
+    "city": "Ahmedabad",
     "lat": 23.11,
     "lng": 72.585
   },
   {
     "name": "Naranpura",
+    "city": "Ahmedabad",
     "lat": 23.06,
     "lng": 72.555
   },
   {
     "name": "Ashram Road",
+    "city": "Ahmedabad",
     "lat": 23.04,
     "lng": 72.57
+  },
+  {
+    "name": "Ambawadi",
+    "city": "Ahmedabad",
+    "lat": 23.024,
+    "lng": 72.552
+  },
+  {
+    "name": "Gulbai Tekra",
+    "city": "Ahmedabad",
+    "lat": 23.03,
+    "lng": 72.548
+  },
+  {
+    "name": "Vejalpur",
+    "city": "Ahmedabad",
+    "lat": 23.002,
+    "lng": 72.518
+  },
+  {
+    "name": "Jodhpur",
+    "city": "Ahmedabad",
+    "lat": 23.02,
+    "lng": 72.525
+  },
+  {
+    "name": "Shivranjani",
+    "city": "Ahmedabad",
+    "lat": 23.025,
+    "lng": 72.53
+  },
+  {
+    "name": "Iscon",
+    "city": "Ahmedabad",
+    "lat": 23.025,
+    "lng": 72.507
+  },
+  {
+    "name": "Makarba",
+    "city": "Ahmedabad",
+    "lat": 22.995,
+    "lng": 72.5
+  },
+  {
+    "name": "Sarkhej",
+    "city": "Ahmedabad",
+    "lat": 22.985,
+    "lng": 72.5
+  },
+  {
+    "name": "Juhapura",
+    "city": "Ahmedabad",
+    "lat": 22.995,
+    "lng": 72.525
+  },
+  {
+    "name": "Science City",
+    "city": "Ahmedabad",
+    "lat": 23.078,
+    "lng": 72.495
+  },
+  {
+    "name": "Chandlodia",
+    "city": "Ahmedabad",
+    "lat": 23.08,
+    "lng": 72.555
+  },
+  {
+    "name": "Ghatlodia",
+    "city": "Ahmedabad",
+    "lat": 23.068,
+    "lng": 72.54
+  },
+  {
+    "name": "Vadaj",
+    "city": "Ahmedabad",
+    "lat": 23.07,
+    "lng": 72.57
+  },
+  {
+    "name": "Ranip",
+    "city": "Ahmedabad",
+    "lat": 23.078,
+    "lng": 72.568
+  },
+  {
+    "name": "Sabarmati",
+    "city": "Ahmedabad",
+    "lat": 23.09,
+    "lng": 72.585
+  },
+  {
+    "name": "Motera",
+    "city": "Ahmedabad",
+    "lat": 23.1,
+    "lng": 72.6
+  },
+  {
+    "name": "Shahibaug",
+    "city": "Ahmedabad",
+    "lat": 23.055,
+    "lng": 72.595
+  },
+  {
+    "name": "Usmanpura",
+    "city": "Ahmedabad",
+    "lat": 23.05,
+    "lng": 72.57
+  },
+  {
+    "name": "Kalupur",
+    "city": "Ahmedabad",
+    "lat": 23.03,
+    "lng": 72.6
+  },
+  {
+    "name": "Dariyapur",
+    "city": "Ahmedabad",
+    "lat": 23.035,
+    "lng": 72.595
+  },
+  {
+    "name": "Jamalpur",
+    "city": "Ahmedabad",
+    "lat": 23.015,
+    "lng": 72.585
+  },
+  {
+    "name": "Khadia",
+    "city": "Ahmedabad",
+    "lat": 23.023,
+    "lng": 72.592
+  },
+  {
+    "name": "Bapunagar",
+    "city": "Ahmedabad",
+    "lat": 23.035,
+    "lng": 72.635
+  },
+  {
+    "name": "Naroda",
+    "city": "Ahmedabad",
+    "lat": 23.07,
+    "lng": 72.665
+  },
+  {
+    "name": "Nikol",
+    "city": "Ahmedabad",
+    "lat": 23.05,
+    "lng": 72.67
+  },
+  {
+    "name": "Vastral",
+    "city": "Ahmedabad",
+    "lat": 23,
+    "lng": 72.66
+  },
+  {
+    "name": "Odhav",
+    "city": "Ahmedabad",
+    "lat": 23.025,
+    "lng": 72.665
+  },
+  {
+    "name": "Isanpur",
+    "city": "Ahmedabad",
+    "lat": 22.975,
+    "lng": 72.605
+  },
+  {
+    "name": "Narol",
+    "city": "Ahmedabad",
+    "lat": 22.965,
+    "lng": 72.59
+  },
+  {
+    "name": "Ghodasar",
+    "city": "Ahmedabad",
+    "lat": 22.985,
+    "lng": 72.61
+  },
+  {
+    "name": "Vatva",
+    "city": "Ahmedabad",
+    "lat": 22.96,
+    "lng": 72.625
+  },
+  {
+    "name": "CTM",
+    "city": "Ahmedabad",
+    "lat": 22.995,
+    "lng": 72.63
+  },
+  {
+    "name": "Hatkeshwar",
+    "city": "Ahmedabad",
+    "lat": 23.01,
+    "lng": 72.625
+  },
+  {
+    "name": "Kankaria",
+    "city": "Ahmedabad",
+    "lat": 23.007,
+    "lng": 72.601
+  },
+  {
+    "name": "Shyamal",
+    "city": "Ahmedabad",
+    "lat": 23.015,
+    "lng": 72.525
+  },
+  {
+    "name": "Nehru Nagar",
+    "city": "Ahmedabad",
+    "lat": 23.02,
+    "lng": 72.54
+  },
+  {
+    "name": "Panchvati",
+    "city": "Ahmedabad",
+    "lat": 23.028,
+    "lng": 72.555
+  },
+  {
+    "name": "Mithakhali",
+    "city": "Ahmedabad",
+    "lat": 23.033,
+    "lng": 72.563
+  },
+  {
+    "name": "Stadium Road",
+    "city": "Ahmedabad",
+    "lat": 23.04,
+    "lng": 72.555
+  },
+  {
+    "name": "Vaishnodevi Circle",
+    "city": "Ahmedabad",
+    "lat": 23.135,
+    "lng": 72.54
+  },
+  {
+    "name": "Adalaj",
+    "city": "Ahmedabad",
+    "lat": 23.165,
+    "lng": 72.58
+  },
+  {
+    "name": "Jagatpur",
+    "city": "Ahmedabad",
+    "lat": 23.12,
+    "lng": 72.55
+  },
+  {
+    "name": "Tragad",
+    "city": "Ahmedabad",
+    "lat": 23.115,
+    "lng": 72.57
+  },
+  {
+    "name": "New Ranip",
+    "city": "Ahmedabad",
+    "lat": 23.088,
+    "lng": 72.56
+  },
+  {
+    "name": "Gurukul",
+    "city": "Ahmedabad",
+    "lat": 23.045,
+    "lng": 72.535
+  },
+  {
+    "name": "Judges Bungalow Road",
+    "city": "Ahmedabad",
+    "lat": 23.04,
+    "lng": 72.52
+  },
+  {
+    "name": "Anandnagar",
+    "city": "Ahmedabad",
+    "lat": 23.022,
+    "lng": 72.518
+  },
+  {
+    "name": "Ramdev Nagar",
+    "city": "Ahmedabad",
+    "lat": 23.025,
+    "lng": 72.513
+  },
+  {
+    "name": "Sanand",
+    "city": "Ahmedabad",
+    "lat": 22.99,
+    "lng": 72.38
+  },
+  {
+    "name": "Rakhial",
+    "city": "Ahmedabad",
+    "lat": 23.025,
+    "lng": 72.625
+  },
+  {
+    "name": "Saraspur",
+    "city": "Ahmedabad",
+    "lat": 23.035,
+    "lng": 72.61
+  },
+  {
+    "name": "Asarwa",
+    "city": "Ahmedabad",
+    "lat": 23.05,
+    "lng": 72.605
+  },
+  {
+    "name": "Meghaninagar",
+    "city": "Ahmedabad",
+    "lat": 23.06,
+    "lng": 72.61
+  },
+  {
+    "name": "Thakkarbapa Nagar",
+    "city": "Ahmedabad",
+    "lat": 23.045,
+    "lng": 72.65
+  },
+  {
+    "name": "Gandhinagar Sector 1",
+    "city": "Gandhinagar",
+    "lat": 23.2,
+    "lng": 72.635
+  },
+  {
+    "name": "Sector 2",
+    "city": "Gandhinagar",
+    "lat": 23.205,
+    "lng": 72.63
+  },
+  {
+    "name": "Sector 3",
+    "city": "Gandhinagar",
+    "lat": 23.21,
+    "lng": 72.64
+  },
+  {
+    "name": "Sector 5",
+    "city": "Gandhinagar",
+    "lat": 23.215,
+    "lng": 72.625
+  },
+  {
+    "name": "Sector 7",
+    "city": "Gandhinagar",
+    "lat": 23.225,
+    "lng": 72.645
+  },
+  {
+    "name": "Sector 11",
+    "city": "Gandhinagar",
+    "lat": 23.22,
+    "lng": 72.655
+  },
+  {
+    "name": "Sector 16",
+    "city": "Gandhinagar",
+    "lat": 23.24,
+    "lng": 72.64
+  },
+  {
+    "name": "Sector 20",
+    "city": "Gandhinagar",
+    "lat": 23.229,
+    "lng": 72.674
+  },
+  {
+    "name": "Sector 21",
+    "city": "Gandhinagar",
+    "lat": 23.235,
+    "lng": 72.66
+  },
+  {
+    "name": "Sector 22",
+    "city": "Gandhinagar",
+    "lat": 23.242,
+    "lng": 72.665
+  },
+  {
+    "name": "Sector 24",
+    "city": "Gandhinagar",
+    "lat": 23.245,
+    "lng": 72.63
+  },
+  {
+    "name": "Sector 26",
+    "city": "Gandhinagar",
+    "lat": 23.25,
+    "lng": 72.645
+  },
+  {
+    "name": "Sector 28",
+    "city": "Gandhinagar",
+    "lat": 23.255,
+    "lng": 72.66
+  },
+  {
+    "name": "Sector 30",
+    "city": "Gandhinagar",
+    "lat": 23.258,
+    "lng": 72.635
+  },
+  {
+    "name": "Infocity",
+    "city": "Gandhinagar",
+    "lat": 23.193,
+    "lng": 72.63
+  },
+  {
+    "name": "GIFT City",
+    "city": "Gandhinagar",
+    "lat": 23.162,
+    "lng": 72.68
+  },
+  {
+    "name": "Kudasan",
+    "city": "Gandhinagar",
+    "lat": 23.18,
+    "lng": 72.63
+  },
+  {
+    "name": "Sargasan",
+    "city": "Gandhinagar",
+    "lat": 23.19,
+    "lng": 72.615
+  },
+  {
+    "name": "Raysan",
+    "city": "Gandhinagar",
+    "lat": 23.17,
+    "lng": 72.64
+  },
+  {
+    "name": "Randesan",
+    "city": "Gandhinagar",
+    "lat": 23.18,
+    "lng": 72.645
+  },
+  {
+    "name": "Koba",
+    "city": "Gandhinagar",
+    "lat": 23.15,
+    "lng": 72.62
+  },
+  {
+    "name": "Pethapur",
+    "city": "Gandhinagar",
+    "lat": 23.25,
+    "lng": 72.61
+  },
+  {
+    "name": "Mahatma Mandir",
+    "city": "Gandhinagar",
+    "lat": 23.218,
+    "lng": 72.656
+  },
+  {
+    "name": "Akshardham",
+    "city": "Gandhinagar",
+    "lat": 23.229,
+    "lng": 72.674
+  },
+  {
+    "name": "Bhat",
+    "city": "Gandhinagar",
+    "lat": 23.14,
+    "lng": 72.63
+  },
+  {
+    "name": "Zundal",
+    "city": "Gandhinagar",
+    "lat": 23.13,
+    "lng": 72.6
+  },
+  {
+    "name": "Vavol",
+    "city": "Gandhinagar",
+    "lat": 23.215,
+    "lng": 72.6
+  },
+  {
+    "name": "PDEU Raysan",
+    "city": "Gandhinagar",
+    "lat": 23.157,
+    "lng": 72.665
   }
 ]

@@ -3,9 +3,10 @@
 import { ChevronLeft, Eye, EyeOff } from "lucide-react";
 import Link from "next/link";
 import { useState, type ComponentProps, type ReactNode } from "react";
-import { Screen } from "@/components/layout/screen";
+import { Logo } from "@/components/brand/logo";
+import { AuthBackground } from "./auth-background";
 
-/** Brand header + content area shared by the welcome, log-in, sign-up and reset screens. */
+/** White sign-in layout: drifting background, logo, progress, title, then the form. */
 export function AuthShell({
   title,
   subtitle,
@@ -23,13 +24,12 @@ export function AuthShell({
   step?: [number, number];
   children: ReactNode;
 }) {
-  const backClass = "flex h-9 w-9 items-center justify-center rounded-full bg-white/15 text-white";
+  const backClass = "flex h-10 w-10 items-center justify-center rounded-full border-[1.5px] border-ink bg-white text-ink";
   return (
-    <Screen padded={false} className="!pb-10">
-      <div className="relative overflow-hidden bg-ink px-6 pb-14 pt-6 text-white">
-        <span className="absolute -right-10 -top-12 h-40 w-40 rounded-full bg-brand/30" aria-hidden />
-        <span className="absolute -bottom-16 left-10 h-32 w-32 rounded-full bg-navy/60" aria-hidden />
-        <div className="relative flex h-9 items-center justify-between">
+    <div className="absolute inset-0 overflow-y-auto bg-white">
+      <AuthBackground />
+      <div className="relative px-7 pb-10 pt-6">
+        <div className="flex h-10 items-center justify-between">
           {back ? (
             <Link href={back} aria-label="Back" className={backClass}>
               <ChevronLeft size={22} />
@@ -41,20 +41,33 @@ export function AuthShell({
           ) : (
             <span />
           )}
-          <span className="font-heading text-[18px] font-bold text-brand">Planzy</span>
+          <Logo width={96} />
         </div>
         {step && (
-          <div className="relative mt-5 flex gap-1.5" aria-label={`Step ${step[0]} of ${step[1]}`}>
+          <div className="mt-6 flex gap-1.5" aria-label={`Step ${step[0]} of ${step[1]}`}>
             {Array.from({ length: step[1] }).map((_, i) => (
-              <span key={i} className={`h-1 flex-1 rounded-full ${i < step[0] ? "bg-brand" : "bg-white/20"}`} />
+              <span
+                key={i}
+                className={`h-1.5 flex-1 rounded-full transition-colors duration-300 ${i < step[0] ? "bg-brand" : "bg-ink/10"}`}
+              />
             ))}
           </div>
         )}
-        <h1 className="relative mt-5 font-heading text-[26px] font-bold leading-tight">{title}</h1>
-        {subtitle && <p className="relative mt-1.5 text-[13px] text-white/75">{subtitle}</p>}
+        <h1 className="mt-7 font-heading text-[26px] font-bold leading-tight">{title}</h1>
+        {subtitle && <p className="mt-1.5 text-[14px] text-ink/65">{subtitle}</p>}
+        <div className="mt-7">{children}</div>
       </div>
-      <div className="card relative -mt-8 mx-5 bg-cream! px-5 pb-6 pt-5">{children}</div>
-    </Screen>
+    </div>
+  );
+}
+
+/** Orange primary button used on every sign-in screen. */
+export function AuthButton({ className = "", ...rest }: ComponentProps<"button">) {
+  return (
+    <button
+      {...rest}
+      className={`h-[52px] w-full rounded-[14px] bg-brand text-[17px] font-semibold text-white transition active:scale-[0.99] disabled:opacity-60 ${className}`}
+    />
   );
 }
 
@@ -77,7 +90,7 @@ export function AuthField({
     <label className="mt-4 block first:mt-0">
       <span className="text-[13px] font-semibold">{label}</span>
       <span
-        className={`mt-1.5 flex h-[48px] items-center gap-2 rounded-[12px] border bg-paper px-4 shadow-[0_2px_0_#242a2f] ${error ? "border-red-500" : "border-ink"}`}
+        className={`mt-1.5 flex h-[52px] items-center gap-2 rounded-[14px] border-[1.5px] bg-white/90 px-4 focus-within:border-brand ${error ? "border-red-500" : "border-ink"}`}
       >
         {prefix && <span className="text-[15px] font-medium text-ink/70">{prefix}</span>}
         <input

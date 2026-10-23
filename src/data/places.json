@@ -77,6 +77,10 @@
       "maintenance": 4.2,
       "value": 4.2,
       "staff": 3.9
+    },
+    "hourly": {
+      "rate": 1200,
+      "unit": "turf"
     }
   },
   {
@@ -941,6 +945,10 @@
       "maintenance": 4.7,
       "value": 4.7,
       "staff": 4.1
+    },
+    "hourly": {
+      "rate": 900,
+      "unit": "box"
     }
   },
   {
@@ -1155,5 +1163,149 @@
       "value": 3.5,
       "staff": 4.1
     }
+  },
+  {
+    "popular": false,
+    "newThisWeek": true,
+    "nearby": true,
+    "live": {
+      "crowd": "Moderate",
+      "updatedMinsAgo": 16
+    },
+    "id": "smash-pickleball",
+    "name": "Smash Pickleball Club",
+    "area": "Bodakdev",
+    "address": "Behind Rajpath Club, Bodakdev, Ahmedabad",
+    "lat": 23.0405,
+    "lng": 72.5045,
+    "distanceKm": 3,
+    "rating": 4.5,
+    "reviewsCount": 188,
+    "category": "Sports",
+    "pricePerPerson": 150,
+    "hourly": {
+      "rate": 600,
+      "unit": "court"
+    },
+    "image": "/images/places/smash-pickleball.jpg",
+    "gallery": [
+      "/images/places/smash-pickleball-1.jpg",
+      "/images/places/smash-pickleball-2.jpg",
+      "/images/places/smash-pickleball-3.jpg"
+    ],
+    "open": "06:00",
+    "close": "23:00",
+    "hours": {
+      "weekday": "Mon-Fri, 6:00 A.M. to 11:00 P.M.",
+      "weekend": "Sat-Sun, 6:00 A.M. to 11:00 P.M."
+    },
+    "bestTime": "Weekdays, 2 - 5 PM",
+    "scores": {
+      "cleanliness": 4.6,
+      "maintenance": 4.7,
+      "value": 4.3,
+      "staff": 4.4
+    },
+    "tags": [
+      "Pickleball",
+      "4 courts",
+      "Paddles on rent",
+      "Coaching"
+    ],
+    "about": "Four outdoor pickleball courts with floodlights. Courts are booked by the hour; paddles and balls are available on rent. Beginner coaching on weekend mornings.",
+    "phone": "+91 90000 10017",
+    "reviews": [
+      {
+        "id": "r1",
+        "author": "Riya",
+        "rating": 5,
+        "text": "Courts are in great shape and easy to book for an hour.",
+        "when": "3 days ago",
+        "verified": true,
+        "photos": [
+          "/images/places/smash-pickleball-1.jpg"
+        ]
+      },
+      {
+        "id": "r2",
+        "author": "Parth",
+        "rating": 4,
+        "text": "Evenings get busy, book a slot in advance.",
+        "when": "2 weeks ago",
+        "verified": true
+      }
+    ]
+  },
+  {
+    "popular": false,
+    "newThisWeek": true,
+    "nearby": false,
+    "live": {
+      "crowd": "Moderate",
+      "updatedMinsAgo": 16
+    },
+    "id": "cue-and-co-pool",
+    "name": "Cue & Co. Pool Lounge",
+    "area": "Navrangpura",
+    "address": "2nd Floor, Shivam Complex, Navrangpura, Ahmedabad",
+    "lat": 23.0375,
+    "lng": 72.5585,
+    "distanceKm": 6.9,
+    "rating": 4.3,
+    "reviewsCount": 264,
+    "category": "Sports",
+    "pricePerPerson": 100,
+    "hourly": {
+      "rate": 300,
+      "unit": "table"
+    },
+    "image": "/images/places/cue-and-co-pool.jpg",
+    "gallery": [
+      "/images/places/cue-and-co-pool-1.jpg",
+      "/images/places/cue-and-co-pool-2.jpg",
+      "/images/places/cue-and-co-pool-3.jpg"
+    ],
+    "open": "12:00",
+    "close": "00:00",
+    "hours": {
+      "weekday": "Mon-Fri, 12:00 P.M. to 12:00 A.M.",
+      "weekend": "Sat-Sun, 11:00 A.M. to 12:00 A.M."
+    },
+    "bestTime": "Weekdays, 3 - 6 PM",
+    "scores": {
+      "cleanliness": 4.2,
+      "maintenance": 4.3,
+      "value": 4.5,
+      "staff": 4.2
+    },
+    "tags": [
+      "Pool",
+      "Snooker",
+      "Music",
+      "Snacks"
+    ],
+    "about": "Eight pool tables and two snooker tables in a relaxed lounge. Tables are booked by the hour; cues provided.",
+    "phone": "+91 90000 10018",
+    "reviews": [
+      {
+        "id": "r1",
+        "author": "Krish",
+        "rating": 5,
+        "text": "Tables are well kept and ₹300 an hour is fair.",
+        "when": "1 week ago",
+        "verified": true,
+        "photos": [
+          "/images/places/cue-and-co-pool-2.jpg"
+        ]
+      },
+      {
+        "id": "r2",
+        "author": "Harsh",
+        "rating": 4,
+        "text": "Good music, gets loud after 9.",
+        "when": "3 weeks ago",
+        "verified": false
+      }
+    ]
   }
 ]

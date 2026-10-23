@@ -26,7 +26,10 @@ export interface Place {
   rating: number;
   reviewsCount: number;
   category: Category;
+  /** Typical spend per person (used for budget matching). */
   pricePerPerson: number;
+  /** Sports booked by the hour (turf, box cricket, pickleball, pool): rate per unit. */
+  hourly?: { rate: number; unit: string };
   /** Path under /public. Places without a photo render a branded placeholder. */
   image?: string;
   /** Extra photos: shown as the gallery and as recent visitor photos. */
@@ -64,6 +67,7 @@ export interface Friend {
 
 export interface Area {
   name: string;
+  city: "Ahmedabad" | "Gandhinagar";
   lat: number;
   lng: number;
 }
@@ -104,6 +108,8 @@ export interface Booking {
   status: BookingStatus;
   slot: string;
   people: number;
+  /** Hours booked, for places priced per hour. */
+  hours?: number;
   /** Pay online now, or on reaching the venue. */
   payMode: "now" | "venue";
   method: PaymentMethod;
@@ -154,6 +160,8 @@ export interface PlanState {
   created: boolean;
   /** Finished outing, shown under Old chats. */
   archived: boolean;
+  /** How the group rated a finished outing (1-5). */
+  rating?: number;
   decided: boolean;
   /** Admin locked the final place; booking can start. */
   locked: boolean;

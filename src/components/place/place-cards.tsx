@@ -1,7 +1,7 @@
 import { Check, Images, MapPin, Navigation, Sparkles } from "lucide-react";
 import Link from "next/link";
 import { ButtonLink } from "@/components/ui/button";
-import { MemberDots } from "@/components/ui/avatar";
+import { AvatarStack } from "@/components/ui/avatar";
 import { RatingBadge, RatingInline, RatingPill } from "@/components/ui/rating";
 import { formatTimeShort } from "@/lib/time";
 import type { Place, RecentOuting } from "@/lib/types";
@@ -75,7 +75,7 @@ export function FeaturedPlaceCard({ place, priority }: { place: Place; priority?
 export function RecentCard({ outing, place }: { outing: RecentOuting; place: Place }) {
   return (
     <Link
-      href={`/place/${place.id}`}
+      href={`/history/old-${outing.id}`}
       aria-label={`${outing.groupName}, ${place.name}`}
       className="reveal-x card-dark flex h-[160px] w-[135px] shrink-0 flex-col overflow-hidden"
     >
@@ -86,7 +86,7 @@ export function RecentCard({ outing, place }: { outing: RecentOuting; place: Pla
           <RatingPill value={outing.rating} className="shrink-0" />
         </div>
         <div className="mt-1">
-          <MemberDots count={outing.memberIds.length} />
+          <AvatarStack ids={outing.memberIds} size={22} max={3} ring="white" />
         </div>
         <p className="mt-auto line-clamp-2 text-[9px] leading-[11px] text-white/85">
           {place.name}, {place.area}, Ahmedabad

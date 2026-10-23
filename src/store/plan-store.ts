@@ -15,6 +15,7 @@ import { greetingLine, placeAddedLine, replyLine, REPLY_DELAY_MS } from "@/lib/a
 import { getMe, getPerson, getPlace, getRecents } from "@/lib/api/data";
 import { hash, joinNames } from "@/lib/format";
 import { bookingSlots } from "@/lib/time";
+import { quote } from "@/lib/pricing";
 import { rankShortlist } from "@/lib/votes";
 import type {
   AppNotification,
@@ -121,6 +122,7 @@ function seedStore(): Store {
       shortlist: [r.placeId],
       created: true,
       archived: true,
+      rating: r.rating,
       decided: true,
       locked: true,
       chosenPlaceId: r.placeId,
@@ -397,7 +399,7 @@ export function advanceSimulatedAdmin(planId: string) {
     const food = place.category === "Food";
     const slots = bookingSlots(p.timeSlot);
     const slot = slots[1] ?? slots[0];
-    const amount = place.pricePerPerson * p.memberIds.length + 20;
+    const amount = quote(place, p.memberIds.length, 1).total;
     updatePlan(planId, (q) => ({
       ...q,
       locked: true,
@@ -428,8 +430,9 @@ export function advanceSimulatedAdmin(planId: string) {
 /** Profile defaults for new plans. */
 function readProfilePrefs(): Pick<PlanState, "budget" | "distance" | "timeSlot" | "categories"> {
   try {
-    const raw = window.localStorage.getItem("planzy:account:v1");
-    const prefs = raw ? JSON.parse(raw).account?.profile?.preferences : null;
+    const raw = window.localStorage.getItem("planzy:accounts:v2");
+    const saved = raw ? JSON.parse(raw) : null;
+    const prefs = saved?.accounts?.find((a: { id: string }) => a.id === saved.currentId)?.profile?.preferences;
     if (prefs)
       return { budget: prefs.budget, distance: prefs.distance, timeSlot: prefs.timeSlot, categories: prefs.categories ?? [] };
   } catch {
@@ -783,6 +786,11 @@ export const planActions = {
       messages: [...p.messages, system(`${getPerson(ME).name} left the group`)],
     }));
     setStore((s) => ({ ...s, currentId: s.currentId === id ? null : s.currentId }));
+  },
+
+  /** Rate a finished outing. */
+  rateOuting(id: string, rating: number) {
+    updatePlan(id, (p) => ({ ...p, rating }));
   },
 
   toggleFavourite(placeId: string) {

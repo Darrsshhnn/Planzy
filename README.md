@@ -28,8 +28,9 @@ Lint: `npm run lint`
 
 | Step | Route | Notes |
 | --- | --- | --- |
-| Welcome / Log in | `/auth`, `/auth/login` | Log in with mobile number or email + password; Forgot password |
-| Sign up | `/auth/signup` | Name → mobile number → password → email → location preference |
+| Landing / Sign in | `/auth`, `/auth/login` | Logo animation on orange, then sign in (email/phone + password), Continue with Google, Forgot password |
+| Sign up | `/auth/signup` | Name → mobile number → password → email (or Continue with Google) |
+| Your area | `/onboarding/location` | After any sign-up / first Google sign-in: searchable dropdown of all Ahmedabad and Gandhinagar areas, or current location |
 | Forgot password | `/auth/forgot` | Number/email → 4-digit code (demo code **1234**) → new password |
 | Home | `/` | Confirmed booking / ongoing chat, recents, recommendations, groups, nearby places |
 | Notifications | `/notifications` | Group invites to accept/decline, replies to your invites (Home bell) |
@@ -48,7 +49,7 @@ Lint: `npm run lint`
 | Place Detail | `/place/[id]` | Photos, live status, rating breakdown, reviews with photos, Location opens the map |
 | Explore | `/search` | Search, filter mini screen, map, new spots, new areas |
 | Map | `/map`, `/map?place=id` | OpenStreetMap: your live location, search an area, places within 3 km |
-| History | `/history` | Upcoming, ongoing and past outings |
+| History | `/history`, `/history/[id]` | Upcoming, ongoing and past outings; a past outing shows the place, group, your rating and Revisit |
 | Profile | `/profile` | Photo, name, age, location, number, email; sections below open their own screens |
 | Profile sections | `/profile/edit`, `/profile/preferences`, `/profile/favourites`, `/profile/groups`, `/profile/settings` | Personal details, default preferences, liked places, saved groups and group chats, password / notifications / log out |
 
@@ -98,6 +99,17 @@ src/
     reviews-store.ts   reviews written in the app, with photos
     viewer-store.ts    demo admin/member role per tab
 ```
+
+## Google sign-in
+
+Continue with Google uses Google Identity Services when a client ID is set. Create an OAuth client (type "Web application") in Google Cloud Console, add your site's origin (e.g. `http://localhost:3000` and your Vercel URL) under Authorised JavaScript origins, then:
+
+```bash
+# .env.local (and the same variable in Vercel → Project → Settings → Environment Variables)
+NEXT_PUBLIC_GOOGLE_CLIENT_ID=your-client-id.apps.googleusercontent.com
+```
+
+Without it, the button opens a demo account chooser (name + Gmail address) so the flow still works.
 
 ## Mocked parts and where a backend plugs in
 

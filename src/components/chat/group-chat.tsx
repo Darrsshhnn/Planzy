@@ -1,6 +1,6 @@
 "use client";
 
-import { Archive, Gavel, ImagePlus, Link2, MapPin, MessageSquare, Plus, SendHorizontal, X } from "lucide-react";
+import { Archive, Gavel, ImagePlus, MapPin, MapPinPlus, MessageSquare, Plus, SendHorizontal, X } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
@@ -145,25 +145,9 @@ export function GroupChat({ planId }: { planId: string }) {
     }
   };
 
-  const shareLink = async () => {
-    setAttachOpen(false);
-    const url = `${window.location.origin}/chat/${plan.id}`;
-    const data = { title: plan.groupName, text: `Join "${plan.groupName}" on Planzy`, url };
-    try {
-      if (navigator.share) {
-        await navigator.share(data);
-        return;
-      }
-      await navigator.clipboard.writeText(`${data.text}: ${url}`);
-      flash("Group link copied");
-    } catch {
-      flash("Couldn't share right now");
-    }
-  };
-
   const status = plan.archived
     ? "Old chat"
-    : `${plan.memberIds.length} members · ${formatDateLong(plan.date).replace(/,? \d{4}$/, "")}`;
+    : `${plan.memberIds.length} ${plan.memberIds.length === 1 ? "member" : "members"} · ${formatDateLong(plan.date).replace(/,? \d{4}$/, "")}`;
 
   return (
     <Screen
@@ -271,7 +255,14 @@ export function GroupChat({ planId }: { planId: string }) {
                 <div className="card absolute bottom-[58px] left-4 z-10 w-[210px] overflow-hidden p-1" role="menu">
                   <AttachItem icon={ImagePlus} label="Upload image" onClick={() => photoRef.current?.click()} />
                   <AttachItem icon={MapPin} label="Share location" onClick={sendLocation} />
-                  <AttachItem icon={Link2} label="Share group link" onClick={shareLink} />
+                  <AttachItem
+                    icon={MapPinPlus}
+                    label="Add a place"
+                    onClick={() => {
+                      setAttachOpen(false);
+                      setSearchOpen(true);
+                    }}
+                  />
                 </div>
               )}
               <input
@@ -294,7 +285,7 @@ export function GroupChat({ planId }: { planId: string }) {
                 <button
                   type="button"
                   onClick={() => setAttachOpen((o) => !o)}
-                  aria-label={attachOpen ? "Close attachments" : "Attach photo, location or link"}
+                  aria-label={attachOpen ? "Close attachments" : "Add photo, location or place"}
                   aria-expanded={attachOpen}
                   className="flex h-[42px] w-[42px] shrink-0 items-center justify-center rounded-full border-[1.5px] border-ink bg-cream"
                 >

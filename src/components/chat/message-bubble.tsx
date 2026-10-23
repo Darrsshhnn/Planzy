@@ -5,7 +5,7 @@ import { PlaceImage } from "@/components/place/place-image";
 import { Avatar } from "@/components/ui/avatar";
 import { RatingBadge } from "@/components/ui/rating";
 import { getPerson, getPlace } from "@/lib/api/data";
-import { formatClock, rupees } from "@/lib/format";
+import { formatClock, priceLabel } from "@/lib/format";
 import type { ChatMessage } from "@/lib/types";
 
 export function MessageBubble({ message, viewerId }: { message: ChatMessage; viewerId: string }) {
@@ -112,7 +112,7 @@ function PlaceMessage({ placeId }: { placeId: string }) {
       <div className="px-3 py-2">
         <p className="font-heading text-[15px] font-bold">{place.name}</p>
         <p className="text-[11px] text-white/80">
-          {place.distanceKm} km · {place.area} · {rupees(place.pricePerPerson)}/person
+          {place.distanceKm} km · {place.area} · {priceLabel(place)}
         </p>
       </div>
     </Link>

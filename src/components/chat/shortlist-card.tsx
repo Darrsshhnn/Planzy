@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { PlaceImage } from "@/components/place/place-image";
 import { RatingBadge } from "@/components/ui/rating";
-import { rupees } from "@/lib/format";
+import { priceLabel } from "@/lib/format";
 import type { Place, Vote } from "@/lib/types";
 import type { Tally } from "@/lib/votes";
 import { TallyBar, VoteButtons } from "./vote-controls";
@@ -45,7 +45,7 @@ export function ShortlistCard({
             )}
           </div>
           <p className="truncate text-[11px] text-muted">
-            {place.distanceKm} km · {place.area} · {rupees(place.pricePerPerson)}/person
+            {place.distanceKm} km · {place.area} · {priceLabel(place)}
           </p>
           <RatingBadge value={place.rating} className="mt-1 !text-[10px]" />
         </div>

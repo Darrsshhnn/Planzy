@@ -13,7 +13,7 @@ export async function processPayment(input: {
   amount: number;
   method: PaymentMethod;
 }): Promise<PaymentResult> {
-  await new Promise((resolve) => setTimeout(resolve, 1600));
+  await new Promise((resolve) => setTimeout(resolve, 800));
   const reference = `PLZ-${input.method.toUpperCase()}-${Math.random().toString(36).slice(2, 8).toUpperCase()}`;
   return { reference, paidAt: Date.now() };
 }

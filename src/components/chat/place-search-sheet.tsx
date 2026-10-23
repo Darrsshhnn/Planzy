@@ -7,7 +7,7 @@ import { FieldBox } from "@/components/ui/card";
 import { Chip } from "@/components/ui/chip";
 import { Sheet } from "@/components/ui/sheet";
 import { CATEGORIES, getPlace, searchPlaces } from "@/lib/api/data";
-import { rupees } from "@/lib/format";
+import { priceLabel } from "@/lib/format";
 import type { Category } from "@/lib/types";
 
 /** Add places to the group's shortlist: search everything, or pick from places you liked. */
@@ -82,7 +82,7 @@ export function PlaceSearchSheet({
               <div className="min-w-0 flex-1">
                 <p className="truncate text-[14px] font-semibold">{p.name}</p>
                 <p className="truncate text-[11px] text-muted">
-                  {p.distanceKm} km · {p.area} · {rupees(p.pricePerPerson)}/person · Rated {p.rating.toFixed(1)}
+                  {p.distanceKm} km · {p.area} · {priceLabel(p)} · Rated {p.rating.toFixed(1)}
                 </p>
               </div>
               <button

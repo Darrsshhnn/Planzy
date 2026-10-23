@@ -7,19 +7,23 @@ export function PriceSummary({
   people,
   paid,
   atVenue,
+  hours = 1,
 }: {
   place: Place;
   people: number;
+  hours?: number;
   paid?: boolean;
   /** Paying on reaching the venue instead of online. */
   atVenue?: boolean;
 }) {
-  const q = quote(place, people);
+  const q = quote(place, people, hours);
   return (
     <dl className="space-y-1.5 text-[13px]">
       <div className="flex justify-between">
         <dt>
-          {rupees(place.pricePerPerson)} × {people} {people === 1 ? "person" : "people"}
+          {place.hourly
+            ? `${rupees(place.hourly.rate)} × ${hours} ${hours === 1 ? "hour" : "hours"}`
+            : `${rupees(place.pricePerPerson)} × ${people} ${people === 1 ? "person" : "people"}`}
         </dt>
         <dd>{rupees(q.subtotal)}</dd>
       </div>

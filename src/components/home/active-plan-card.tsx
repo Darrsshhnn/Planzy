@@ -44,7 +44,7 @@ export function ActivePlanCard() {
       <Link
         href={stage.href}
         onClick={() => planActions.select(plan.id)}
-        className="reveal card-dark mx-5 mt-3 block overflow-hidden text-white"
+        className="reveal card-dark mx-5 mt-1.5 block overflow-hidden text-white"
       >
         <div className="flex gap-3 p-3">
           {place ? (

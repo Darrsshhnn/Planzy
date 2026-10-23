@@ -8,7 +8,7 @@ import { AvailabilityChip, LivePill } from "@/components/place/live-status";
 import { PlaceImage } from "@/components/place/place-image";
 import { RatingBadge } from "@/components/ui/rating";
 import { getPlace, getPlaces } from "@/lib/api/data";
-import { mapsUrl, rupees } from "@/lib/format";
+import { mapsUrl, priceLabel } from "@/lib/format";
 import { findArea, getAreas, kmBetween, nearestArea } from "@/lib/geo";
 import { useProfile } from "@/store/account-store";
 import { LiveMap, type LiveMapHandle } from "./live-map";
@@ -202,7 +202,7 @@ export function MapScreen({ focusPlaceId }: { focusPlaceId?: string }) {
                 </button>
               </div>
               <p className="truncate text-[12px] text-muted">
-                {selected.category} · {selected.area} · {rupees(selected.pricePerPerson)}/person
+                {selected.category} · {selected.area} · {priceLabel(selected)}
                 {user ? ` · ${kmBetween(user, selected).toFixed(1)} km away` : ""}
               </p>
               <div className="mt-1 flex flex-wrap gap-1">

@@ -1,6 +1,6 @@
 import Link from "next/link";
 import type { ReactNode } from "react";
-import { rupees } from "@/lib/format";
+import { priceLabel } from "@/lib/format";
 import type { Place } from "@/lib/types";
 import { AvailabilityChip, LivePill } from "./live-status";
 import { MapLink } from "./place-cards";
@@ -21,7 +21,7 @@ export function PlaceListRow({ place, trailing }: { place: Place; trailing?: Rea
             {place.category} · {place.distanceKm} km · {place.area}
           </p>
           <p className="text-[11px] text-muted">
-            {rupees(place.pricePerPerson)}/person · Rated {place.rating.toFixed(1)}
+            {priceLabel(place)} · Rated {place.rating.toFixed(1)}
           </p>
           <AvailabilityChip place={place} className="mt-1" />
         </div>

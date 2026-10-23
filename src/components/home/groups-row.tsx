@@ -1,8 +1,8 @@
 "use client";
 
 import { Plus } from "lucide-react";
-import Image from "next/image";
 import { useRouter } from "next/navigation";
+import { GroupFaces } from "@/components/ui/group-faces";
 import { getGroups } from "@/lib/api/data";
 import { planActions } from "@/store/plan-store";
 
@@ -14,27 +14,22 @@ export function GroupsRow() {
     router.push("/plan/friends");
   };
   return (
-    <div className="carousel items-center">
+    <div className="carousel items-start">
       {getGroups().map((g) => (
         <button
           key={g.id}
           onClick={() => startWith(g.memberIds)}
           aria-label={`Plan with ${g.name}`}
-          className="reveal-x shrink-0 rounded-full transition active:scale-95"
+          className="reveal-x flex w-[100px] shrink-0 flex-col items-center gap-1.5 transition active:scale-95"
         >
-          <Image
-            src={g.image}
-            alt={g.name}
-            width={100}
-            height={100}
-            className="h-[100px] w-[100px] rounded-full border-2 border-ink object-cover"
-          />
+          <GroupFaces ids={g.memberIds} size={96} />
+          <span className="w-full truncate text-center text-[12px] font-semibold">{g.name}</span>
         </button>
       ))}
       <button
         onClick={() => startWith([])}
         aria-label="Create a new group"
-        className="flex h-[98px] w-[50px] shrink-0 items-center justify-center rounded-[8px] border-2 border-brand bg-cream text-ink transition active:scale-95"
+        className="flex h-[96px] w-[56px] shrink-0 items-center justify-center rounded-[16px] border-2 border-dashed border-brand bg-cream text-ink transition active:scale-95"
       >
         <Plus size={26} />
       </button>

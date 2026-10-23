@@ -4,7 +4,7 @@ import type { Area } from "@/lib/types";
 const areas = areasJson as Area[];
 
 /** City centre, used when we don't know where the user is. */
-export const AHMEDABAD: Area = { name: "Ahmedabad", lat: 23.0300, lng: 72.5600 };
+export const AHMEDABAD: Area = { name: "Ahmedabad", city: "Ahmedabad", lat: 23.03, lng: 72.56 };
 
 export function getAreas(): Area[] {
   return areas;
@@ -23,9 +23,22 @@ export function nearestArea(point: { lat: number; lng: number }): Area {
   return areas.reduce((best, a) => (kmBetween(point, a) < kmBetween(point, best) ? a : best), areas[0]);
 }
 
+/** "Bodakdev, Ahmedabad" / "Sector 21, Gandhinagar" */
+export function areaLabel(a: Area) {
+  return `${a.name}, ${a.city}`;
+}
+
+/** Areas matching a search, best matches first (name starts with the query). */
+export function searchAreas(query: string): Area[] {
+  const q = query.trim().toLowerCase();
+  if (!q) return areas;
+  const hits = areas.filter((a) => `${a.name} ${a.city}`.toLowerCase().includes(q));
+  return hits.sort((a, b) => Number(!a.name.toLowerCase().startsWith(q)) - Number(!b.name.toLowerCase().startsWith(q)));
+}
+
 /** Finds a known area by name ("bodakdev", "Bodakdev, Ahmedabad", ...). */
 export function findArea(query: string): Area | undefined {
-  const q = query.trim().toLowerCase();
+  const q = query.trim().toLowerCase().replace(/,\s*(ahmedabad|gandhinagar|gujarat)$/, "");
   if (!q) return undefined;
   return (
     areas.find((a) => a.name.toLowerCase() === q) ??

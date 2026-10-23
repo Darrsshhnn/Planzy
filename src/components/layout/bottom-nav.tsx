@@ -4,7 +4,7 @@ import { House, MessageSquare, Plus, Search, UserRound, type LucideIcon } from "
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import type { CSSProperties } from "react";
-import { useNotifications } from "@/store/plan-store";
+import { planActions, useNotifications } from "@/store/plan-store";
 
 interface Tab {
   href: string;
@@ -26,7 +26,7 @@ const TABS: Tab[] = [
     icon: MessageSquare,
     match: (p) => ["/chat", "/decision", "/booking", "/locked"].some((r) => p.startsWith(r)),
   },
-  { href: "/plan/new", label: "Make a plan", icon: Plus, match: (p) => p.startsWith("/plan") },
+  { href: "/plan/friends", label: "Make a plan", icon: Plus, match: (p) => p.startsWith("/plan") },
   { href: "/search", label: "Search", icon: Search, match: (p) => p.startsWith("/search") || p.startsWith("/map") },
   { href: "/profile", label: "Profile", icon: UserRound, match: (p) => p.startsWith("/profile") },
 ];
@@ -64,13 +64,13 @@ export function BottomNav() {
           className="absolute inset-y-0 left-0 flex items-center justify-center will-change-transform"
           style={slot(320, "cubic-bezier(0.4, 0, 0.2, 1)")}
         >
-          <span className="h-12 w-12 rounded-full bg-cream" />
+          <span className="h-12 w-12 rounded-[18px] bg-cream" />
         </span>
         <span
           className="absolute inset-y-0 left-0 flex items-center justify-center will-change-transform"
           style={slot(440, "cubic-bezier(0.34, 1.3, 0.64, 1)")}
         >
-          <span className="h-9 w-9 rounded-full bg-cream" />
+          <span className="h-9 w-9 rounded-[14px] bg-cream" />
         </span>
       </div>
       <div className="relative flex h-full items-center">
@@ -82,9 +82,11 @@ export function BottomNav() {
               href={href}
               aria-label={label}
               aria-current={on ? "page" : undefined}
+              // Make a plan: start the draft on tap and go straight to friends (no redirect hop).
+              onClick={href === "/plan/friends" ? () => planActions.start("new") : undefined}
               className="relative flex h-full flex-1 items-center justify-center"
             >
-              {href === "/plan/new" ? (
+              {href === "/plan/friends" ? (
                 <span
                   className={`flex h-[24px] w-[24px] items-center justify-center rounded-[6px] border-[1.75px] transition-colors duration-200 ${
                     on ? "border-brand bg-brand text-cream" : "border-cream text-cream"

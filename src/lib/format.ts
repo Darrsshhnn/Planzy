@@ -2,6 +2,11 @@ export function rupees(amount: number) {
   return `₹${amount.toLocaleString("en-IN")}`;
 }
 
+/** "₹1,200/hr" for hourly sports, otherwise "₹250/person". */
+export function priceLabel(place: { pricePerPerson: number; hourly?: { rate: number } }) {
+  return place.hourly ? `${rupees(place.hourly.rate)}/hr` : `${rupees(place.pricePerPerson)}/person`;
+}
+
 /** ["Darshan", "Karan", "Dev"] -> "Darshan, Karan & Dev" */
 export function joinNames(names: string[]) {
   if (names.length <= 1) return names[0] ?? "";

@@ -70,7 +70,10 @@ function venueReply(placeId: string, text: string) {
   const t = text.toLowerCase();
   if (/time|open|close|hour|timing/.test(t))
     return `We're open ${formatTime(place.open)} to ${formatTime(place.close)} (${place.hours.weekday}).`;
-  if (/price|cost|rate|charge|₹|rs/.test(t)) return `It's about ₹${place.pricePerPerson} per person. Group offers available on weekdays.`;
+  if (/price|cost|rate|charge|₹|rs/.test(t))
+    return place.hourly
+      ? `It's ₹${place.hourly.rate} per ${place.hourly.unit} per hour. Book 2+ hours for a free extra 15 minutes.`
+      : `It's about ₹${place.pricePerPerson} per person. Group offers available on weekdays.`;
   if (/park/.test(t)) return "Yes, parking is available nearby.";
   if (/book|slot|available|reserve|table/.test(t))
     return place.category === "Food"

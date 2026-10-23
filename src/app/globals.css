@@ -112,6 +112,107 @@ body {
   }
 }
 
+/* Logo intro: the "p" pin drops in, letters rise one by one, the dot pops. */
+@keyframes logo-pin {
+  0% {
+    opacity: 0;
+    transform: translateY(-70%);
+  }
+  55% {
+    opacity: 1;
+    transform: translateY(6%);
+  }
+  75% {
+    transform: translateY(-3%);
+  }
+  100% {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes logo-letter {
+  from {
+    opacity: 0;
+    transform: translateY(40%);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes logo-dot {
+  0% {
+    transform: scale(0);
+  }
+  70% {
+    transform: scale(1.25);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+.logo-pin {
+  transform-box: fill-box;
+  animation: logo-pin 0.7s cubic-bezier(0.3, 0.7, 0.4, 1) both;
+}
+.logo-letter {
+  transform-box: fill-box;
+  animation: logo-letter 0.45s cubic-bezier(0.2, 0.8, 0.3, 1) both;
+}
+.logo-dot {
+  transform-box: fill-box;
+  animation: logo-dot 0.5s cubic-bezier(0.3, 1.4, 0.5, 1) 0.85s both;
+}
+
+/* Auth screens: slow drifting blobs and pins behind the form. */
+@keyframes auth-drift {
+  0%,
+  100% {
+    transform: translate(0, 0) scale(1);
+  }
+  33% {
+    transform: translate(18px, -26px) scale(1.06);
+  }
+  66% {
+    transform: translate(-14px, 16px) scale(0.96);
+  }
+}
+@keyframes auth-float {
+  0%,
+  100% {
+    transform: translateY(0) rotate(var(--tilt, 0deg));
+  }
+  50% {
+    transform: translateY(-14px) rotate(var(--tilt, 0deg));
+  }
+}
+.auth-blob {
+  animation: auth-drift var(--dur, 14s) ease-in-out infinite;
+}
+.auth-pin {
+  animation: auth-float var(--dur, 6s) ease-in-out infinite;
+}
+/* Reduced motion: no bouncing or drifting, just a gentle fade of the logo. */
+@keyframes logo-fade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .logo-pin,
+  .logo-letter,
+  .logo-dot {
+    animation: logo-fade 0.6s ease-out both;
+  }
+  .auth-blob,
+  .auth-pin {
+    animation: none;
+  }
+}
+
 /* Leaflet zoom buttons sit below the map screen's search bar. */
 .leaflet-top {
   top: 64px;

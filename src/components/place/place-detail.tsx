@@ -215,7 +215,11 @@ export function PlaceDetail({ place }: { place: Place }) {
         />
 
         <dl className="mt-4 grid grid-cols-2 gap-2.5 text-[12px]">
-          <InfoTile icon={IndianRupee} label="Avg budget / person" value={rupees(place.pricePerPerson)} />
+          <InfoTile
+            icon={IndianRupee}
+            label={place.hourly ? `Per ${place.hourly.unit} / hour` : "Avg budget / person"}
+            value={place.hourly ? rupees(place.hourly.rate) : rupees(place.pricePerPerson)}
+          />
           <InfoTile icon={Sparkles} label="Best time" value={place.bestTime} />
           <InfoTile icon={Clock} label="Opening hours" value={`${place.hours.weekday}\n${place.hours.weekend}`} wide />
         </dl>
