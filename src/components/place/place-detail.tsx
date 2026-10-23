@@ -26,6 +26,7 @@ import { CURRENT_USER_ID, planActions, usePlan } from "@/store/plan-store";
 import { useViewer } from "@/store/viewer-store";
 import { FavouriteButton } from "./favourite-button";
 import { LivePill } from "./live-status";
+import { HourlyRate } from "./place-cards";
 import { Photo, PhotoViewer, type ViewerPhoto } from "./photo";
 import { PlaceImage } from "./place-image";
 import { LiveSection, ScoreBars } from "./place-sections";
@@ -179,6 +180,7 @@ export function PlaceDetail({ place }: { place: Place }) {
           </div>
           <div className="flex shrink-0 flex-col items-end gap-1">
             <span className="rounded-full border border-ink px-3 py-0.5 text-[12px]">{place.category}</span>
+            <HourlyRate place={place} className="!text-[11px]" />
             {place.newThisWeek && (
               <span className="flex items-center gap-1 rounded-full bg-brand px-2 py-0.5 text-[10px] font-semibold text-white">
                 <Sparkles size={11} /> New this week

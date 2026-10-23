@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { Poppins } from "next/font/google";
+import { INTRO_SEEN_SCRIPT } from "@/components/brand/intro-script";
 import { AppFrame } from "@/components/layout/app-frame";
 import "./globals.css";
 
@@ -23,7 +24,11 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
-    <html lang="en" className={`${poppins.variable} antialiased`}>
+    <html lang="en" className={`${poppins.variable} antialiased`} suppressHydrationWarning>
+      <head>
+        {/* Hide the opening animation before first paint if it already played this session. */}
+        <script dangerouslySetInnerHTML={{ __html: INTRO_SEEN_SCRIPT }} />
+      </head>
       <body>
         <AppFrame>{children}</AppFrame>
       </body>

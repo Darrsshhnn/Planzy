@@ -192,6 +192,120 @@ body {
 .auth-pin {
   animation: auth-float var(--dur, 6s) ease-in-out infinite;
 }
+/*
+ * App opening (AppIntro): the "p" magnifier appears and scans, the location
+ * dot drops in with a ping, the mark slides left and "lanzy" writes out.
+ * Times are absolute delays so the steps read as one sequence (~2.3s).
+ */
+.intro-seen .app-intro {
+  display: none;
+}
+@keyframes intro-in {
+  0% {
+    opacity: 0;
+    transform: translateY(-40px) scale(0.7);
+  }
+  60% {
+    opacity: 1;
+    transform: translateY(6px) scale(1.04);
+  }
+  100% {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes intro-scan {
+  0%,
+  100% {
+    transform: none;
+  }
+  25% {
+    transform: translate(-70px, -40px) rotate(-18deg);
+  }
+  50% {
+    transform: translate(60px, -20px) rotate(16deg);
+  }
+  75% {
+    transform: translate(-25px, 18px) rotate(-8deg);
+  }
+}
+@keyframes intro-dot {
+  0% {
+    opacity: 0;
+    transform: translateY(-130px) scale(0.4);
+  }
+  60% {
+    opacity: 1;
+    transform: translateY(8px) scale(1.1);
+  }
+  80% {
+    transform: translateY(-4px) scale(0.98);
+  }
+  100% {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes intro-ripple {
+  0% {
+    opacity: 0.9;
+    transform: scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(2.8);
+  }
+}
+@keyframes intro-glint {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+@keyframes intro-move {
+  from {
+    transform: translateX(408px) scale(1.5);
+  }
+  to {
+    transform: none;
+  }
+}
+@keyframes intro-letter {
+  from {
+    opacity: 0;
+    transform: translateX(-30px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+.intro-in {
+  animation: intro-in 0.5s cubic-bezier(0.3, 0.7, 0.4, 1) both;
+}
+.intro-scan {
+  animation: intro-scan 0.8s ease-in-out 0.45s both;
+}
+.intro-dot {
+  animation: intro-dot 0.5s cubic-bezier(0.3, 0.7, 0.4, 1) 1.15s both;
+}
+.intro-ripple {
+  opacity: 0;
+  animation: intro-ripple 0.65s ease-out 1.55s forwards;
+}
+.intro-glint {
+  animation: intro-glint 0.3s ease-out 1.6s both;
+}
+.intro-move {
+  animation: intro-move 0.6s cubic-bezier(0.65, 0, 0.35, 1) 1.7s both;
+}
+.intro-letter {
+  transform-box: fill-box;
+  animation: intro-letter 0.4s cubic-bezier(0.2, 0.8, 0.3, 1) both;
+}
+
 /* Reduced motion: no bouncing or drifting, just a gentle fade of the logo. */
 @keyframes logo-fade {
   from {
@@ -206,6 +320,17 @@ body {
   .logo-letter,
   .logo-dot {
     animation: logo-fade 0.6s ease-out both;
+  }
+  .intro-in,
+  .intro-scan,
+  .intro-dot,
+  .intro-glint,
+  .intro-move,
+  .intro-letter {
+    animation: logo-fade 0.6s ease-out both;
+  }
+  .intro-ripple {
+    animation: none;
   }
   .auth-blob,
   .auth-pin {

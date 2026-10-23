@@ -1,8 +1,9 @@
-import { Check, Images, MapPin, Navigation, Sparkles } from "lucide-react";
+import { Check, Clock, Images, MapPin, Navigation, Sparkles } from "lucide-react";
 import Link from "next/link";
 import { ButtonLink } from "@/components/ui/button";
 import { AvatarStack } from "@/components/ui/avatar";
 import { RatingBadge, RatingInline, RatingPill } from "@/components/ui/rating";
+import { rupees } from "@/lib/format";
 import { formatTimeShort } from "@/lib/time";
 import type { Place, RecentOuting } from "@/lib/types";
 import { FavouriteButton } from "./favourite-button";
@@ -56,7 +57,10 @@ export function FeaturedPlaceCard({ place, priority }: { place: Place; priority?
                   place.hours.weekend
                 )}
               </p>
-              <AvailabilityChip place={place} className="mt-1.5" />
+              <span className="mt-1.5 flex flex-wrap gap-1">
+                <AvailabilityChip place={place} />
+                <HourlyRate place={place} />
+              </span>
             </div>
             <div className="flex shrink-0 gap-2">
               <MapLink place={place} className="h-[44px] w-[44px]" />
@@ -71,26 +75,25 @@ export function FeaturedPlaceCard({ place, priority }: { place: Place; priority?
   );
 }
 
-/** Recents card (Figma layout): photo on top, group, rating, members and area below. 135x160. */
+/** Recents card (Figma layout): photo on top, group, rating, members and place below. Sized to its content. */
 export function RecentCard({ outing, place }: { outing: RecentOuting; place: Place }) {
   return (
     <Link
       href={`/history/old-${outing.id}`}
       aria-label={`${outing.groupName}, ${place.name}`}
-      className="reveal-x card-dark flex h-[160px] w-[135px] shrink-0 flex-col overflow-hidden"
+      className="reveal-x card-dark flex w-[156px] shrink-0 flex-col overflow-hidden"
     >
-      <PlaceImage place={place} className="h-[72px] w-full shrink-0" sizes="140px" />
-      <div className="flex min-h-0 flex-1 flex-col px-2 pb-2 pt-1.5 text-white">
-        <div className="flex items-start justify-between gap-1">
-          <p className="line-clamp-2 text-[11px] font-semibold leading-[14px]">{outing.groupName}</p>
+      <PlaceImage place={place} className="h-[84px] w-full shrink-0" sizes="160px" />
+      <div className="flex flex-1 flex-col gap-1.5 px-2.5 pb-2.5 pt-2 text-white">
+        <div className="flex items-start justify-between gap-1.5">
+          <p className="line-clamp-2 text-[12px] font-semibold leading-[15px]">{outing.groupName}</p>
           <RatingPill value={outing.rating} className="shrink-0" />
         </div>
-        <div className="mt-1">
-          <AvatarStack ids={outing.memberIds} size={22} max={3} ring="white" />
+        <AvatarStack ids={outing.memberIds} size={22} max={3} ring="white" />
+        <div className="mt-auto min-w-0">
+          <p className="truncate text-[11px] font-semibold leading-[14px]">{place.name}</p>
+          <p className="truncate text-[10px] leading-[13px] text-white/75">{place.area}, Ahmedabad</p>
         </div>
-        <p className="mt-auto line-clamp-2 text-[9px] leading-[11px] text-white/85">
-          {place.name}, {place.area}, Ahmedabad
-        </p>
       </div>
     </Link>
   );
@@ -117,11 +120,27 @@ export function NearbyCard({ place }: { place: Place }) {
           </span>
         </div>
         <p className="mt-1.5 line-clamp-1 text-[9px] leading-[11px] text-white/85">{place.address}</p>
-        <AvailabilityChip place={place} className="mt-1.5" />
+        <span className="mt-1.5 flex flex-wrap gap-1">
+                <AvailabilityChip place={place} />
+                <HourlyRate place={place} />
+              </span>
       </div>
     </Link>
     <MapLink place={place} className="absolute right-2.5 top-[62px] h-8 w-8 shadow-[0_2px_0_#242a2f]" />
     </div>
+  );
+}
+
+/** "₹1,200/hr · per turf" for sports booked by the hour; nothing otherwise. */
+export function HourlyRate({ place, className = "" }: { place: Place; className?: string }) {
+  if (!place.hourly) return null;
+  return (
+    <span
+      className={`inline-flex items-center gap-1 whitespace-nowrap rounded-full bg-brand px-2 py-0.5 text-[10px] font-semibold text-white ${className}`}
+    >
+      <Clock size={10} />
+      {rupees(place.hourly.rate)}/hr · per {place.hourly.unit}
+    </span>
   );
 }
 
@@ -190,7 +209,10 @@ export function PlaceRowCard({
           </span>
         </p>
         <div className="mt-1 flex flex-wrap items-center justify-between gap-x-1 gap-y-1">
-          <AvailabilityChip place={place} />
+          <span className="flex flex-wrap gap-1">
+            <AvailabilityChip place={place} />
+            <HourlyRate place={place} />
+          </span>
           <span className="flex items-center gap-2">
             <Link
               href={`/map?place=${place.id}`}

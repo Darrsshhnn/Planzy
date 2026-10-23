@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { HourlyRate } from "@/components/place/place-cards";
 import { PlaceImage } from "@/components/place/place-image";
 import { RatingBadge } from "@/components/ui/rating";
 import { priceLabel } from "@/lib/format";
@@ -47,7 +48,10 @@ export function ShortlistCard({
           <p className="truncate text-[11px] text-muted">
             {place.distanceKm} km · {place.area} · {priceLabel(place)}
           </p>
-          <RatingBadge value={place.rating} className="mt-1 !text-[10px]" />
+          <span className="mt-1 flex flex-wrap items-center gap-1">
+            <RatingBadge value={place.rating} className="!text-[10px]" />
+            <HourlyRate place={place} />
+          </span>
         </div>
       </Link>
       <div className="mt-2.5">
