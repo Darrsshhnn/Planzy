@@ -76,10 +76,10 @@ export function FeaturedPlaceCard({ place, priority }: { place: Place; priority?
 }
 
 /** Recents card (Figma layout): photo on top, group, rating, members and place below. Sized to its content. */
-export function RecentCard({ outing, place }: { outing: RecentOuting; place: Place }) {
+export function RecentCard({ outing, place, href }: { outing: RecentOuting; place: Place; href?: string }) {
   return (
     <Link
-      href={`/history/old-${outing.id}`}
+      href={href ?? `/history/old-${outing.id}`}
       aria-label={`${outing.groupName}, ${place.name}`}
       className="reveal-x card-dark flex w-[156px] shrink-0 flex-col overflow-hidden"
     >
@@ -100,33 +100,35 @@ export function RecentCard({ outing, place }: { outing: RecentOuting; place: Pla
 }
 
 /** Dark card in the Home "Nearby Places" carousel. */
-export function NearbyCard({ place }: { place: Place }) {
+export function NearbyCard({ place, match, note }: { place: Place; match?: number; note?: string }) {
   return (
     <div className="reveal-x relative w-[248px] shrink-0">
-    <Link
-      href={`/place/${place.id}`}
-      className="card-dark block overflow-hidden"
-    >
-      <div className="relative">
-        <PlaceImage place={place} className="h-[96px] w-full" sizes="250px" />
-        <LivePill place={place} className="absolute left-1.5 top-1.5" />
-        <PhotoCount place={place} className="absolute right-1.5 top-1.5" />
-      </div>
-      <div className="px-2 pb-2 pt-3 text-white">
-        <div className="flex items-start justify-between gap-2">
-          <p className="text-[12px] font-semibold leading-[15px]">{place.name}</p>
-          <span className="flex shrink-0 items-center gap-1 text-[12px]">
-            {place.distanceKm} km <Navigation size={12} />
+      <Link href={`/place/${place.id}`} className="card-dark flex h-full flex-col overflow-hidden">
+        <div className="relative">
+          <PlaceImage place={place} className="h-[96px] w-full" sizes="250px" />
+          <LivePill place={place} className="absolute left-1.5 top-1.5" />
+          <PhotoCount place={place} className="absolute right-1.5 top-1.5" />
+        </div>
+        <div className="flex flex-1 flex-col px-2.5 pb-2.5 pt-3 text-white">
+          <div className="flex items-start justify-between gap-2">
+            <p className="text-[12px] font-semibold leading-[15px]">{place.name}</p>
+            <span className="flex shrink-0 items-center gap-1 text-[11px]">
+              {place.distanceKm} km <Navigation size={11} />
+            </span>
+          </div>
+          {match !== undefined && (
+            <span className="mt-1.5 inline-flex items-center gap-1 self-start rounded-full bg-cream px-2 py-0.5 text-[10px] font-semibold text-ink">
+              <Sparkles size={11} className="text-brand" /> {match}% match{note ? ` · ${note}` : ""}
+            </span>
+          )}
+          <p className="mt-1.5 line-clamp-1 text-[10px] leading-[13px] text-white/75">{place.address}</p>
+          <span className="mt-auto flex flex-wrap gap-1 pt-1.5">
+            <AvailabilityChip place={place} />
+            <HourlyRate place={place} />
           </span>
         </div>
-        <p className="mt-1.5 line-clamp-1 text-[9px] leading-[11px] text-white/85">{place.address}</p>
-        <span className="mt-1.5 flex flex-wrap gap-1">
-                <AvailabilityChip place={place} />
-                <HourlyRate place={place} />
-              </span>
-      </div>
-    </Link>
-    <MapLink place={place} className="absolute right-2.5 top-[62px] h-8 w-8 shadow-[0_2px_0_#242a2f]" />
+      </Link>
+      <MapLink place={place} className="absolute right-2.5 top-[62px] h-8 w-8 shadow-[0_2px_0_#242a2f]" />
     </div>
   );
 }
@@ -184,7 +186,7 @@ export function PlaceRowCard({
         onClick={onSelect}
         aria-pressed={selected}
         aria-label={`${selected ? "Remove" : "Add"} ${place.name}`}
-        className="absolute inset-0 z-0 rounded-[12px]"
+        className="absolute inset-0 z-0 rounded-[14px]"
       />
       <div className="pointer-events-none relative h-[130px] w-[150px] shrink-0 overflow-hidden rounded-[8px]">
         <PlaceImage place={place} className="h-full w-full" sizes="150px" />

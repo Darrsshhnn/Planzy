@@ -29,10 +29,12 @@ Lint: `npm run lint`
 | Step | Route | Notes |
 | --- | --- | --- |
 | Landing / Sign in | `/auth`, `/auth/login` | Logo animation on orange, then sign in (email/phone + password), Continue with Google, Forgot password |
-| Sign up | `/auth/signup` | Name → mobile number → password → email (or Continue with Google) |
+| Sign up | `/auth/signup` | Name → mobile number → password → email (or Sign up with Google) |
 | Your area | `/onboarding/location` | After any sign-up / first Google sign-in: searchable dropdown of all Ahmedabad and Gandhinagar areas, or current location |
+| Your interests | `/onboarding/interests` | New accounts pick the kinds of outings they like, budget and timing; then a ~2 s logo animation opens Home |
 | Forgot password | `/auth/forgot` | Number/email → 4-digit code (demo code **1234**) → new password |
-| Home | `/` | Confirmed booking / ongoing chat, recents, recommendations, groups, nearby places |
+| Home | `/` | Confirmed booking / ongoing chat, recents (new users: **Places you might like**, from their interests), Planzy AI, recommendations, groups, nearby places |
+| Planzy AI | `/ai` | Describe the outing in your own words, set area and budget, get 3–4 places with a reason each, then plan one with friends |
 | Notifications | `/notifications` | Group invites to accept/decline, replies to your invites (Home bell) |
 | Add Friends | `/plan/friends` | The + tab starts here. Top picks, more friends, search; Continue sends invites |
 | Group Details | `/plan/group` | Group name, invited friends with live Accepted / Waiting / Declined, categories, date |
@@ -100,6 +102,23 @@ src/
     viewer-store.ts    demo admin/member role per tab
 ```
 
+## New users
+
+A new account (sign-up or a first Google sign-in) goes: area → interests → logo animation → Home. It has no outing history, so Home shows places picked from its interests instead of Recents, and History starts empty. Logging in to an existing account also plays the ~2 s logo animation before Home.
+
+The first plan is guided: a coach card on each step (Home → friends → group → preferences → recommendations → chat and votes → decision → booking → Locked In) says what to do. It can be folded, skipped, or turned back on in Profile → Settings.
+
+## Planzy AI
+
+`POST /api/ai/suggest` takes `{ prompt, location, budget, categories }`. With `ANTHROPIC_API_KEY` set on the server, Claude (`claude-opus-5-5`, structured JSON output) picks places from the catalogue and writes a reason for each; the key stays on the server.
+
+```bash
+# .env.local (and in Vercel → Project → Settings → Environment Variables)
+ANTHROPIC_API_KEY=sk-ant-...
+```
+
+Without a key, or if the call fails, the built-in matcher in `src/lib/ai/suggest.ts` answers instead (it reads category, budget, group size, timing and area out of the text), so the feature always works.
+
 ## Google sign-in
 
 Continue with Google uses Google Identity Services when a client ID is set. Create an OAuth client (type "Web application") in Google Cloud Console, add your site's origin (e.g. `http://localhost:3000` and your Vercel URL) under Authorised JavaScript origins, then:
@@ -109,12 +128,13 @@ Continue with Google uses Google Identity Services when a client ID is set. Crea
 NEXT_PUBLIC_GOOGLE_CLIENT_ID=your-client-id.apps.googleusercontent.com
 ```
 
-Without it, the button opens a demo account chooser (name + Gmail address) so the flow still works.
+With a client ID, the sign-in screen also offers Google One Tap. Without it, the button opens a demo of the usual Google flow (choose an account on this device or use another, then confirm what Planzy gets) so the flow still works.
 
 ## Mocked parts and where a backend plugs in
 
 - **Places and people:** read from `src/data/*.json` through `src/lib/api/data.ts`. Replace those functions with API calls.
-- **Accounts:** `src/store/account-store.ts` keeps one account per browser (password stored as a SHA-256 hash). Replace with a real auth service.
+- **Planzy AI:** `src/app/api/ai/suggest/route.ts` (Claude when `ANTHROPIC_API_KEY` is set, built-in matcher otherwise).
+- **Accounts:** `src/store/account-store.ts` keeps accounts per browser (password stored as a SHA-256 hash). Replace with a real auth service.
 - **Plans, invites, notifications:** `src/store/plan-store.ts` (multi-plan, simulated friends and admins).
 - **Personal chats:** `src/store/dm-store.ts`.
 - **Venue messages:** `src/store/venue-chat-store.ts` keeps in-app conversations with venues; replies are mocked.

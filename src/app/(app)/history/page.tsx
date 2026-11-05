@@ -11,6 +11,7 @@ import { GroupFaces } from "@/components/ui/group-faces";
 import { getPlace } from "@/lib/api/data";
 import { formatDateLong } from "@/lib/format";
 import type { Place, PlanState } from "@/lib/types";
+import { useIsNewUser } from "@/store/account-store";
 import { CURRENT_USER_ID, usePlans } from "@/store/plan-store";
 
 function HistoryRow({
@@ -78,8 +79,10 @@ function PastCard({ plan }: { plan: PlanState }) {
 /** Full history: opened from Home > Recents > See all and Profile > History. */
 export default function HistoryPage() {
   const { plans } = usePlans();
+  const isNew = useIsNewUser();
   const mine = plans
-    .filter((p) => p.created && p.memberIds.includes(CURRENT_USER_ID))
+    // New accounts start with a clean history (no demo outings).
+    .filter((p) => p.created && p.memberIds.includes(CURRENT_USER_ID) && !(isNew && p.id.startsWith("old-")))
     .sort((a, b) => b.createdAt - a.createdAt);
   const upcoming = mine.filter((p) => !p.archived && p.booking.status !== "none");
   const ongoing = mine.filter((p) => !p.archived && p.booking.status === "none");
@@ -124,7 +127,7 @@ export default function HistoryPage() {
           {past.map((p) => (
             <PastCard key={p.id} plan={p} />
           ))}
-          {past.length === 0 && <li className="text-[13px] text-muted">No past outings yet.</li>}
+          {past.length === 0 && <li className="text-[13px] text-muted">No past outings yet. Your first plan will show up here.</li>}
         </ul>
       </section>
     </Screen>

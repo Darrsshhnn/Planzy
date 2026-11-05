@@ -37,12 +37,12 @@ body {
 
 /*
  * One card language for the whole app, taken from the Make a Plan card:
- * ink stroke + solid 3px bottom shadow. Dark cards keep the cream ring from
- * the Figma Recents card and get the same bottom shadow.
+ * ink stroke + solid 3px bottom shadow and a 14px corner. Dark cards keep the
+ * cream ring from the Figma Recents card, with the same corner and shadow.
  */
 @utility card {
   border: 1px solid var(--color-ink);
-  border-radius: 12px;
+  border-radius: 14px;
   background-color: var(--color-paper);
   box-shadow: 0 3px 0 var(--color-ink);
 }
@@ -462,4 +462,19 @@ svg.lucide {
 }
 .animate-rise {
   animation: planzy-rise 0.25s ease-out both;
+}
+
+/* Guide coach card drops in from the top. */
+@keyframes planzy-rise-down {
+  from {
+    opacity: 0;
+    transform: translateY(-16px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+.animate-rise-down {
+  animation: planzy-rise-down 0.3s cubic-bezier(0.2, 0.8, 0.3, 1) both;
 }

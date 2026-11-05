@@ -116,7 +116,16 @@ export default function SearchPage() {
 
       {!query && activeFilters === 0 && (
         <>
-          <Link href="/map" className="card-dark mt-4 flex items-center gap-3 p-3 text-white">
+          <Link href="/ai" className="card mt-4 flex items-center gap-3 bg-cream! p-3">
+            <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-ink text-brand">
+              <Sparkles size={22} />
+            </span>
+            <span className="min-w-0 flex-1">
+              <span className="block text-[15px] font-semibold">Ask Planzy AI</span>
+              <span className="block text-[12px] text-ink/70">Describe the outing, get places picked for you</span>
+            </span>
+          </Link>
+          <Link href="/map" className="card-dark mt-3 flex items-center gap-3 p-3 text-white">
             <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-brand">
               <Map size={22} />
             </span>

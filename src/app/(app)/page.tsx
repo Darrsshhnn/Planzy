@@ -2,12 +2,13 @@ import { ChevronRight, SlidersHorizontal } from "lucide-react";
 import Link from "next/link";
 import { ActivePlanCard } from "@/components/home/active-plan-card";
 import { HomeHeader } from "@/components/home/home-header";
+import { AiCard, HomeForYou } from "@/components/home/home-for-you";
 import { GroupsRow } from "@/components/home/groups-row";
 import { Screen } from "@/components/layout/screen";
-import { FeaturedPlaceCard, NearbyCard, RecentCard } from "@/components/place/place-cards";
+import { FeaturedPlaceCard, NearbyCard } from "@/components/place/place-cards";
 import { ButtonLink } from "@/components/ui/button";
 import { SectionTitle } from "@/components/ui/card";
-import { getFeaturedPlaces, getNearbyPlaces, getPlace, getRecents } from "@/lib/api/data";
+import { getFeaturedPlaces, getNearbyPlaces } from "@/lib/api/data";
 
 const filterLink = (
   <Link href="/search" aria-label="Filter places" className="rounded-lg p-1 text-ink hover:bg-ink/5">
@@ -20,22 +21,13 @@ export default function HomePage() {
     <Screen padded={false}>
       <HomeHeader />
 
-      {/* Hierarchy: active plan > Recents > Recommendation > Groups > Nearby */}
+      {/* Hierarchy: active plan > Recents (or picks for new users) > Planzy AI > Recommendation > Groups > Nearby */}
       <ActivePlanCard />
 
-      <SectionTitle
-        action={
-          <Link href="/history" className="text-[13px] font-medium text-navy underline underline-offset-2">
-            See All
-          </Link>
-        }
-      >
-        Recents
-      </SectionTitle>
-      <div className="carousel mt-1.5">
-        {getRecents().map((r) => (
-          <RecentCard key={r.id} outing={r} place={getPlace(r.placeId)!} />
-        ))}
+      <HomeForYou />
+
+      <div className="mt-[22px]">
+        <AiCard />
       </div>
 
       <div className="mt-[22px]">

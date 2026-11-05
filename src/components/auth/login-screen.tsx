@@ -86,7 +86,7 @@ export function LoginScreen({ className = "" }: { className?: string }) {
         <div className="my-4 flex items-center gap-3 text-[14px] text-ink/70" aria-hidden>
           <span className="h-px flex-1 bg-ink/35" /> or <span className="h-px flex-1 bg-ink/35" />
         </div>
-        <GoogleButton />
+        <GoogleButton oneTap />
         <Link href="/auth/signup" className="mt-6 self-center text-[14px] text-ink underline underline-offset-2">
           Create a new account
         </Link>

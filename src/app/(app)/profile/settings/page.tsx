@@ -1,6 +1,6 @@
 "use client";
 
-import { KeyRound, LogOut, RotateCcw } from "lucide-react";
+import { KeyRound, Lightbulb, LogOut, RotateCcw } from "lucide-react";
 import { useState, useSyncExternalStore } from "react";
 import { AuthField } from "@/components/auth/auth-shell";
 import { PageHeader } from "@/components/layout/page-header";
@@ -8,7 +8,7 @@ import { Screen } from "@/components/layout/screen";
 import { Button } from "@/components/ui/button";
 import { Sheet } from "@/components/ui/sheet";
 import { Toggle } from "@/components/ui/toggle";
-import { changePassword, logOut, passwordProblem } from "@/store/account-store";
+import { changePassword, logOut, passwordProblem, setGuide, useGuideActive } from "@/store/account-store";
 import { planActions } from "@/store/plan-store";
 import { setRole, useViewer } from "@/store/viewer-store";
 
@@ -45,6 +45,7 @@ const subscribeNotify = (l: () => void) => {
 
 export default function SettingsPage() {
   const { role } = useViewer();
+  const guideOn = useGuideActive();
   const notify = useSyncExternalStore(subscribeNotify, readNotify, () => DEFAULT_NOTIFY);
   const [pwOpen, setPwOpen] = useState(false);
   const [current, setCurrent] = useState("");
@@ -117,6 +118,13 @@ export default function SettingsPage() {
       <div className="card mt-2 divide-y divide-ink/10">
         <button onClick={() => setPwOpen(true)} className="flex w-full items-center gap-3 px-3.5 py-3 text-left text-[14px]">
           <KeyRound size={19} className="text-brand" /> Change password
+        </button>
+        <button
+          onClick={() => setGuide(guideOn ? "done" : "active")}
+          className="flex w-full items-center gap-3 px-3.5 py-3 text-left text-[14px]"
+        >
+          <Lightbulb size={19} className="text-brand" />
+          {guideOn ? "Turn off the plan guide" : "Show the plan guide again"}
         </button>
         <button onClick={logOut} className="flex w-full items-center gap-3 px-3.5 py-3 text-left text-[14px] text-[#b42318]">
           <LogOut size={19} /> Log out

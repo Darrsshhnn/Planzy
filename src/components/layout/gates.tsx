@@ -2,9 +2,11 @@
 
 import { House, MessageSquare, Plus, Search, UserRound } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { Suspense, useEffect, type ReactNode } from "react";
+import { Suspense, useEffect, useRef, useState, type ReactNode } from "react";
+import { WelcomeIntro } from "@/components/brand/app-intro";
 import { Logo } from "@/components/brand/logo";
-import { needsLocation, useAuth } from "@/store/account-store";
+import { FlowGuide } from "@/components/guide/flow-guide";
+import { onboardingPath, useAuth } from "@/store/account-store";
 import { BottomNav } from "./bottom-nav";
 
 /** Orange brand screen shown while the session loads. */
@@ -36,7 +38,7 @@ function NavShell() {
 export function AppGate({ children }: { children: ReactNode }) {
   const auth = useAuth();
   const router = useRouter();
-  const redirect = !auth ? null : !auth.loggedIn ? "/auth" : needsLocation(auth) ? "/onboarding/location" : null;
+  const redirect = !auth ? null : !auth.loggedIn ? "/auth" : onboardingPath(auth);
 
   useEffect(() => {
     if (redirect) router.replace(redirect);
@@ -50,22 +52,43 @@ export function AppGate({ children }: { children: ReactNode }) {
       <Suspense fallback={<NavShell />}>
         <BottomNav />
       </Suspense>
+      <Suspense fallback={null}>
+        <FlowGuide />
+      </Suspense>
     </>
   );
 }
 
-/** Welcome / log in / sign up: signed-out users only. */
+/**
+ * Log in / sign up: signed-out users only. Right after a successful log-in the
+ * logo animation plays for ~2s, then Home opens. New accounts go to setup first.
+ */
 export function AuthOnlyGate({ children }: { children: ReactNode }) {
   const auth = useAuth();
   const router = useRouter();
-  const redirect = auth?.loggedIn ? (needsLocation(auth) ? "/onboarding/location" : "/") : null;
+  const sawSignedOut = useRef(false);
+  const [welcome, setWelcome] = useState(false);
 
   useEffect(() => {
-    if (redirect) router.replace(redirect);
-  }, [redirect, router]);
+    if (!auth) return;
+    if (!auth.loggedIn) {
+      sawSignedOut.current = true;
+      return;
+    }
+    const setup = onboardingPath(auth);
+    if (setup) router.replace(setup);
+    else if (sawSignedOut.current) {
+      router.prefetch("/");
+      setWelcome(true);
+    } else router.replace("/");
+  }, [auth, router]);
 
   if (!auth) return <Splash />;
-  if (redirect) return <Splash />;
+  if (welcome) {
+    const first = auth.account?.profile.name.split(" ")[0] ?? "";
+    return <WelcomeIntro onDone={() => router.replace("/")} message={first ? `Welcome back, ${first}!` : undefined} />;
+  }
+  if (auth.loggedIn) return <Splash />;
   return <>{children}</>;
 }
 

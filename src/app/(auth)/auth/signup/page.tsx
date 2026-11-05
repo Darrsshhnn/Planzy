@@ -51,7 +51,7 @@ export default function SignupPage() {
     <AuthShell
       title={COPY[step].title}
       subtitle={COPY[step].subtitle}
-      step={[index + 1, STEPS.length + 1]}
+      step={[index + 1, STEPS.length + 2]}
       back={index === 0 ? "/auth" : undefined}
       onBack={index > 0 ? () => (setError(""), setIndex(index - 1)) : undefined}
     >
@@ -129,7 +129,7 @@ export default function SignupPage() {
           <div className="my-4 flex items-center gap-3 text-[14px] text-ink/70" aria-hidden>
             <span className="h-px flex-1 bg-ink/35" /> or <span className="h-px flex-1 bg-ink/35" />
           </div>
-          <GoogleButton />
+          <GoogleButton mode="signup" />
         </>
       )}
       <p className="mt-6 text-center text-[14px]">

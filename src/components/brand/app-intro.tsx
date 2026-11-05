@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, type CSSProperties } from "react";
+import { useEffect, useRef, useState, type CSSProperties } from "react";
 import { INTRO_SEEN_KEY } from "./intro-script";
 import { LOGO_DOT, LOGO_LETTERS, LOGO_RATIO, LOGO_VIEWBOX } from "./logo-paths";
 
@@ -13,7 +13,7 @@ const DOT_CENTER = `${LOGO_DOT.cx}px ${LOGO_DOT.cy}px`;
  * magnifying glass, the orange location dot drops into the lens with a ping,
  * then the "p" slides into place as "lanzy" writes out.
  */
-function LogoIntro({ width = 240 }: { width?: number }) {
+export function LogoIntro({ width = 240 }: { width?: number }) {
   const { cx, cy, r } = LOGO_DOT;
   const p = LOGO_LETTERS.find((l) => l.id === "p")!;
   const rest = LOGO_LETTERS.filter((l) => l.id !== "p");
@@ -110,6 +110,39 @@ export function AppIntro() {
       aria-hidden={phase === "leave"}
     >
       <LogoIntro />
+    </div>
+  );
+}
+
+/**
+ * The same logo animation as a one-off overlay (~2s), played right before
+ * Home opens after signing in or finishing sign-up. Calls onDone at the end.
+ */
+export function WelcomeIntro({ onDone, message }: { onDone: () => void; message?: string }) {
+  const [leaving, setLeaving] = useState(false);
+  const done = useRef(onDone);
+  useEffect(() => {
+    done.current = onDone;
+  }, [onDone]);
+  useEffect(() => {
+    const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const timers = [
+      setTimeout(() => setLeaving(true), reduce ? 900 : 2200),
+      setTimeout(() => done.current(), reduce ? 1200 : 2550),
+    ];
+    return () => timers.forEach(clearTimeout);
+  }, []);
+
+  return (
+    <div
+      role="status"
+      aria-label="Opening Planzy"
+      className={`absolute inset-0 z-[60] flex flex-col items-center justify-center bg-brand transition-opacity duration-300 ${leaving ? "opacity-0" : ""}`}
+    >
+      <LogoIntro />
+      {message && (
+        <p className="intro-glint absolute bottom-[18%] px-8 text-center text-[15px] font-medium text-cream">{message}</p>
+      )}
     </div>
   );
 }

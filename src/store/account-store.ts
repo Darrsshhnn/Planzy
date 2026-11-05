@@ -21,6 +21,12 @@ interface Account {
   profile: Profile;
   /** Empty for Google accounts that never set a password. */
   passwordHash: string;
+  /** Created on this version: starts with no outing history (no demo Recents). */
+  fresh?: boolean;
+  /** false until the new user has picked their interests (undefined = older account, done). */
+  onboarded?: boolean;
+  /** First-plan walkthrough: "active" until the first plan is locked in or skipped. */
+  guide?: "active" | "done";
 }
 
 interface Store {
@@ -150,6 +156,55 @@ export function needsLocation(auth: AccountState | null) {
   return !!auth?.account && !auth.account.profile.location;
 }
 
+/** Signed in, area picked, but hasn't told us what they like yet. */
+export function needsInterests(auth: AccountState | null) {
+  return !!auth?.account && auth.account.onboarded === false;
+}
+
+/** Where a signed-in user still has to go before Home, or null when set up. */
+export function onboardingPath(auth: AccountState | null) {
+  if (needsLocation(auth)) return "/onboarding/location";
+  if (needsInterests(auth)) return "/onboarding/interests";
+  return null;
+}
+
+/** New account with no demo history (shows picks instead of the demo Recents). */
+export function useIsNewUser() {
+  return !!useAuth()?.account?.fresh;
+}
+
+/** Whether the first-plan guide is running for the signed-in user. */
+export function useGuideActive() {
+  return useAuth()?.account?.guide === "active";
+}
+
+function patchCurrent(patch: Partial<Account>) {
+  ensureLoaded();
+  const account = current();
+  if (!account) return false;
+  return write({ ...store, accounts: store.accounts.map((a) => (a.id === account.id ? { ...a, ...patch } : a)) });
+}
+
+/** Saves the interests picked during onboarding and finishes setup. */
+export function finishOnboarding(preferences: Profile["preferences"]) {
+  ensureLoaded();
+  const account = current();
+  if (!account) return false;
+  return patchCurrent({ onboarded: true, profile: { ...account.profile, preferences } });
+}
+
+export function setGuide(state: "active" | "done") {
+  return patchCurrent({ guide: state });
+}
+
+/** Google accounts already used on this device, for the account chooser. */
+export function googleAccountsOnDevice() {
+  ensureLoaded();
+  return store.accounts
+    .filter((a) => a.provider === "google")
+    .map((a) => ({ name: a.profile.name, email: a.profile.email, picture: a.profile.avatar }));
+}
+
 async function hash(password: string) {
   const bytes = new TextEncoder().encode(`planzy:${password}`);
   const digest = await crypto.subtle.digest("SHA-256", bytes);
@@ -195,6 +250,9 @@ export async function signUp(input: { name: string; phone: string; password: str
     provider: "password",
     profile: { ...defaultProfile, avatar: "", location: "", name: input.name.trim(), phone: input.phone, email },
     passwordHash: await hash(input.password),
+    fresh: true,
+    onboarded: false,
+    guide: "active",
   };
   return write({ accounts: [...store.accounts, account], currentId: account.id })
     ? ""
@@ -223,6 +281,9 @@ export function signInWithGoogle(user: { name: string; email: string; picture?: 
     provider: "google",
     profile: { ...defaultProfile, location: "", name: user.name.trim() || email.split("@")[0], email, avatar: user.picture ?? "" },
     passwordHash: "",
+    fresh: true,
+    onboarded: false,
+    guide: "active",
   };
   return write({ accounts: [...store.accounts, account], currentId: account.id });
 }
@@ -263,10 +324,7 @@ export async function changePassword(currentPw: string, next: string) {
 }
 
 export function saveProfile(next: Profile) {
-  ensureLoaded();
-  const account = current();
-  if (!account) return false;
-  return write({ ...store, accounts: store.accounts.map((a) => (a.id === account.id ? { ...a, profile: next } : a)) });
+  return patchCurrent({ profile: next });
 }
 
 // Apply a saved profile as soon as this module loads in the browser.
