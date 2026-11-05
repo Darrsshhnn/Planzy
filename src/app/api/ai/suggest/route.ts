@@ -9,6 +9,7 @@
 import Anthropic from "@anthropic-ai/sdk";
 import { getPlace } from "@/lib/api/data";
 import {
+  byDistance,
   catalogue,
   describe,
   fit,
@@ -28,7 +29,7 @@ Pick the places from the catalogue that best fit what the person asks for: the k
 Rules:
 - Only use place ids from the catalogue. Return 3 or 4 places, best first.
 - Respect the budget. For places priced per hour, split the hourly rate across the group when a group size is given.
-- Prefer places close to the person's area (use the lat/lng given for the area and each place).
+- Stay within the person's travel distance from their area (use the lat/lng given for the area and each place).
 - Each reason is one friendly sentence (under 25 words) that says why it fits: price, distance, vibe or timing. Use ₹ for money.
 - The summary is one short sentence restating what you understood.
 
@@ -62,11 +63,11 @@ function readQuery(body: unknown): AiQuery | null {
   const prompt = typeof b.prompt === "string" ? b.prompt.slice(0, 500) : "";
   const location = typeof b.location === "string" && b.location ? b.location.slice(0, 80) : "Ahmedabad, Ahmedabad";
   const budget = typeof b.budget === "number" && b.budget > 0 ? Math.min(b.budget, 10000) : 500;
+  const distance = typeof b.distance === "number" && b.distance > 0 ? Math.min(b.distance, 60) : 10;
   const categories = Array.isArray(b.categories)
     ? (b.categories.filter((c) => CATEGORIES.includes(c as Category)) as Category[])
     : [];
-  if (!prompt.trim() && categories.length === 0) return null;
-  return { prompt, location, budget, categories };
+  return { prompt, location, budget, distance, categories };
 }
 
 async function askClaude(q: AiQuery): Promise<AiResult | null> {
@@ -77,6 +78,7 @@ async function askClaude(q: AiQuery): Promise<AiResult | null> {
     `Request: ${q.prompt || "(no text, use the filters)"}`,
     `Heading out from: ${area}`,
     `Budget per person: ₹${u.budget}`,
+    `Will travel up to: ${u.distance} km`,
     q.categories.length ? `Categories they ticked: ${q.categories.join(", ")}` : "",
     u.people ? `Group size: ${u.people}` : "",
   ]
@@ -111,7 +113,13 @@ async function askClaude(q: AiQuery): Promise<AiResult | null> {
       return { placeId: place.id, reason: s.reason, match: fit(place, u), km: kmFrom(area, place) };
     });
   if (suggestions.length === 0) return null;
-  return { summary: parsed.summary || `Here's what fits ${describe(u)}.`, suggestions, understood: u, source: "claude" };
+  return {
+    summary: parsed.summary || `Here's what fits ${describe(u)}.`,
+    // Shown closest first, farthest last.
+    suggestions: byDistance(suggestions),
+    understood: u,
+    source: "claude",
+  };
 }
 
 export async function POST(request: Request) {
@@ -122,7 +130,7 @@ export async function POST(request: Request) {
     return Response.json({ error: "Send JSON" }, { status: 400 });
   }
   const q = readQuery(body);
-  if (!q) return Response.json({ error: "Tell Planzy AI what you're in the mood for" }, { status: 400 });
+  if (!q) return Response.json({ error: "Send the filters as JSON" }, { status: 400 });
 
   if (process.env.ANTHROPIC_API_KEY) {
     try {

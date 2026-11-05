@@ -28,9 +28,11 @@ import type {
   TimeSlot,
   Vote,
 } from "@/lib/types";
-import { onProfileChange } from "@/store/account-store";
+import { accountScope, onProfileChange, scopedKey } from "@/store/account-store";
 
-const STORAGE_KEY = "planzy:store:v2";
+const BASE_KEY = "planzy:store:v2";
+/** A new account gets its first invite from a friend a little after it starts. */
+const FIRST_INVITE_DELAY_MS = 30_000;
 const ME = getMe().id;
 const DAY = 24 * 60 * 60 * 1000;
 const RESPONSE_DELAY_MS = 2500;
@@ -75,6 +77,8 @@ interface Store {
   currentId: string | null;
   favourites: string[];
   notifications: AppNotification[];
+  /** New accounts: when the first friend invite arrives (null once delivered). */
+  inviteDueAt?: number | null;
 }
 
 let seq = 0;
@@ -143,9 +147,15 @@ function seedStore(): Store {
     });
   });
 
-  // An invite from Karan: accept it to join as a member.
-  const inviteAt = now - 40 * 60_000;
-  plans["inv-sunday-cricket"] = newPlan("inv-sunday-cricket", {
+  const invite = inviteFromKaran(now - 40 * 60_000);
+  plans[invite.plan.id] = invite.plan;
+  return { plans, currentId: null, favourites: [], notifications: [invite.notification] };
+}
+
+/** An invite from Karan: accept it to join as a member. */
+function inviteFromKaran(inviteAt: number): { plan: PlanState; notification: AppNotification } {
+  const now = Date.now();
+  const plan = newPlan("inv-sunday-cricket", {
     createdAt: inviteAt,
     adminId: "karan",
     memberIds: ["karan", "dev", "umang"],
@@ -176,20 +186,25 @@ function seedStore(): Store {
   });
 
   return {
-    plans,
-    currentId: null,
-    favourites: [],
-    notifications: [
-      {
-        id: "n-inv-sunday-cricket",
-        kind: "invite",
-        planId: "inv-sunday-cricket",
-        text: `Karan invited you to "Sunday Box Cricket"`,
-        at: inviteAt,
-        read: false,
-      },
-    ],
+    plan,
+    notification: {
+      id: "n-inv-sunday-cricket",
+      kind: "invite",
+      planId: "inv-sunday-cricket",
+      text: `Karan invited you to "Sunday Box Cricket"`,
+      at: inviteAt,
+      read: false,
+    },
   };
+}
+
+/** A brand-new account: no chats, plans or history; the first invite comes soon. */
+function freshStore(): Store {
+  return { plans: {}, currentId: null, favourites: [], notifications: [], inviteDueAt: Date.now() + FIRST_INVITE_DELAY_MS };
+}
+
+function firstRunStore(): Store {
+  return accountScope()?.fresh ? freshStore() : seedStore();
 }
 
 const SERVER_STORE: Store = { plans: {}, currentId: null, favourites: [], notifications: [] };
@@ -201,18 +216,48 @@ function emit() {
   listeners.forEach((l) => l());
 }
 
+/** Each account keeps its own plans (see scopedKey). */
+let storageKey = BASE_KEY;
+
 function read(): Store {
   try {
-    const raw = window.localStorage.getItem(STORAGE_KEY);
-    return raw ? { ...SERVER_STORE, ...JSON.parse(raw) } : seedStore();
+    const raw = window.localStorage.getItem(storageKey);
+    return raw ? { ...SERVER_STORE, ...JSON.parse(raw) } : firstRunStore();
   } catch {
-    return seedStore();
+    return firstRunStore();
   }
+}
+
+let inviteTimer: ReturnType<typeof setTimeout> | undefined;
+function scheduleFirstInvite() {
+  clearTimeout(inviteTimer);
+  const due = store.inviteDueAt;
+  if (!due) return;
+  const key = storageKey;
+  inviteTimer = setTimeout(() => {
+    if (storageKey !== key || !store.inviteDueAt) return;
+    const { plan, notification } = inviteFromKaran(Date.now() - 60_000);
+    setStore((s) => ({
+      ...s,
+      inviteDueAt: null,
+      plans: { ...s.plans, [plan.id]: plan },
+      notifications: [notification, ...s.notifications],
+    }));
+  }, Math.max(0, due - Date.now()));
+}
+
+/** Loads the signed-in account's plans (on start and whenever the account changes). */
+function load() {
+  storageKey = scopedKey(BASE_KEY);
+  store = read();
+  persist();
+  scheduleFirstInvite();
+  for (const plan of Object.values(store.plans)) if (plan.adminId === ME) scheduleResponses(plan.id);
 }
 
 function persist() {
   try {
-    window.localStorage.setItem(STORAGE_KEY, JSON.stringify(store));
+    window.localStorage.setItem(storageKey, JSON.stringify(store));
   } catch {
     // Storage can be unavailable (private mode); state still works in memory.
   }
@@ -221,19 +266,18 @@ function persist() {
 function ensureLoaded() {
   if (loaded || typeof window === "undefined") return;
   loaded = true;
-  store = read();
-  persist();
+  load();
   window.addEventListener("storage", (e) => {
-    if (e.key !== STORAGE_KEY) return;
+    if (e.key !== storageKey) return;
     store = read();
     emit();
   });
+  // Switching accounts swaps in that account's plans; profile edits re-render names.
   onProfileChange(() => {
-    store = { ...store };
+    if (scopedKey(BASE_KEY) !== storageKey) load();
+    else store = { ...store };
     emit();
   });
-  // Pick up invites that were still waiting when the page was closed.
-  for (const plan of Object.values(store.plans)) if (plan.adminId === ME) scheduleResponses(plan.id);
 }
 
 function setStore(update: (s: Store) => Store) {
@@ -799,7 +843,7 @@ export const planActions = {
 
   /** Demo helper: back to the first-run sample data (keeps favourites). */
   reset() {
-    setStore((s) => ({ ...seedStore(), favourites: s.favourites }));
+    setStore((s) => ({ ...firstRunStore(), favourites: s.favourites }));
   },
 };
 

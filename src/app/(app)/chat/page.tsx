@@ -1,7 +1,8 @@
 "use client";
 
-import { MessageSquarePlus, Search } from "lucide-react";
+import { BookUser, MailOpen, MessageSquarePlus, Search } from "lucide-react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useState, type ReactNode } from "react";
 import { PageHeader } from "@/components/layout/page-header";
 import { Screen } from "@/components/layout/screen";
@@ -13,7 +14,8 @@ import { getFriends, getPerson } from "@/lib/api/data";
 import { previewMessage, shortWhen } from "@/lib/chat-preview";
 import type { PlanState } from "@/lib/types";
 import { useThreads } from "@/store/dm-store";
-import { CURRENT_USER_ID, usePlans } from "@/store/plan-store";
+import { useIsNewUser } from "@/store/account-store";
+import { CURRENT_USER_ID, planActions, usePlans } from "@/store/plan-store";
 
 type Tab = "all" | "groups" | "personal";
 
@@ -42,7 +44,7 @@ function Row({
 }) {
   return (
     <li className="reveal">
-      <Link href={href} className="flex items-center gap-3 px-3 py-3 transition-colors hover:bg-cream/70 active:bg-cream">
+      <Link href={href} className="flex items-center gap-3.5 px-4 py-4 transition-colors hover:bg-cream/70 active:bg-cream">
         <span className="flex w-[50px] shrink-0 justify-center">{avatar}</span>
         <span className="min-w-0 flex-1">
           <span className="flex items-center justify-between gap-2">
@@ -66,17 +68,73 @@ function Row({
 /** One card per section; rows split by clearly visible lines. */
 function Section({ title, count, children }: { title: string; count: number; children: ReactNode }) {
   return (
-    <section className="mt-5">
+    <section className="mt-7">
       <h2 className="flex items-center gap-2 px-1 text-[12px] font-semibold uppercase tracking-wide text-ink/70">
         {title}
         <span className="rounded-full bg-ink px-1.5 text-[10px] leading-[16px] text-cream">{count}</span>
       </h2>
-      <ul className="card mt-2 divide-y divide-ink/20 overflow-hidden p-0!">{children}</ul>
+      <ul className="card mt-3 divide-y divide-ink/15 overflow-hidden p-0!">{children}</ul>
+    </section>
+  );
+}
+
+/**
+ * New accounts have no chats yet: show friends from their contacts who are
+ * already on Planzy, to say hi or plan with. Invites arrive here too.
+ */
+function ContactsOnPlanzy({ waitingForInvites }: { waitingForInvites: boolean }) {
+  const router = useRouter();
+  const friends = getFriends().slice(0, 10);
+  return (
+    <section className="mt-7">
+      {waitingForInvites && (
+        <div className="card flex items-center gap-3 bg-cream! p-4">
+          <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-ink text-brand">
+            <MailOpen size={19} />
+          </span>
+          <p className="text-[12px] leading-[17px] text-ink/80">
+            No chats yet. When friends invite you to a plan, the invite shows up here.
+          </p>
+        </div>
+      )}
+      <h2 className="mt-7 flex items-center gap-2 px-1 text-[12px] font-semibold uppercase tracking-wide text-ink/70">
+        <BookUser size={15} /> From your contacts
+        <span className="rounded-full bg-ink px-1.5 text-[10px] leading-[16px] text-cream">{friends.length}</span>
+      </h2>
+      <p className="mt-1 px-1 text-[12px] text-muted">Friends already on Planzy</p>
+      <ul className="card mt-3 divide-y divide-ink/10 overflow-hidden p-0!">
+        {friends.map((f) => (
+          <li key={f.id} className="flex items-center gap-3 px-4 py-3.5">
+            <Avatar personId={f.id} size={44} />
+            <span className="min-w-0 flex-1">
+              <span className="block truncate text-[15px] font-semibold">{f.name}</span>
+              <span className="block truncate text-[12px] text-muted">On Planzy</span>
+            </span>
+            <Link
+              href={`/chat/dm/${f.id}`}
+              className="rounded-full border border-ink px-3 py-1.5 text-[12px] font-semibold hover:bg-cream"
+            >
+              Say hi
+            </Link>
+            <button
+              type="button"
+              onClick={() => {
+                planActions.start("new", [f.id]);
+                router.push("/plan/friends");
+              }}
+              className="rounded-full bg-brand px-3 py-1.5 text-[12px] font-semibold text-white"
+            >
+              Plan
+            </button>
+          </li>
+        ))}
+      </ul>
     </section>
   );
 }
 
 export default function ChatsPage() {
+  const isNew = useIsNewUser();
   const { plans, ready } = usePlans();
   const threads = useThreads();
   const [query, setQuery] = useState("");
@@ -159,7 +217,7 @@ export default function ChatsPage() {
           className="min-w-0 flex-1 bg-transparent text-[14px] outline-none placeholder:text-ink/40"
         />
       </FieldBox>
-      <div className="mt-3 grid grid-cols-3 rounded-full bg-cream p-1" role="tablist">
+      <div className="mt-4 grid grid-cols-3 rounded-full bg-cream p-1" role="tablist">
         {(
           [
             ["all", "All"],
@@ -200,7 +258,9 @@ export default function ChatsPage() {
       )}
       {showGroups && old.length > 0 && <Section title="Old chats" count={old.length}>{old.map(groupRow)}</Section>}
 
-      {empty && (
+      {isNew && !q && tab !== "groups" && <ContactsOnPlanzy waitingForInvites={!!empty} />}
+
+      {empty && !(isNew && !q && tab !== "groups") && (
         <div className="mt-12 text-center">
           <p className="text-[14px] font-semibold">{q ? "No chats match" : "No chats yet"}</p>
           <p className="mt-1 text-[12px] text-muted">

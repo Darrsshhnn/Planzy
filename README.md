@@ -34,7 +34,7 @@ Lint: `npm run lint`
 | Your interests | `/onboarding/interests` | New accounts pick the kinds of outings they like, budget and timing; then a ~2 s logo animation opens Home |
 | Forgot password | `/auth/forgot` | Number/email → 4-digit code (demo code **1234**) → new password |
 | Home | `/` | Confirmed booking / ongoing chat, recents (new users: **Places you might like**, from their interests), Planzy AI, recommendations, groups, nearby places |
-| Planzy AI | `/ai` | Describe the outing in your own words, set area and budget, get 3–4 places with a reason each, then plan one with friends |
+| Planzy AI | `/ai` | Pick your area, type, budget and distance; get places that fit, closest first, with a reason each, then plan one with friends |
 | Notifications | `/notifications` | Group invites to accept/decline, replies to your invites (Home bell) |
 | Add Friends | `/plan/friends` | The + tab starts here. Top picks, more friends, search; Continue sends invites |
 | Group Details | `/plan/group` | Group name, invited friends with live Accepted / Waiting / Declined, categories, date |
@@ -104,13 +104,13 @@ src/
 
 ## New users
 
-A new account (sign-up or a first Google sign-in) goes: area → interests → logo animation → Home. It has no outing history, so Home shows places picked from its interests instead of Recents, and History starts empty. Logging in to an existing account also plays the ~2 s logo animation before Home.
+A new account (sign-up or a first Google sign-in) goes: area → interests → logo animation → Home. It has no outing history, so Home has no Recents yet and its Recommendation is picked from those interests (with a match % and why). It starts with no chats, plans or history: Chats lists friends from contacts who are on Planzy, and the first invite from a friend arrives about 30 seconds in. Plans and personal chats are stored per account. Logging in to an existing account also plays the ~2 s logo animation before Home.
 
 The first plan is guided: a coach card on each step (Home → friends → group → preferences → recommendations → chat and votes → decision → booking → Locked In) says what to do. It can be folded, skipped, or turned back on in Profile → Settings.
 
 ## Planzy AI
 
-`POST /api/ai/suggest` takes `{ prompt, location, budget, categories }`. With `ANTHROPIC_API_KEY` set on the server, Claude (`claude-opus-5-5`, structured JSON output) picks places from the catalogue and writes a reason for each; the key stays on the server.
+`POST /api/ai/suggest` takes `{ location, budget, distance, categories }` (plus optional `prompt`). Results come back closest first. With `ANTHROPIC_API_KEY` set on the server, Claude (`claude-opus-5-5`, structured JSON output) picks places from the catalogue and writes a reason for each; the key stays on the server.
 
 ```bash
 # .env.local (and in Vercel → Project → Settings → Environment Variables)
@@ -121,14 +121,18 @@ Without a key, or if the call fails, the built-in matcher in `src/lib/ai/suggest
 
 ## Google sign-in
 
-Continue with Google uses Google Identity Services when a client ID is set. Create an OAuth client (type "Web application") in Google Cloud Console, add your site's origin (e.g. `http://localhost:3000` and your Vercel URL) under Authorised JavaScript origins, then:
+Continue with Google is the real Google sign-in (Google Identity Services). Tapping it opens Google's own account chooser with the Google accounts on the device; the person picks one and confirms with Google. On the sign-in screen Google One Tap may also offer "Continue as …". Google returns a signed ID token, and `/api/auth/google` checks it with Google (issuer, this app's client ID, expiry) and only accepts accounts whose email Google has verified. A new Google user then picks their area and interests; a known one just logs in.
+
+1. Google Cloud Console → APIs & Services → Credentials → Create credentials → OAuth client ID → Web application.
+2. Authorised JavaScript origins: `http://localhost:3000`, `http://localhost` and your Vercel URL (e.g. `https://planzy.vercel.app`). Google only allows https or localhost, so a plain LAN address like `http://192.168.x.x:3000` can't use Google sign-in; test it on localhost or the deployed https site.
+3. Set the client ID and rebuild:
 
 ```bash
 # .env.local (and the same variable in Vercel → Project → Settings → Environment Variables)
 NEXT_PUBLIC_GOOGLE_CLIENT_ID=your-client-id.apps.googleusercontent.com
 ```
 
-With a client ID, the sign-in screen also offers Google One Tap. Without it, the button opens a demo of the usual Google flow (choose an account on this device or use another, then confirm what Planzy gets) so the flow still works.
+Without a client ID the button explains that Google sign-in isn't set up; phone/email sign-up still works.
 
 ## Mocked parts and where a backend plugs in
 

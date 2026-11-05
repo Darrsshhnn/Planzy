@@ -1,15 +1,50 @@
 "use client";
 
-import { House, MessageSquare, Plus, Search, UserRound, type LucideIcon } from "lucide-react";
+import {
+  CircleUserRound,
+  House,
+  MessageSquare,
+  MessageSquareText,
+  Plus,
+  Search,
+  UserRound,
+  type LucideIcon,
+  type LucideProps,
+} from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import type { CSSProperties } from "react";
 import { planActions, useNotifications } from "@/store/plan-store";
 
+/** Selected Search: the lens gets a glint line inside, like the other selected icons. */
+function SearchSelected(props: LucideProps) {
+  const { size = 24, className = "", ...rest } = props;
+  return (
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className={`lucide ${className}`}
+      aria-hidden
+      {...rest}
+    >
+      <circle cx="11" cy="11" r="8" />
+      <path d="m21 21-4.3-4.3" fill="none" />
+      <path d="M7.5 10a3.5 3.5 0 0 1 3-3" fill="none" />
+    </svg>
+  );
+}
+
 interface Tab {
   href: string;
   label: string;
   icon: LucideIcon;
+  /** Outline with inside detail lines, shown when the tab is selected. */
+  activeIcon: LucideIcon | typeof SearchSelected;
   match: (path: string) => boolean;
 }
 
@@ -18,24 +53,39 @@ const TABS: Tab[] = [
     href: "/",
     label: "Home",
     icon: House,
+    activeIcon: House,
     match: (p) => p === "/" || p.startsWith("/place") || p.startsWith("/history") || p.startsWith("/notifications"),
   },
   {
     href: "/chat",
     label: "Chats",
     icon: MessageSquare,
+    activeIcon: MessageSquareText,
     match: (p) => ["/chat", "/decision", "/booking", "/locked"].some((r) => p.startsWith(r)),
   },
-  { href: "/plan/friends", label: "Make a plan", icon: Plus, match: (p) => p.startsWith("/plan") },
-  { href: "/search", label: "Search", icon: Search, match: (p) => p.startsWith("/search") || p.startsWith("/map") },
-  { href: "/profile", label: "Profile", icon: UserRound, match: (p) => p.startsWith("/profile") },
+  { href: "/plan/friends", label: "Make a plan", icon: Plus, activeIcon: Plus, match: (p) => p.startsWith("/plan") },
+  {
+    href: "/search",
+    label: "Search",
+    icon: Search,
+    activeIcon: SearchSelected,
+    match: (p) => p.startsWith("/search") || p.startsWith("/map") || p.startsWith("/ai"),
+  },
+  {
+    href: "/profile",
+    label: "Profile",
+    icon: UserRound,
+    activeIcon: CircleUserRound,
+    match: (p) => p.startsWith("/profile"),
+  },
 ];
 
 /**
  * Floating tab bar with a liquid indicator. Two cream blobs ride in tab-wide
  * slots moved with GPU transforms; the small one trails with a soft overshoot
  * and an SVG "goo" filter melts them into one stretching drop.
- * Idle icons are light cream outlines; the selected one is filled orange.
+ * Idle icons are light cream outlines; the selected one turns orange with a
+ * light tint and line detail inside (door, chat lines, lens glint, face ring).
  */
 export function BottomNav() {
   const pathname = usePathname();
@@ -74,8 +124,9 @@ export function BottomNav() {
         </span>
       </div>
       <div className="relative flex h-full items-center">
-        {TABS.map(({ href, label, icon: Icon }, i) => {
+        {TABS.map(({ href, label, icon, activeIcon }, i) => {
           const on = i === active;
+          const Icon = on ? activeIcon : icon;
           return (
             <Link
               key={href}
@@ -89,7 +140,7 @@ export function BottomNav() {
               {href === "/plan/friends" ? (
                 <span
                   className={`flex h-[24px] w-[24px] items-center justify-center rounded-[6px] border-[1.75px] transition-colors duration-200 ${
-                    on ? "border-brand bg-brand text-cream" : "border-cream text-cream"
+                    on ? "border-brand bg-brand/20 text-brand" : "border-cream text-cream"
                   }`}
                 >
                   <Plus size={16} />
@@ -97,7 +148,7 @@ export function BottomNav() {
               ) : (
                 <Icon
                   size={24}
-                  className={`transition-[color,fill] duration-200 ${on ? "fill-brand text-brand" : "fill-transparent text-cream"}`}
+                  className={`transition-[color,fill] duration-200 ${on ? "fill-brand/20 text-brand" : "fill-transparent text-cream"}`}
                 />
               )}
               {href === "/chat" && invites > 0 && (

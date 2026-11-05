@@ -97,7 +97,7 @@ body {
 /* Side-scrolling rows: snap cards to the page edge (20px gutter). */
 @utility carousel {
   display: flex;
-  gap: 12px;
+  gap: 16px;
   overflow-x: auto;
   scroll-snap-type: x mandatory;
   scroll-padding-inline: 20px;

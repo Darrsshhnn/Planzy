@@ -1,65 +1,47 @@
-import { ChevronRight, SlidersHorizontal } from "lucide-react";
+import { ChevronRight } from "lucide-react";
 import Link from "next/link";
 import { ActivePlanCard } from "@/components/home/active-plan-card";
 import { HomeHeader } from "@/components/home/home-header";
-import { AiCard, HomeForYou } from "@/components/home/home-for-you";
+import { AiCard, HomeRecents, RecommendedForYou } from "@/components/home/home-for-you";
 import { GroupsRow } from "@/components/home/groups-row";
 import { Screen } from "@/components/layout/screen";
-import { FeaturedPlaceCard, NearbyCard } from "@/components/place/place-cards";
-import { ButtonLink } from "@/components/ui/button";
+import { NearbyCard } from "@/components/place/place-cards";
 import { SectionTitle } from "@/components/ui/card";
-import { getFeaturedPlaces, getNearbyPlaces } from "@/lib/api/data";
-
-const filterLink = (
-  <Link href="/search" aria-label="Filter places" className="rounded-lg p-1 text-ink hover:bg-ink/5">
-    <SlidersHorizontal size={24} />
-  </Link>
-);
+import { getNearbyPlaces } from "@/lib/api/data";
 
 export default function HomePage() {
   return (
     <Screen padded={false}>
       <HomeHeader />
 
-      {/* Hierarchy: active plan > Recents (or picks for new users) > Planzy AI > Recommendation > Groups > Nearby */}
+      {/* Hierarchy: active plan > Recents > Planzy AI > Recommended for you > Groups > Nearby */}
       <ActivePlanCard />
+      <HomeRecents />
 
-      <HomeForYou />
-
-      <div className="mt-[22px]">
+      <div className="mt-9">
         <AiCard />
       </div>
 
-      <div className="mt-[22px]">
-        <SectionTitle action={filterLink}>Recommendation</SectionTitle>
-      </div>
-      <div className="mt-1.5 space-y-5 px-5">
-        {getFeaturedPlaces().map((p, i) => (
-          <FeaturedPlaceCard key={p.id} place={p} priority={i === 0} />
-        ))}
-        <ButtonLink href="/search" variant="dark" block className="!h-[46px] !text-[16px]">
-          Explore More
-        </ButtonLink>
-      </div>
+      <RecommendedForYou />
 
-      <div className="mt-[26px]">
+      <section className="mt-10">
         <Link href="/profile/groups" className="flex items-center gap-1 px-5">
           <h2 className="font-heading text-[19px] font-bold">Groups</h2>
-          <ChevronRight size={24} />
+          <ChevronRight size={22} />
         </Link>
-      </div>
-      <div className="mt-2">
-        <GroupsRow />
-      </div>
+        <div className="mt-3">
+          <GroupsRow />
+        </div>
+      </section>
 
-      <div className="mt-[26px]">
+      <section className="mt-10">
         <SectionTitle>Nearby Places</SectionTitle>
-      </div>
-      <div className="carousel mt-1.5">
-        {getNearbyPlaces().map((p) => (
-          <NearbyCard key={p.id} place={p} />
-        ))}
-      </div>
+        <div className="carousel mt-3">
+          {getNearbyPlaces().map((p) => (
+            <NearbyCard key={p.id} place={p} />
+          ))}
+        </div>
+      </section>
     </Screen>
   );
 }

@@ -329,3 +329,20 @@ export function saveProfile(next: Profile) {
 
 // Apply a saved profile as soon as this module loads in the browser.
 ensureLoaded();
+
+/**
+ * Which saved data the other stores should use. Accounts made before
+ * per-account data share the original demo data; new accounts get their own,
+ * empty space (no demo chats, plans or history).
+ */
+export function accountScope(): { id: string; fresh: boolean } | null {
+  ensureLoaded();
+  const account = current();
+  return account ? { id: account.id, fresh: !!account.fresh } : null;
+}
+
+/** Storage key for a store's data under the signed-in account. */
+export function scopedKey(base: string) {
+  const scope = accountScope();
+  return scope?.fresh ? `${base}:${scope.id}` : base;
+}

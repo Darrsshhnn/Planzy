@@ -7,6 +7,7 @@
 import { useSyncExternalStore } from "react";
 import { replyLine, REPLY_DELAY_MS } from "@/lib/api/chat";
 import { hash } from "@/lib/format";
+import { accountScope, onProfileChange, scopedKey } from "@/store/account-store";
 
 export interface DirectMessage {
   id: string;
@@ -40,21 +41,35 @@ let threads: Threads = {};
 let loaded = false;
 const listeners = new Set<() => void>();
 
+/** Each account keeps its own chats; a new account starts with none. */
+let storageKey = STORAGE_KEY;
+
+function load() {
+  storageKey = scopedKey(STORAGE_KEY);
+  const firstRun = () => (accountScope()?.fresh ? {} : seed());
+  try {
+    const raw = window.localStorage.getItem(storageKey);
+    threads = raw ? JSON.parse(raw) : firstRun();
+  } catch {
+    threads = firstRun();
+  }
+}
+
 function ensureLoaded() {
   if (loaded || typeof window === "undefined") return;
   loaded = true;
-  try {
-    const raw = window.localStorage.getItem(STORAGE_KEY);
-    threads = raw ? JSON.parse(raw) : seed();
-  } catch {
-    threads = seed();
-  }
+  load();
+  onProfileChange(() => {
+    if (scopedKey(STORAGE_KEY) === storageKey) return;
+    load();
+    listeners.forEach((l) => l());
+  });
 }
 
 function save(next: Threads) {
   threads = next;
   try {
-    window.localStorage.setItem(STORAGE_KEY, JSON.stringify(threads));
+    window.localStorage.setItem(storageKey, JSON.stringify(threads));
   } catch {
     // keep in memory
   }

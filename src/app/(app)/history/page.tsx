@@ -31,7 +31,7 @@ function HistoryRow({
 }) {
   return (
     <li className="reveal">
-      <Link href={href} className="flex gap-3 card p-2.5">
+      <Link href={href} className="card flex gap-3.5 p-3">
         {place && <PlaceImage place={place} className="h-[64px] w-[72px] shrink-0 rounded-[8px]" sizes="72px" />}
         <div className="min-w-0 flex-1">
           <div className="flex items-start justify-between gap-2">
@@ -110,20 +110,20 @@ export default function HistoryPage() {
     <Screen>
       <PageHeader title="History" />
       {upcoming.length > 0 && (
-        <section className="mb-6">
+        <section className="mb-9">
           <h2 className="font-heading text-[16px] font-bold">Upcoming</h2>
-          <ul className="mt-2.5 space-y-3">{upcoming.map((p) => row(p, pill("Booked", "bg-brand text-white")))}</ul>
+          <ul className="mt-3 space-y-4">{upcoming.map((p) => row(p, pill("Booked", "bg-brand text-white")))}</ul>
         </section>
       )}
       {ongoing.length > 0 && (
-        <section className="mb-6">
+        <section className="mb-9">
           <h2 className="font-heading text-[16px] font-bold">Ongoing</h2>
-          <ul className="mt-2.5 space-y-3">{ongoing.map((p) => row(p, pill("Chat", "bg-cream")))}</ul>
+          <ul className="mt-3 space-y-4">{ongoing.map((p) => row(p, pill("Chat", "bg-cream")))}</ul>
         </section>
       )}
       <section>
         <h2 className="font-heading text-[16px] font-bold">Past outings</h2>
-        <ul className="mt-2.5 space-y-3">
+        <ul className="mt-3 space-y-4">
           {past.map((p) => (
             <PastCard key={p.id} plan={p} />
           ))}

@@ -10,12 +10,14 @@ import { isOpenDuring } from "@/lib/time";
 import type { Category, Place, TimeSlot } from "@/lib/types";
 
 export interface AiQuery {
-  /** What the person typed, in their own words. */
+  /** Optional free text (used by the API; the app screen sends filters only). */
   prompt: string;
   /** "Area, City" they're heading out from. */
   location: string;
   /** Budget per person in rupees (the slider); the prompt can override it. */
   budget: number;
+  /** How far they'll travel, in km. */
+  distance: number;
   /** Optional category filter chips. */
   categories: Category[];
 }
@@ -23,6 +25,7 @@ export interface AiQuery {
 export interface AiUnderstood {
   categories: Category[];
   budget: number;
+  distance: number;
   area: string;
   people: number | null;
   timeSlot: TimeSlot | null;
@@ -87,7 +90,7 @@ export function understand(q: AiQuery): AiUnderstood {
   const placeWords = new Set(getPlaces().flatMap((p) => p.tags.map((t) => t.toLowerCase())));
   const keywords = [...placeWords].filter((t) => t.length > 2 && has(text, t));
 
-  return { categories, budget, area, people, timeSlot, keywords };
+  return { categories, budget, distance: q.distance, area, people, timeSlot, keywords };
 }
 
 function origin(area: string) {
@@ -132,22 +135,38 @@ export function describe(u: AiUnderstood) {
   const parts = [
     u.categories.length ? u.categories.join(" / ").toLowerCase() : "anything fun",
     `around ₹${u.budget} each`,
-    `near ${u.area.split(",")[0]}`,
+    `within ${u.distance} km of ${u.area.split(",")[0]}`,
   ];
   if (u.people) parts.push(`for ${u.people}`);
   if (u.timeSlot) parts.push(`in the ${u.timeSlot.toLowerCase()}`);
   return parts.join(", ");
 }
 
-/** The built-in engine: same inputs, no network. */
-export function suggestLocally(q: AiQuery, limit = 4): AiResult {
+/** Closest first, farthest last (ties: better match first). */
+export function byDistance<T extends { km: number; match: number }>(list: T[]) {
+  return [...list].sort((a, b) => a.km - b.km || b.match - a.match);
+}
+
+/**
+ * The built-in engine: same inputs, no network. Keeps the best matches that
+ * fit the type, budget and distance, then lists them closest first. If too
+ * few fit, the nearest good near-misses fill the list (at least 3).
+ */
+export function suggestLocally(q: AiQuery, limit = 5): AiResult {
   const u = understand(q);
-  const suggestions = getPlaces()
-    .map((p) => ({ placeId: p.id, reason: reasonFor(p, u), match: fit(p, u), km: kmFrom(u.area, p) }))
-    .sort((a, b) => b.match - a.match)
-    .slice(0, limit);
+  const scored = getPlaces()
+    .map((p) => {
+      const km = kmFrom(u.area, p);
+      const typeOk = u.categories.length === 0 || u.categories.includes(p.category);
+      const priceOk = (p.hourly && u.people ? Math.ceil(p.hourly.rate / u.people) : p.pricePerPerson) <= u.budget;
+      return { placeId: p.id, reason: reasonFor(p, u), match: fit(p, u), km, ok: typeOk && priceOk && km <= u.distance };
+    })
+    .sort((a, b) => b.match - a.match);
+  const strict = scored.filter((s) => s.ok);
+  const picks = (strict.length >= 3 ? strict : [...strict, ...scored.filter((s) => !s.ok)]).slice(0, Math.max(3, Math.min(limit, strict.length)));
+  const suggestions = byDistance(picks.map(({ placeId, reason, match, km }) => ({ placeId, reason, match, km })));
   return {
-    summary: `Here's what fits ${describe(u)}.`,
+    summary: `Here's what fits ${describe(u)}, closest first.`,
     suggestions,
     understood: u,
     source: "local",

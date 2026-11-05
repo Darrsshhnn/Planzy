@@ -2,6 +2,7 @@
 
 import { Compass, Map, Search, SlidersHorizontal, Sparkles, X } from "lucide-react";
 import Link from "next/link";
+import { AiIcon } from "@/components/brand/ai-icon";
 import { useState } from "react";
 import { PageHeader } from "@/components/layout/page-header";
 import { Screen } from "@/components/layout/screen";
@@ -116,16 +117,16 @@ export default function SearchPage() {
 
       {!query && activeFilters === 0 && (
         <>
-          <Link href="/ai" className="card mt-4 flex items-center gap-3 bg-cream! p-3">
+          <Link href="/ai" className="card mt-5 flex items-center gap-3.5 bg-cream! p-4">
             <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-ink text-brand">
-              <Sparkles size={22} />
+              <AiIcon size={22} />
             </span>
             <span className="min-w-0 flex-1">
               <span className="block text-[15px] font-semibold">Ask Planzy AI</span>
-              <span className="block text-[12px] text-ink/70">Describe the outing, get places picked for you</span>
+              <span className="block text-[12px] text-ink/70">Area, budget and distance in. Places out.</span>
             </span>
           </Link>
-          <Link href="/map" className="card-dark mt-3 flex items-center gap-3 p-3 text-white">
+          <Link href="/map" className="card-dark mt-4 flex items-center gap-3.5 p-4 text-white">
             <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-brand">
               <Map size={22} />
             </span>
@@ -134,11 +135,11 @@ export default function SearchPage() {
               <span className="block text-[12px] text-white/75">Your live location and what&apos;s on around you</span>
             </span>
           </Link>
-          <section className="mt-4">
+          <section className="mt-8">
             <h2 className="flex items-center gap-1.5 font-heading text-[17px] font-bold">
               <Sparkles size={17} className="text-brand" /> New spots this week
             </h2>
-            <div className="carousel -mx-5 mt-2">
+            <div className="carousel -mx-5 mt-3">
               {getNewPlaces().map((p) => (
                 <Link
                   key={p.id}
@@ -160,12 +161,12 @@ export default function SearchPage() {
               ))}
             </div>
           </section>
-          <section className="mt-4">
+          <section className="mt-8">
             <h2 className="flex items-center gap-1.5 font-heading text-[17px] font-bold">
               <Compass size={17} className="text-brand" /> Explore a new area
             </h2>
             <p className="text-[11px] text-muted">Areas you haven&apos;t been to on a Planzy outing</p>
-            <div className="no-scrollbar -mx-5 mt-2 flex gap-2 overflow-x-auto px-5">
+            <div className="no-scrollbar -mx-5 mt-3 flex gap-2 overflow-x-auto px-5">
               {newAreas().map((a) => (
                 <Chip key={a} onClick={() => setQuery(a)}>
                   {a}
@@ -176,11 +177,11 @@ export default function SearchPage() {
         </>
       )}
 
-      <div className="mt-4 flex items-center justify-between text-[12px] text-muted">
+      <div className="mt-8 flex items-center justify-between text-[12px] text-muted">
         <span>{results.length} places</span>
         <span>Sorted by {SORT_LABEL[filters.sort].toLowerCase()}</span>
       </div>
-      <ul className="mt-1 divide-y divide-ink/10">
+      <ul className="mt-2 divide-y divide-ink/10">
         {results.map((p) => (
           <PlaceListRow key={p.id} place={p} />
         ))}

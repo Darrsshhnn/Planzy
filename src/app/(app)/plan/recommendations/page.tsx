@@ -33,7 +33,7 @@ export default function RecommendationPage() {
         skip picking and add places later in the chat.
       </p>
       <GroupPrefsPanel plan={plan} />
-      <div className="mt-4 space-y-4">
+      <div className="mt-5 space-y-5">
         {recs.map((r) => (
           <PlaceRowCard
             key={r.place.id}

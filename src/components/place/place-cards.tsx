@@ -1,5 +1,6 @@
-import { Check, Clock, Images, MapPin, Navigation, Sparkles } from "lucide-react";
+import { Check, Clock, MapPin, Navigation } from "lucide-react";
 import Link from "next/link";
+import { AiIcon } from "@/components/brand/ai-icon";
 import { ButtonLink } from "@/components/ui/button";
 import { AvatarStack } from "@/components/ui/avatar";
 import { RatingBadge, RatingInline, RatingPill } from "@/components/ui/rating";
@@ -10,64 +11,77 @@ import { FavouriteButton } from "./favourite-button";
 import { AvailabilityChip, LivePill } from "./live-status";
 import { PlaceImage } from "./place-image";
 
-/** "+3 photos" corner tag: the card opens a gallery and visitor photos. */
-function PhotoCount({ place, className = "" }: { place: Place; className?: string }) {
-  const total = place.gallery.length + (place.image ? 1 : 0);
+/**
+ * One status chip per card, to keep cards calm: the hourly rate for sports
+ * booked by the hour, otherwise today's availability.
+ */
+function StatusChip({ place }: { place: Place }) {
+  return place.hourly ? <HourlyRate place={place} /> : <AvailabilityChip place={place} />;
+}
+
+/** "92% match · Sports": how well a place fits your interests. */
+function MatchPill({ match, note, dark }: { match: number; note?: string; dark?: boolean }) {
   return (
     <span
-      className={`inline-flex items-center gap-1 rounded-full bg-ink/80 px-2 py-0.5 text-[10px] font-medium text-white backdrop-blur ${className}`}
+      className={`inline-flex items-center gap-1 self-start rounded-full px-2.5 py-0.5 text-[11px] font-semibold ${dark ? "bg-ink text-brand" : "bg-cream text-ink"}`}
     >
-      <Images size={11} /> {total}
+      <AiIcon size={12} className="text-brand" /> {match}% match{note ? ` · ${note}` : ""}
     </span>
   );
 }
 
-/** Large dark card from Home > Recommendation. */
-export function FeaturedPlaceCard({ place, priority }: { place: Place; priority?: boolean }) {
+/**
+ * Large dark card on Home > Recommended for you. With `match`/`reason` it
+ * says why the place was picked for you (from your interests).
+ */
+export function FeaturedPlaceCard({
+  place,
+  priority,
+  match,
+  reason,
+}: {
+  place: Place;
+  priority?: boolean;
+  match?: number;
+  reason?: string;
+}) {
   return (
     <article className="reveal card-dark relative overflow-hidden">
-      <div>
-        <Link href={`/place/${place.id}`} aria-label={place.name} className="block">
-          <PlaceImage place={place} className="h-[220px] w-full" priority={priority} />
-          <div className="pointer-events-none absolute inset-x-0 top-[120px] h-[100px] bg-gradient-to-b from-transparent to-ink" />
-        </Link>
-        <div className="pointer-events-none absolute left-4 top-4 flex gap-1.5">
-          <LivePill place={place} />
-          <PhotoCount place={place} />
+      <Link href={`/place/${place.id}`} aria-label={place.name} className="block">
+        <PlaceImage place={place} className="h-[200px] w-full" priority={priority} />
+        <div className="pointer-events-none absolute inset-x-0 top-[110px] h-[90px] bg-gradient-to-b from-transparent to-ink" />
+      </Link>
+      <LivePill place={place} className="pointer-events-none absolute left-4 top-4" />
+      <FavouriteButton placeId={place.id} className="absolute right-4 top-4" />
+      <div className="relative -mt-8 px-5 pb-5 text-white">
+        <div className="flex items-center justify-between gap-3">
+          <h3 className="font-heading text-[21px] font-bold leading-tight">{place.name}</h3>
+          <RatingInline value={place.rating} />
         </div>
-        <FavouriteButton placeId={place.id} className="absolute right-4 top-4" />
-        <div className="relative -mt-10 px-4 pb-4">
-          <div className="flex items-center justify-between">
-            <h3 className="font-heading text-[21px] font-bold text-white">{place.name}</h3>
-            <RatingInline value={place.rating} />
+        <p className="mt-1.5 flex flex-wrap items-center gap-x-1.5 text-[13px] text-white/85">
+          <span className="inline-flex items-center gap-1">
+            {place.distanceKm} km · {place.area} <Navigation size={13} />
+          </span>
+          <span aria-hidden className="text-white/35">
+            |
+          </span>
+          <span>
+            Open {formatTimeShort(place.open)} – {formatTimeShort(place.close)}
+          </span>
+        </p>
+        {match !== undefined && (
+          <div className="mt-3 flex flex-col gap-1.5">
+            <MatchPill match={match} note={place.category} />
+            {reason && <p className="text-[12px] leading-[17px] text-white/70">{reason}</p>}
           </div>
-          <p className="mt-1.5 flex items-center gap-1.5 whitespace-nowrap text-[13px] text-white">
-            {place.distanceKm} km, {place.area}, Ahmedabad
-            <Navigation size={13} />
-          </p>
-          <div className="mt-1 flex items-center justify-between gap-3">
-            <div className="min-w-0 text-white">
-              <p className="text-[10px] leading-[15px] text-white/90">{place.hours.weekday}</p>
-              <p className="text-[10px] leading-[15px] text-white/90">
-                {place.closedOn ? (
-                  <>
-                    {place.hours.weekend.split(",")[0]}, <span className="text-brand">Closed</span>
-                  </>
-                ) : (
-                  place.hours.weekend
-                )}
-              </p>
-              <span className="mt-1.5 flex flex-wrap gap-1">
-                <AvailabilityChip place={place} />
-                <HourlyRate place={place} />
-              </span>
-            </div>
-            <div className="flex shrink-0 gap-2">
-              <MapLink place={place} className="h-[44px] w-[44px]" />
-              <ButtonLink href={`/place/${place.id}`} variant="brand" size="md" className="w-[96px]">
-                Visit
-              </ButtonLink>
-            </div>
+        )}
+        <div className="mt-4 flex items-center justify-between gap-3">
+          <StatusChip place={place} />
+          <div className="flex shrink-0 gap-2.5">
+            <MapLink place={place} className="h-[44px] w-[44px]" />
+            <ButtonLink href={`/place/${place.id}`} variant="brand" size="md" className="w-[96px]">
+              Visit
+            </ButtonLink>
           </div>
         </div>
       </div>
@@ -81,10 +95,10 @@ export function RecentCard({ outing, place, href }: { outing: RecentOuting; plac
     <Link
       href={href ?? `/history/old-${outing.id}`}
       aria-label={`${outing.groupName}, ${place.name}`}
-      className="reveal-x card-dark flex w-[156px] shrink-0 flex-col overflow-hidden"
+      className="reveal-x card-dark flex w-[160px] shrink-0 flex-col overflow-hidden"
     >
-      <PlaceImage place={place} className="h-[84px] w-full shrink-0" sizes="160px" />
-      <div className="flex flex-1 flex-col gap-1.5 px-2.5 pb-2.5 pt-2 text-white">
+      <PlaceImage place={place} className="h-[88px] w-full shrink-0" sizes="160px" />
+      <div className="flex flex-1 flex-col gap-2 px-3 pb-3 pt-2.5 text-white">
         <div className="flex items-start justify-between gap-1.5">
           <p className="line-clamp-2 text-[12px] font-semibold leading-[15px]">{outing.groupName}</p>
           <RatingPill value={outing.rating} className="shrink-0" />
@@ -92,7 +106,7 @@ export function RecentCard({ outing, place, href }: { outing: RecentOuting; plac
         <AvatarStack ids={outing.memberIds} size={22} max={3} ring="white" />
         <div className="mt-auto min-w-0">
           <p className="truncate text-[11px] font-semibold leading-[14px]">{place.name}</p>
-          <p className="truncate text-[10px] leading-[13px] text-white/75">{place.area}, Ahmedabad</p>
+          <p className="truncate text-[10px] leading-[13px] text-white/70">{place.area}, Ahmedabad</p>
         </div>
       </div>
     </Link>
@@ -102,33 +116,26 @@ export function RecentCard({ outing, place, href }: { outing: RecentOuting; plac
 /** Dark card in the Home "Nearby Places" carousel. */
 export function NearbyCard({ place, match, note }: { place: Place; match?: number; note?: string }) {
   return (
-    <div className="reveal-x relative w-[248px] shrink-0">
+    <div className="reveal-x relative w-[240px] shrink-0">
       <Link href={`/place/${place.id}`} className="card-dark flex h-full flex-col overflow-hidden">
         <div className="relative">
-          <PlaceImage place={place} className="h-[96px] w-full" sizes="250px" />
-          <LivePill place={place} className="absolute left-1.5 top-1.5" />
-          <PhotoCount place={place} className="absolute right-1.5 top-1.5" />
+          <PlaceImage place={place} className="h-[110px] w-full" sizes="250px" />
+          <LivePill place={place} className="absolute left-2 top-2" />
         </div>
-        <div className="flex flex-1 flex-col px-2.5 pb-2.5 pt-3 text-white">
+        <div className="flex flex-1 flex-col gap-2 px-3.5 pb-3.5 pt-3 text-white">
           <div className="flex items-start justify-between gap-2">
-            <p className="text-[12px] font-semibold leading-[15px]">{place.name}</p>
-            <span className="flex shrink-0 items-center gap-1 text-[11px]">
+            <p className="text-[13px] font-semibold leading-[16px]">{place.name}</p>
+            <span className="flex shrink-0 items-center gap-1 text-[11px] text-white/85">
               {place.distanceKm} km <Navigation size={11} />
             </span>
           </div>
-          {match !== undefined && (
-            <span className="mt-1.5 inline-flex items-center gap-1 self-start rounded-full bg-cream px-2 py-0.5 text-[10px] font-semibold text-ink">
-              <Sparkles size={11} className="text-brand" /> {match}% match{note ? ` · ${note}` : ""}
-            </span>
-          )}
-          <p className="mt-1.5 line-clamp-1 text-[10px] leading-[13px] text-white/75">{place.address}</p>
-          <span className="mt-auto flex flex-wrap gap-1 pt-1.5">
-            <AvailabilityChip place={place} />
-            <HourlyRate place={place} />
+          {match !== undefined && <MatchPill match={match} note={note} />}
+          <span className="mt-auto pt-1">
+            <StatusChip place={place} />
           </span>
         </div>
       </Link>
-      <MapLink place={place} className="absolute right-2.5 top-[62px] h-8 w-8 shadow-[0_2px_0_#242a2f]" />
+      <MapLink place={place} className="absolute right-2.5 top-[74px] h-8 w-8 shadow-[0_2px_0_#242a2f]" />
     </div>
   );
 }
@@ -159,13 +166,14 @@ export function MapLink({ place, className = "" }: { place: Place; className?: s
   );
 }
 
-/** Horizontal row card used on Recommendation and the popular-place picker. */
+/** Horizontal row card used on Recommendation, Planzy AI and the popular-place picker. */
 export function PlaceRowCard({
   place,
   selected,
   onSelect,
   note,
   match,
+  km,
 }: {
   place: Place;
   selected?: boolean;
@@ -173,11 +181,13 @@ export function PlaceRowCard({
   note?: string;
   /** Preference-match percentage, shown on Recommendation. */
   match?: number;
+  /** Distance from the person (defaults to the place's listed distance). */
+  km?: number;
 }) {
   return (
     <div
       className={[
-        "reveal card relative flex gap-2.5 p-[9px] transition",
+        "reveal card relative flex gap-3.5 p-3 transition",
         selected ? "border-brand! ring-2 ring-brand/70" : "",
       ].join(" ")}
     >
@@ -188,47 +198,29 @@ export function PlaceRowCard({
         aria-label={`${selected ? "Remove" : "Add"} ${place.name}`}
         className="absolute inset-0 z-0 rounded-[14px]"
       />
-      <div className="pointer-events-none relative h-[130px] w-[150px] shrink-0 overflow-hidden rounded-[8px]">
-        <PlaceImage place={place} className="h-full w-full" sizes="150px" />
-        <LivePill place={place} className="absolute left-1.5 top-1.5" />
+      <div className="pointer-events-none relative h-[124px] w-[124px] shrink-0 overflow-hidden rounded-[10px]">
+        <PlaceImage place={place} className="h-full w-full" sizes="130px" />
         <RatingBadge value={place.rating} className="absolute bottom-2 right-2" />
       </div>
       <div className="pointer-events-none relative z-10 flex min-w-0 flex-1 flex-col py-0.5">
         <h3 className="font-heading text-[17px] font-bold leading-tight">{place.name}</h3>
+        <p className="mt-1 text-[12px] leading-[16px] text-ink/70">
+          {km ?? place.distanceKm} km · {place.area}
+        </p>
         {match !== undefined && (
-          <span className="mt-1 inline-flex items-center gap-1 self-start rounded-full bg-ink px-2 py-0.5 text-[10px] font-semibold text-brand">
-            <Sparkles size={11} /> {match}% match
+          <span className="mt-2 flex">
+            <MatchPill match={match} dark />
           </span>
         )}
-        <p className="mt-1.5 text-[12px] leading-[16px]">
-          {place.distanceKm} km, {place.area}, Ahmedabad
-        </p>
-        {note && <p className="mt-0.5 text-[11px] text-brand">{note}</p>}
-        <p className="mt-auto text-[11px] leading-[16px]">
-          Open{" "}
-          <span className="text-brand">
-            {formatTimeShort(place.open)} – {formatTimeShort(place.close)}
-          </span>
-        </p>
-        <div className="mt-1 flex flex-wrap items-center justify-between gap-x-1 gap-y-1">
-          <span className="flex flex-wrap gap-1">
-            <AvailabilityChip place={place} />
-            <HourlyRate place={place} />
-          </span>
-          <span className="flex items-center gap-2">
-            <Link
-              href={`/map?place=${place.id}`}
-              className="pointer-events-auto flex items-center gap-0.5 text-[11px] font-medium text-navy underline underline-offset-2"
-            >
-              <MapPin size={11} /> Map
-            </Link>
-            <Link
-              href={`/place/${place.id}`}
-              className="pointer-events-auto text-[11px] font-medium text-navy underline underline-offset-2"
-            >
-              Details
-            </Link>
-          </span>
+        {note && <p className="mt-1 text-[11px] text-brand">{note}</p>}
+        <div className="mt-auto flex items-end justify-between gap-2 pt-2">
+          <StatusChip place={place} />
+          <Link
+            href={`/place/${place.id}`}
+            className="pointer-events-auto shrink-0 text-[12px] font-medium text-navy underline underline-offset-2"
+          >
+            Details
+          </Link>
         </div>
       </div>
       {selected && (
