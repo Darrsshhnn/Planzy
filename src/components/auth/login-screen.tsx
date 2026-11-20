@@ -90,6 +90,17 @@ export function LoginScreen({ className = "" }: { className?: string }) {
         <Link href="/auth/signup" className="mt-6 self-center text-[14px] text-ink underline underline-offset-2">
           Create a new account
         </Link>
+        <p className="mt-4 text-center text-[11px] leading-[16px] text-ink/60">
+          By continuing you agree to our{" "}
+          <Link href="/terms" className="underline underline-offset-2">
+            Terms
+          </Link>{" "}
+          and{" "}
+          <Link href="/privacy" className="underline underline-offset-2">
+            Privacy Policy
+          </Link>
+          .
+        </p>
       </div>
     </div>
   );
