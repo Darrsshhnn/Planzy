@@ -121,18 +121,14 @@ Without a key, or if the call fails, the built-in matcher in `src/lib/ai/suggest
 
 ## Google sign-in
 
-Continue with Google is the real Google sign-in (Google Identity Services). Tapping it opens Google's own account chooser with the Google accounts on the device; the person picks one and confirms with Google. On the sign-in screen Google One Tap may also offer "Continue as …". Google returns a signed ID token, and `/api/auth/google` checks it with Google (issuer, this app's client ID, expiry) and only accepts accounts whose email Google has verified. A new Google user then picks their area and interests; a known one just logs in.
+Continue with Google uses **Firebase Authentication** (project `planzy-01`). Tapping it opens Google's own account chooser with the Google accounts on the device; the person picks one and confirms with Google. `/api/auth/google` then checks the Firebase ID token with Google and only accepts Google accounts with a verified email. A new Google user picks their area and interests; a known one just logs in. Planzy keeps its own session, so Firebase is signed out right after.
 
-1. Google Cloud Console → APIs & Services → Credentials → Create credentials → OAuth client ID → Web application.
-2. Authorised JavaScript origins: `http://localhost:3000`, `http://localhost` and your Vercel URL (e.g. `https://planzy.vercel.app`). Google only allows https or localhost, so a plain LAN address like `http://192.168.x.x:3000` can't use Google sign-in; test it on localhost or the deployed https site.
-3. Set the client ID and rebuild:
+The Firebase web config lives in `src/lib/firebase.ts`. It is public by design (it identifies the project, it is not a secret), so nothing needs setting in `.env.local` or Vercel. To use another Firebase project, set the `NEXT_PUBLIC_FIREBASE_*` variables.
 
-```bash
-# .env.local (and the same variable in Vercel → Project → Settings → Environment Variables)
-NEXT_PUBLIC_GOOGLE_CLIENT_ID=your-client-id.apps.googleusercontent.com
-```
+Firebase setup (already done for `planzy-01`):
 
-Without a client ID the button explains that Google sign-in isn't set up; phone/email sign-up still works.
+1. Firebase console → Authentication → Sign-in method → **Google** → Enable.
+2. Authentication → Settings → **Authorized domains**: `localhost` and every address the app runs on (e.g. `planzy-eight.vercel.app`). A plain LAN IP like `192.168.x.x` isn't accepted; use localhost or the deployed site.
 
 ## Mocked parts and where a backend plugs in
 

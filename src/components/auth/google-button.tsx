@@ -1,74 +1,20 @@
 "use client";
 
 import { Loader2 } from "lucide-react";
-import { useEffect, useRef, useState } from "react";
-import { Sheet } from "@/components/ui/sheet";
+import { useEffect, useState } from "react";
 import { signInWithGoogle } from "@/store/account-store";
 
 /**
- * Real "Sign in with Google" (Google Identity Services).
+ * "Continue with Google", through Firebase Authentication.
  *
- * Tapping the button opens Google's own account chooser, listing the Google
- * accounts on this device; the person picks one and confirms with Google. On
- * the sign-in screen Google One Tap may also offer "Continue as …". Google
- * returns a signed ID token, which our server checks with Google
- * (/api/auth/google) before signing in. Only accounts with a verified email
- * are accepted. A Google account that's new to Planzy gets set up (area,
- * interests); a known one just logs in.
- *
- * Needs NEXT_PUBLIC_GOOGLE_CLIENT_ID (see README).
+ * Tapping it opens Google's own account chooser with the Google accounts on
+ * the device; the person picks one and confirms with Google. Our server then
+ * checks the sign-in with Google (/api/auth/google) and only accepts Google
+ * accounts with a verified email. A Google account that's new to Planzy gets
+ * set up (area, interests); a known one just logs in. Planzy keeps its own
+ * session, so Firebase is signed out again right after.
  */
-const CLIENT_ID = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID;
-
-interface GsiButtonOptions {
-  type?: "standard" | "icon";
-  theme?: "outline" | "filled_blue" | "filled_black";
-  size?: "large" | "medium" | "small";
-  text?: "signin_with" | "signup_with" | "continue_with" | "signin";
-  shape?: "rectangular" | "pill" | "circle" | "square";
-  logo_alignment?: "left" | "center";
-  width?: number;
-}
-
-declare global {
-  interface Window {
-    google?: {
-      accounts: {
-        id: {
-          initialize: (cfg: {
-            client_id: string;
-            callback: (res: { credential?: string }) => void;
-            auto_select?: boolean;
-            cancel_on_tap_outside?: boolean;
-            context?: "signin" | "signup" | "use";
-            ux_mode?: "popup" | "redirect";
-            use_fedcm_for_prompt?: boolean;
-          }) => void;
-          renderButton: (el: HTMLElement, options: GsiButtonOptions) => void;
-          prompt: () => void;
-          cancel: () => void;
-        };
-      };
-    };
-  }
-}
-
-let gsiPromise: Promise<void> | null = null;
-function loadGsi(): Promise<void> {
-  if (window.google?.accounts?.id) return Promise.resolve();
-  gsiPromise ??= new Promise((resolve, reject) => {
-    const s = document.createElement("script");
-    s.src = "https://accounts.google.com/gsi/client";
-    s.async = true;
-    s.onload = () => resolve();
-    s.onerror = () => {
-      gsiPromise = null;
-      reject(new Error("Couldn't load Google sign-in"));
-    };
-    document.head.appendChild(s);
-  });
-  return gsiPromise;
-}
+const REDIRECT_FLAG = "planzy:google-redirect";
 
 export function GoogleMark({ size = 20 }: { size?: number }) {
   return (
@@ -81,103 +27,111 @@ export function GoogleMark({ size = 20 }: { size?: number }) {
   );
 }
 
-/** Sends Google's ID token to our server, which verifies it with Google. */
-async function finishSignIn(credential: string) {
+/** Our server checks the Firebase token with Google, then we sign in to Planzy. */
+async function finishSignIn(idToken: string) {
   const res = await fetch("/api/auth/google", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ credential }),
+    body: JSON.stringify({ idToken }),
   });
   const data = (await res.json().catch(() => ({}))) as { name?: string; email?: string; picture?: string; error?: string };
   if (!res.ok || !data.email) throw new Error(data.error ?? "Google sign-in failed. Try again.");
   signInWithGoogle({ name: data.name ?? "", email: data.email, picture: data.picture });
 }
 
-export function GoogleButton({ mode = "signin", oneTap = false }: { mode?: "signin" | "signup"; oneTap?: boolean }) {
-  const slot = useRef<HTMLDivElement>(null);
-  const [ready, setReady] = useState(false);
+/** Friendly text for Firebase's error codes; null means stay quiet (the person closed it). */
+function messageFor(error: unknown): string | null {
+  const code = (error as { code?: string })?.code ?? "";
+  if (code === "auth/popup-closed-by-user" || code === "auth/cancelled-popup-request" || code === "auth/user-cancelled") return null;
+  if (code === "auth/unauthorized-domain") {
+    return `Google sign-in isn't allowed on ${window.location.hostname} yet. Add it in Firebase → Authentication → Settings → Authorized domains.`;
+  }
+  if (code === "auth/network-request-failed") return "No connection. Check your internet and try again.";
+  if (code === "auth/operation-not-allowed") return "Google sign-in is turned off in Firebase (Authentication → Sign-in method → Google).";
+  if (error instanceof Error && !code) return error.message;
+  return "Google sign-in didn't work. Please try again.";
+}
+
+export function GoogleButton({ mode = "signin" }: { mode?: "signin" | "signup"; oneTap?: boolean }) {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
-  const [setupHelp, setSetupHelp] = useState(false);
 
+  // Coming back from the redirect fallback: finish signing in.
   useEffect(() => {
-    if (!CLIENT_ID) return;
+    let flagged = false;
+    try {
+      flagged = window.sessionStorage.getItem(REDIRECT_FLAG) === "1";
+      window.sessionStorage.removeItem(REDIRECT_FLAG);
+    } catch {
+      // storage blocked
+    }
+    if (!flagged) return;
     let cancelled = false;
-    loadGsi()
-      .then(() => {
-        if (cancelled || !slot.current) return;
-        const id = window.google!.accounts.id;
-        id.initialize({
-          client_id: CLIENT_ID,
-          context: mode,
-          ux_mode: "popup",
-          cancel_on_tap_outside: true,
-          use_fedcm_for_prompt: true,
-          callback: ({ credential }) => {
-            if (!credential) return setError("Google sign-in was cancelled.");
-            setError("");
-            setBusy(true);
-            finishSignIn(credential)
-              .catch((e: Error) => setError(e.message))
-              .finally(() => setBusy(false));
-          },
-        });
-        // Google's own button: opens the account chooser for this device.
-        id.renderButton(slot.current, {
-          type: "standard",
-          theme: "outline",
-          size: "large",
-          shape: "rectangular",
-          text: mode === "signup" ? "signup_with" : "continue_with",
-          logo_alignment: "center",
-          width: Math.min(400, Math.max(200, slot.current.offsetWidth)),
-        });
-        setReady(true);
-        if (oneTap) id.prompt();
-      })
-      .catch(() => !cancelled && setError("Couldn't reach Google. Check your connection."));
+    (async () => {
+      setBusy(true);
+      try {
+        const { firebaseAuth } = await import("@/lib/firebase");
+        const { getRedirectResult, signOut } = await import("firebase/auth");
+        const auth = firebaseAuth();
+        const result = await getRedirectResult(auth);
+        if (result && !cancelled) {
+          await finishSignIn(await result.user.getIdToken());
+          await signOut(auth);
+        }
+      } catch (e) {
+        if (!cancelled) setError(messageFor(e) ?? "");
+      } finally {
+        if (!cancelled) setBusy(false);
+      }
+    })();
     return () => {
       cancelled = true;
-      window.google?.accounts?.id?.cancel();
     };
-  }, [mode, oneTap]);
+  }, []);
 
-  if (!CLIENT_ID) {
-    return (
-      <>
-        <button
-          type="button"
-          onClick={() => setSetupHelp(true)}
-          className="flex h-[52px] w-full items-center justify-center gap-3 rounded-[14px] border-[1.5px] border-ink bg-white text-[16px] font-medium text-ink shadow-[0_3px_0_#242a2f] transition active:translate-y-[2px] active:shadow-none"
-        >
-          <GoogleMark />
-          {mode === "signup" ? "Sign up with Google" : "Continue with Google"}
-        </button>
-        <Sheet open={setupHelp} onClose={() => setSetupHelp(false)} title="Google sign-in">
-          <p className="text-[14px] leading-[21px] text-ink/80">
-            Google sign-in isn&apos;t switched on for this copy of Planzy yet. It needs a Google OAuth client ID so
-            Google can show your accounts and confirm it&apos;s you.
-          </p>
-          <p className="mt-3 text-[13px] leading-[20px] text-muted">
-            Add <code className="rounded bg-cream px-1">NEXT_PUBLIC_GOOGLE_CLIENT_ID</code> (see README), restart the
-            app, and this button will open Google&apos;s account chooser. Until then, sign in with your phone number or
-            email.
-          </p>
-        </Sheet>
-      </>
-    );
-  }
+  const start = async () => {
+    setError("");
+    setBusy(true);
+    try {
+      const { firebaseAuth, googleProvider } = await import("@/lib/firebase");
+      const { signInWithPopup, signInWithRedirect, signOut } = await import("firebase/auth");
+      const auth = firebaseAuth();
+      try {
+        const result = await signInWithPopup(auth, googleProvider());
+        await finishSignIn(await result.user.getIdToken());
+        await signOut(auth);
+      } catch (e) {
+        // Popups blocked (some in-app browsers): go to Google and come back.
+        if ((e as { code?: string })?.code === "auth/popup-blocked") {
+          try {
+            window.sessionStorage.setItem(REDIRECT_FLAG, "1");
+          } catch {
+            // storage blocked
+          }
+          await signInWithRedirect(auth, googleProvider());
+          return;
+        }
+        throw e;
+      }
+    } catch (e) {
+      setError(messageFor(e) ?? "");
+    } finally {
+      setBusy(false);
+    }
+  };
 
   return (
-    <div className="relative">
-      {/* Google renders its button here; we keep the height so nothing jumps. */}
-      <div ref={slot} className={`flex min-h-[44px] w-full justify-center ${busy ? "pointer-events-none opacity-50" : ""}`} />
-      {(!ready || busy) && (
-        <div className="absolute inset-0 flex items-center justify-center gap-2 text-[13px] text-ink/70">
-          <Loader2 size={18} className="animate-spin" /> {busy ? "Checking with Google…" : "Loading Google…"}
-        </div>
-      )}
-      {error && <p className="mt-2 text-center text-[12px] text-red-600">{error}</p>}
-    </div>
+    <>
+      <button
+        type="button"
+        onClick={start}
+        disabled={busy}
+        className="flex h-[52px] w-full items-center justify-center gap-3 rounded-[14px] border-[1.5px] border-ink bg-white text-[16px] font-medium text-ink shadow-[0_3px_0_#242a2f] transition active:translate-y-[2px] active:shadow-none disabled:opacity-60"
+      >
+        {busy ? <Loader2 size={20} className="animate-spin" /> : <GoogleMark />}
+        {busy ? "Waiting for Google…" : mode === "signup" ? "Sign up with Google" : "Continue with Google"}
+      </button>
+      {error && <p className="mt-2 text-center text-[12px] leading-[17px] text-red-600">{error}</p>}
+    </>
   );
 }
