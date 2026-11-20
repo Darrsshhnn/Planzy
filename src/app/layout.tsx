@@ -13,6 +13,8 @@ const poppins = Poppins({
 export const metadata: Metadata = {
   title: "Planzy - Plan outings together",
   description: "Discover, vote and book group outings in Ahmedabad with your friends.",
+  // Google Search Console ownership tag (set GOOGLE_SITE_VERIFICATION in Vercel).
+  verification: process.env.GOOGLE_SITE_VERIFICATION ? { google: process.env.GOOGLE_SITE_VERIFICATION } : undefined,
 };
 
 export const viewport: Viewport = {

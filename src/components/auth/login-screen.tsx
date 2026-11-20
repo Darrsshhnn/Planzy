@@ -91,7 +91,10 @@ export function LoginScreen({ className = "" }: { className?: string }) {
           Create a new account
         </Link>
         <p className="mt-4 text-center text-[11px] leading-[16px] text-ink/60">
-          By continuing you agree to our{" "}
+          <Link href="/about" className="underline underline-offset-2">
+            About Planzy
+          </Link>
+          {" · "}By continuing you agree to our{" "}
           <Link href="/terms" className="underline underline-offset-2">
             Terms
           </Link>{" "}
