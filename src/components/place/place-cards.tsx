@@ -187,7 +187,7 @@ export function PlaceRowCard({
   return (
     <div
       className={[
-        "reveal card relative flex gap-3.5 p-3 transition",
+        "reveal card relative flex gap-3 p-2.5 transition",
         selected ? "border-brand! ring-2 ring-brand/70" : "",
       ].join(" ")}
     >
@@ -198,13 +198,13 @@ export function PlaceRowCard({
         aria-label={`${selected ? "Remove" : "Add"} ${place.name}`}
         className="absolute inset-0 z-0 rounded-[14px]"
       />
-      <div className="pointer-events-none relative h-[124px] w-[124px] shrink-0 overflow-hidden rounded-[10px]">
-        <PlaceImage place={place} className="h-full w-full" sizes="130px" />
+      <div className="pointer-events-none relative h-[118px] w-[104px] shrink-0 overflow-hidden rounded-[10px]">
+        <PlaceImage place={place} className="h-full w-full" sizes="110px" />
         <RatingBadge value={place.rating} className="absolute bottom-2 right-2" />
       </div>
       <div className="pointer-events-none relative z-10 flex min-w-0 flex-1 flex-col py-0.5">
-        <h3 className="font-heading text-[17px] font-bold leading-tight">{place.name}</h3>
-        <p className="mt-1 text-[12px] leading-[16px] text-ink/70">
+        <h3 className="line-clamp-2 font-heading text-[16px] font-bold leading-tight">{place.name}</h3>
+        <p className="mt-1 truncate text-[12px] leading-[16px] text-ink/70">
           {km ?? place.distanceKm} km · {place.area}
         </p>
         {match !== undefined && (
@@ -213,11 +213,13 @@ export function PlaceRowCard({
           </span>
         )}
         {note && <p className="mt-1 text-[11px] text-brand">{note}</p>}
-        <div className="mt-auto flex items-end justify-between gap-2 pt-2">
-          <StatusChip place={place} />
+        <div className="mt-auto flex min-w-0 flex-wrap items-center justify-between gap-x-2 gap-y-1.5 pt-2">
+          <span className="min-w-0 max-w-full">
+            <StatusChip place={place} />
+          </span>
           <Link
             href={`/place/${place.id}`}
-            className="pointer-events-auto shrink-0 text-[12px] font-medium text-navy underline underline-offset-2"
+            className="pointer-events-auto ml-auto shrink-0 text-[12px] font-medium text-navy underline underline-offset-2"
           >
             Details
           </Link>

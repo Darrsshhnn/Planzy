@@ -15,7 +15,7 @@ import { greetingLine, placeAddedLine, replyLine, REPLY_DELAY_MS } from "@/lib/a
 import { getMe, getPerson, getPlace, getRecents } from "@/lib/api/data";
 import { hash, joinNames } from "@/lib/format";
 import { bookingSlots } from "@/lib/time";
-import { quote } from "@/lib/pricing";
+import { cancellation, needsPrepay, quote } from "@/lib/pricing";
 import { rankShortlist } from "@/lib/votes";
 import type {
   AppNotification,
@@ -351,7 +351,8 @@ export function useNotifications(): AppNotification[] {
 }
 
 export function defaultGroupName(memberIds: string[]) {
-  const friends = memberIds.filter((id) => id !== ME).map((id) => getPerson(id).name);
+  // Members and invitees overlap once people accept, so list each person once.
+  const friends = [...new Set(memberIds)].filter((id) => id !== ME).map((id) => getPerson(id).name);
   return friends.length ? `Plan with ${joinNames(friends)}` : "My Plan";
 }
 
@@ -444,6 +445,8 @@ export function advanceSimulatedAdmin(planId: string) {
     const slots = bookingSlots(p.timeSlot);
     const slot = slots[1] ?? slots[0];
     const amount = quote(place, p.memberIds.length, 1).total;
+    // Places that charge to hold a slot are paid online; others are paid on reach.
+    const prepaid = needsPrepay(place);
     updatePlan(planId, (q) => ({
       ...q,
       locked: true,
@@ -451,20 +454,23 @@ export function advanceSimulatedAdmin(planId: string) {
         ? { ...emptyBooking, status: "walk-in", people: q.memberIds.length, reference: reference("WALKIN") }
         : {
             ...emptyBooking,
-            status: "pay-at-venue",
-            payMode: "venue",
-            method: "cash",
+            status: prepaid ? "paid" : "pay-at-venue",
+            payMode: prepaid ? "now" : "venue",
+            method: prepaid ? "upi" : "cash",
             slot,
             people: q.memberIds.length,
             amount,
-            reference: reference("VENUE"),
+            reference: reference(prepaid ? "PAID" : "VENUE"),
+            paidAt: prepaid ? Date.now() : undefined,
           },
       messages: [
         ...q.messages,
         system(
           food
             ? `Final pick: ${place.name}. Walk-in, no booking needed.`
-            : `${admin} booked ${place.name} (${slot}). Pay ₹${amount} at the venue.`,
+            : prepaid
+              ? `${admin} paid ₹${amount} and booked ${place.name} (${slot}). You're locked in!`
+              : `${admin} booked ${place.name} (${slot}). Pay ₹${amount} at the venue.`,
         ),
       ],
     }));
@@ -803,6 +809,29 @@ export const planActions = {
           ...s.messages,
           system(`Reserved ${place?.name ?? "the place"} (${s.booking.slot}). Pay ₹${amount} at the venue by ${how}.`),
         ],
+      };
+    });
+  },
+
+  /**
+   * Admin cancels the booking. Paid online: 10% cancellation fee, the rest is
+   * refunded. Pay on reach: the held slot is released (the 10% fee is due to
+   * the venue). The group goes back to the final decision to pick again.
+   */
+  cancelBooking() {
+    set((s) => {
+      const place = getPlace(s.chosenPlaceId);
+      if (s.booking.status === "none" || s.booking.status === "walk-in") return s;
+      const { fee, refund } = cancellation(s.booking.amount);
+      const line =
+        s.booking.status === "paid"
+          ? `Booking at ${place?.name ?? "the place"} cancelled. ₹${refund} refunded (10% fee ₹${fee}).`
+          : `Booking at ${place?.name ?? "the place"} cancelled. Cancellation fee ₹${fee} (10%).`;
+      return {
+        ...s,
+        locked: false,
+        booking: { ...emptyBooking, people: s.memberIds.length },
+        messages: [...s.messages, alert(line)],
       };
     });
   },

@@ -3,8 +3,6 @@
 import {
   Banknote,
   Building2,
-  CalendarDays,
-  Clock,
   CreditCard,
   Loader2,
   Lock,
@@ -12,7 +10,6 @@ import {
   QrCode,
   Smartphone,
   Store,
-  Users,
   type LucideIcon,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
@@ -29,7 +26,7 @@ import { RatingBadge } from "@/components/ui/rating";
 import { getPerson, getPlace } from "@/lib/api/data";
 import { processPayment } from "@/lib/api/payments";
 import { formatDateLong, rupees } from "@/lib/format";
-import { quote } from "@/lib/pricing";
+import { needsPrepay, quote } from "@/lib/pricing";
 import type { Booking, PaymentMethod } from "@/lib/types";
 import { planActions, usePlan } from "@/store/plan-store";
 import { useViewer } from "@/store/viewer-store";
@@ -105,7 +102,9 @@ export default function ReviewConfirmPage() {
     );
   }
 
-  const atVenue = booking.payMode === "venue";
+  // Places that charge to hold the slot must be paid and confirmed now.
+  const prepay = needsPrepay(place);
+  const atVenue = !prepay && booking.payMode === "venue";
   const methods = atVenue ? PAY_AT_VENUE : PAY_NOW;
   // Keep the chosen method valid for the current mode.
   const method = methods.some((m) => m.id === booking.method) ? booking.method : methods[0].id;
@@ -132,15 +131,13 @@ export default function ReviewConfirmPage() {
     }
   };
 
-  const details: { icon: LucideIcon; label: string; value: string }[] = [
-    { icon: CalendarDays, label: "Date", value: formatDateLong(plan.date) },
-    { icon: Clock, label: "Time", value: booking.slot },
+  const details = [
+    { label: "Date", value: formatDateLong(plan.date).replace(/,? \d{4}$/, "") },
+    { label: "Time", value: booking.slot },
     {
-      icon: Users,
-      label: place.hourly ? "People · hours" : "People",
-      value: `${booking.people} ${booking.people === 1 ? "person" : "people"}${place.hourly ? ` · ${hours}h` : ""}`,
+      label: place.hourly ? "Group · hrs" : "Group",
+      value: `${booking.people}${place.hourly ? ` · ${hours}h` : booking.people === 1 ? " person" : " people"}`,
     },
-    { icon: MapPin, label: "Distance", value: `${place.distanceKm} km · ${place.area}` },
   ];
 
   return (
@@ -167,7 +164,9 @@ export default function ReviewConfirmPage() {
           </p>
         )}
         {error && <p className="mt-2 text-center text-[12px] text-red-600">{error}</p>}
-        <p className="mt-3 text-center text-[11px] text-muted">Free cancellation up to 2 hours before the booking.</p>
+        <p className="mt-3 text-center text-[11px] text-muted">
+          You can cancel later from Locked In · 10% cancellation fee
+        </p>
 </StickyFooter>
           {paying && (
           <div className="absolute inset-0 z-40 flex flex-col items-center justify-center gap-3 bg-white/85 backdrop-blur-sm">
@@ -181,50 +180,59 @@ export default function ReviewConfirmPage() {
     >
       <PageHeader title="Review & Confirm" backHref="/booking" />
 
-      {/* Booking summary: a ticket with a perforated tear line. */}
-      <section className="card overflow-hidden p-0!" aria-label="Booking summary">
-        <div className="relative h-[120px]">
-          <PlaceImage place={place} className="h-full w-full" sizes="400px" />
-          <div className="absolute inset-0 bg-gradient-to-t from-ink via-ink/40 to-transparent" />
-          <RatingBadge value={place.rating} className="absolute right-3 top-3" />
-          <div className="absolute inset-x-3 bottom-2.5 text-white">
-            <p className="text-[11px] uppercase tracking-wide text-white/75">Booking summary</p>
-            <h2 className="font-heading text-[20px] font-bold leading-tight">{place.name}</h2>
+      {/* Booking summary: a ticket. Big photo on top, tear line, price stub below. */}
+      <section className="reveal card overflow-hidden p-0!" aria-label="Booking summary">
+        <div className="relative h-[240px]">
+          <PlaceImage place={place} className="h-full w-full" sizes="430px" priority />
+          <div className="absolute inset-x-0 bottom-0 h-[110px] bg-gradient-to-t from-ink/90 to-transparent" />
+          <span className="absolute left-4 top-4 rounded-full bg-ink/80 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-wider text-cream backdrop-blur">
+            Booking ticket
+          </span>
+          <RatingBadge value={place.rating} className="absolute right-4 top-4" />
+          <div className="absolute inset-x-4 bottom-3.5 text-white">
+            <h2 className="font-heading text-[23px] font-bold leading-tight">{place.name}</h2>
+            <p className="mt-0.5 flex items-center gap-1 text-[12px] text-white/80">
+              <MapPin size={12} /> {place.area}, Ahmedabad · {place.distanceKm} km
+            </p>
           </div>
         </div>
 
-        <dl className="grid grid-cols-2 gap-x-3 gap-y-3 px-4 pb-3 pt-4">
-          {details.map(({ icon: Icon, label, value }) => (
-            <div key={label} className="flex items-start gap-2">
-              <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-cream text-brand">
-                <Icon size={16} />
-              </span>
-              <div className="min-w-0">
-                <dt className="text-[11px] text-muted">{label}</dt>
-                <dd className="truncate text-[13px] font-semibold">{value}</dd>
-              </div>
+        <dl className="grid grid-cols-3 divide-x divide-ink/10 px-2 py-4 text-center">
+          {details.map(({ label, value }) => (
+            <div key={label} className="min-w-0 px-2">
+              <dt className="text-[10px] font-semibold uppercase tracking-wide text-muted">{label}</dt>
+              <dd className="mt-1 truncate text-[14px] font-bold">{value}</dd>
             </div>
           ))}
         </dl>
-        <div className="flex items-center gap-2 px-4 pb-4 text-[12px]">
+        <div className="flex items-center gap-2.5 px-5 pb-4">
           <AvatarStack ids={plan.memberIds} size={26} max={6} />
-          <span className="min-w-0 truncate text-muted">
+          <span className="min-w-0 truncate text-[12px] text-muted">
             {plan.groupName} · booked by {getPerson(plan.adminId).name}
           </span>
         </div>
 
-        <div className="relative h-0 border-t-2 border-dashed border-ink/20" aria-hidden>
-          <span className="absolute -left-3 -top-3 h-6 w-6 rounded-full border border-ink bg-white" />
-          <span className="absolute -right-3 -top-3 h-6 w-6 rounded-full border border-ink bg-white" />
+        <div className="relative mx-0 h-0 border-t-2 border-dashed border-ink/20" aria-hidden>
+          <span className="absolute -left-3.5 -top-3.5 h-7 w-7 rounded-full border border-ink bg-white" />
+          <span className="absolute -right-3.5 -top-3.5 h-7 w-7 rounded-full border border-ink bg-white" />
         </div>
 
-        <div className="px-4 pb-4 pt-4">
+        <div className="bg-cream/60 px-5 pb-5 pt-5">
           <PriceSummary place={place} people={booking.people} hours={hours} atVenue={atVenue} />
         </div>
       </section>
 
-      <h3 className="mt-6 font-heading text-[18px] font-bold">How do you want to pay?</h3>
-      <div className="mt-2.5 grid grid-cols-2 gap-2" role="radiogroup" aria-label="When to pay">
+      <h3 className="mt-8 font-heading text-[18px] font-bold">How do you want to pay?</h3>
+      {prepay ? (
+        <div className="card mt-3 flex items-start gap-3 border-brand! bg-cream! p-4" role="note">
+          <Lock size={20} className="mt-0.5 shrink-0 text-brand" />
+          <p className="text-[13px] leading-[19px]">
+            <span className="font-semibold">Pay &amp; confirm required.</span> {place.name} charges to hold your{" "}
+            {place.hourly ? place.hourly.unit : "slot"}, so the booking is confirmed once it&apos;s paid.
+          </p>
+        </div>
+      ) : (
+      <div className="mt-3 grid grid-cols-2 gap-2" role="radiogroup" aria-label="When to pay">
         {MODES.map(({ id, label, hint, icon: Icon }) => {
           const active = booking.payMode === id;
           return (
@@ -245,8 +253,9 @@ export default function ReviewConfirmPage() {
           );
         })}
       </div>
+      )}
 
-      <div className="mt-3 space-y-2" role="radiogroup" aria-label="Payment method">
+      <div className="mt-4 space-y-2.5" role="radiogroup" aria-label="Payment method">
         {methods.map(({ id, label, detail, icon: Icon }) => {
           const active = method === id;
           return (

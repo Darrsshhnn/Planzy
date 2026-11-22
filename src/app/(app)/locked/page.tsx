@@ -12,24 +12,32 @@ import {
   Share2,
   Store,
   Utensils,
+  XCircle,
 } from "lucide-react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { AllSetOverlay } from "@/components/booking/all-set";
 import { PriceSummary } from "@/components/booking/price-summary";
 import { PageHeader } from "@/components/layout/page-header";
 import { Screen } from "@/components/layout/screen";
 import { PlaceImage } from "@/components/place/place-image";
 import { AvatarStack } from "@/components/ui/avatar";
-import { ButtonLink } from "@/components/ui/button";
+import { Button, ButtonLink } from "@/components/ui/button";
 import { EmptyState } from "@/components/ui/empty-state";
 import { RatingBadge } from "@/components/ui/rating";
+import { Sheet } from "@/components/ui/sheet";
 import { getPlace } from "@/lib/api/data";
 import { formatDateLong, rupees } from "@/lib/format";
-import { quote } from "@/lib/pricing";
+import { cancellation, quote } from "@/lib/pricing";
 import { planActions, usePlan } from "@/store/plan-store";
+import { useViewer } from "@/store/viewer-store";
 
 export default function LockedInPage() {
   const plan = usePlan();
+  const router = useRouter();
+  const { isAdmin } = useViewer();
+  const [cancelling, setCancelling] = useState(false);
   const [shared, setShared] = useState("");
   const [showPrice, setShowPrice] = useState(false);
   const place = getPlace(plan.chosenPlaceId);
@@ -85,8 +93,51 @@ export default function LockedInPage() {
     { icon: Clock, top: walkIn ? plan.timeSlot : booking.slot, bottom: place.hourly ? `${hours} hour${hours === 1 ? "" : "s"}` : walkIn ? "Any time" : "Arrive by" },
   ];
 
+  const paidOnline = booking.status === "paid";
+  const charged = booking.amount || quote(place, booking.people, hours).total;
+  const { fee, refund } = cancellation(charged);
+  const cancelBooking = () => {
+    planActions.cancelBooking();
+    setCancelling(false);
+    router.replace(`/chat/${plan.id}`);
+  };
+
   return (
-    <Screen>
+    <Screen
+      overlay={
+        <Sheet open={cancelling} onClose={() => setCancelling(false)} title="Cancel booking?">
+          <p className="text-[14px] leading-[21px] text-ink/80">
+            {place.name} · {formatDateLong(plan.date)} at {booking.slot}. Everyone in {plan.groupName} will be told.
+          </p>
+          <dl className="card mt-4 space-y-2 bg-cream! p-4 text-[14px]">
+            <div className="flex justify-between">
+              <dt>{paidOnline ? "Amount paid" : "Booking amount"}</dt>
+              <dd>{rupees(charged)}</dd>
+            </div>
+            <div className="flex justify-between text-[#b42318]">
+              <dt>Cancellation fee (10%)</dt>
+              <dd>− {rupees(fee)}</dd>
+            </div>
+            <div className="flex justify-between border-t border-dashed border-ink/30 pt-2 font-semibold">
+              <dt>{paidOnline ? "Refund to " + booking.method.toUpperCase() : "Fee due to the venue"}</dt>
+              <dd>{paidOnline ? rupees(refund) : rupees(fee)}</dd>
+            </div>
+          </dl>
+          {paidOnline && <p className="mt-2 text-[12px] text-muted">Refunds reach your account in 5–7 working days.</p>}
+          <Button block className="mt-5 !bg-[#b42318]" onClick={cancelBooking}>
+            Cancel booking
+          </Button>
+          <button onClick={() => setCancelling(false)} className="mt-2 w-full py-2.5 text-[14px] font-semibold text-ink/70">
+            Keep booking
+          </button>
+        </Sheet>
+      }
+    >
+      <AllSetOverlay
+        bookingRef={booking.reference ?? ""}
+        title={place.name}
+        subtitle={walkIn ? "Walk in, no booking needed" : `${formatDateLong(plan.date)} · ${booking.slot}`}
+      />
       <PageHeader title="Locked In" backHref="/" />
 
       <div className="flex items-center gap-3 pb-4">
@@ -190,6 +241,17 @@ export default function LockedInPage() {
           Plan another outing
         </ButtonLink>
       </div>
+      {!walkIn && isAdmin && (
+        <button
+          onClick={() => setCancelling(true)}
+          className="mt-3 flex w-full items-center justify-center gap-1.5 py-3 text-[14px] font-semibold text-[#b42318]"
+        >
+          <XCircle size={17} /> Cancel booking
+        </button>
+      )}
+      {!walkIn && (
+        <p className="text-center text-[11px] text-muted">Cancelling costs 10% of the booking amount.</p>
+      )}
     </Screen>
   );
 }

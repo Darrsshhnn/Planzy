@@ -18,7 +18,7 @@ import { EmptyState } from "@/components/ui/empty-state";
 import { RatingBadge } from "@/components/ui/rating";
 import { getPerson, getPlace } from "@/lib/api/data";
 import { formatDateLong, hash, rupees } from "@/lib/format";
-import { quote } from "@/lib/pricing";
+import { needsPrepay, quote } from "@/lib/pricing";
 import { bookingSlots } from "@/lib/time";
 import { planActions, usePlan } from "@/store/plan-store";
 import { useViewer } from "@/store/viewer-store";
@@ -215,8 +215,9 @@ export default function ContactBookingPage() {
         </div>
         <p className="mt-3 flex items-start gap-2 text-[11px] leading-[15px] text-ink/80">
           <ShieldCheck size={16} className="mt-px shrink-0 text-brand" />
-          The group admin books for everyone: pay online now, or pay on reaching the venue by cash or UPI. Members
-          settle their share with the admin.
+          {needsPrepay(place)
+            ? "This place charges to hold the slot, so the admin pays and confirms online for everyone. Members settle their share with the admin."
+            : "The group admin books for everyone: pay online now, or pay on reaching the venue by cash or UPI. Members settle their share with the admin."}
         </p>
       </PlanCard>
 

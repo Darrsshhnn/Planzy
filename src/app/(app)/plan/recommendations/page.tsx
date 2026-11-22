@@ -28,10 +28,6 @@ export default function RecommendationPage() {
       continueLabel={count ? `Create group · share ${count}` : "Create group"}
     >
       <h2 className="font-heading text-[17px] font-bold">Recommendation</h2>
-      <p className="mt-1 text-[12px] text-muted">
-        Matched to the group&apos;s average budget, distance and timing. Tap a card to add or remove it. You can also
-        skip picking and add places later in the chat.
-      </p>
       <GroupPrefsPanel plan={plan} />
       <div className="mt-5 space-y-5">
         {recs.map((r) => (

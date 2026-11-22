@@ -1,6 +1,6 @@
 "use client";
 
-import { Compass, Map, Search, SlidersHorizontal, Sparkles, X } from "lucide-react";
+import { Compass, Search, SlidersHorizontal, Sparkles, X } from "lucide-react";
 import Link from "next/link";
 import { AiIcon } from "@/components/brand/ai-icon";
 import { useState } from "react";
@@ -81,13 +81,6 @@ export default function SearchPage() {
             className="min-w-0 flex-1 bg-transparent text-[15px] outline-none placeholder:text-ink/40"
           />
         </FieldBox>
-        <Link
-          href="/map"
-          aria-label="Look at the map"
-          className="card flex h-[48px] w-[48px] shrink-0 items-center justify-center bg-cream!"
-        >
-          <Map size={22} />
-        </Link>
         <button
           onClick={() => setFiltersOpen(true)}
           aria-label={`Filters${activeFilters ? `, ${activeFilters} active` : ""}`}
@@ -124,15 +117,6 @@ export default function SearchPage() {
             <span className="min-w-0 flex-1">
               <span className="block text-[15px] font-semibold">Ask Planzy AI</span>
               <span className="block text-[12px] text-ink/70">Area, budget and distance in. Places out.</span>
-            </span>
-          </Link>
-          <Link href="/map" className="card-dark mt-4 flex items-center gap-3.5 p-4 text-white">
-            <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-brand">
-              <Map size={22} />
-            </span>
-            <span className="min-w-0 flex-1">
-              <span className="block text-[15px] font-semibold">Explore on the map</span>
-              <span className="block text-[12px] text-white/75">Your live location and what&apos;s on around you</span>
             </span>
           </Link>
           <section className="mt-8">

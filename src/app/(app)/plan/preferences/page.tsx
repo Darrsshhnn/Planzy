@@ -43,10 +43,6 @@ export default function PreferencesPage() {
       onSkip={() => next(true)}
       continueLabel={isPopular ? "Create Group Chat" : "Continue"}
     >
-      <p className="-mt-1 mb-4 text-[12px] text-muted">
-        Your budget, distance and timing. Everyone who accepts adds theirs, and we suggest places for the group
-        average. You can skip this.
-      </p>
       <FieldLabel>Budget Range / Person</FieldLabel>
       <FieldBox className="mt-3">
         <RangeField

@@ -478,3 +478,87 @@ svg.lucide {
 .animate-rise-down {
   animation: planzy-rise-down 0.3s cubic-bezier(0.2, 0.8, 0.3, 1) both;
 }
+
+/* Locked In: full-screen "You're all set!" (AllSetOverlay). */
+@keyframes all-set-badge {
+  0% {
+    transform: scale(0);
+  }
+  65% {
+    transform: scale(1.12);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+@keyframes all-set-draw {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+@keyframes all-set-ring {
+  0% {
+    opacity: 0.9;
+    transform: scale(0.7);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(2);
+  }
+}
+@keyframes all-set-dot {
+  0% {
+    opacity: 0;
+    transform: translate(0, 0) scale(0.3);
+  }
+  30% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: translate(var(--x), var(--y)) scale(1);
+  }
+}
+@keyframes all-set-text {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+.all-set-badge {
+  animation: all-set-badge 0.55s cubic-bezier(0.3, 1.4, 0.5, 1) both;
+}
+.all-set-check path {
+  stroke-dasharray: 30;
+  stroke-dashoffset: 30;
+  animation: all-set-draw 0.4s ease-out 0.35s forwards;
+}
+.all-set-ring {
+  opacity: 0;
+  animation: all-set-ring 0.8s ease-out 0.3s forwards;
+}
+.all-set-dot {
+  opacity: 0;
+  animation: all-set-dot 0.9s cubic-bezier(0.2, 0.8, 0.3, 1) forwards;
+}
+.all-set-text {
+  animation: all-set-text 0.45s ease-out both;
+}
+@media (prefers-reduced-motion: reduce) {
+  .all-set-badge,
+  .all-set-text {
+    animation: logo-fade 0.4s ease-out both;
+  }
+  .all-set-check path {
+    animation: none;
+    stroke-dashoffset: 0;
+  }
+  .all-set-ring,
+  .all-set-dot {
+    display: none;
+  }
+}
