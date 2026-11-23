@@ -16,9 +16,9 @@ import { GroupFaces } from "@/components/ui/group-faces";
 import { RangeField } from "@/components/ui/range-field";
 import { Sheet } from "@/components/ui/sheet";
 import { suggestLocally, type AiQuery, type AiResult } from "@/lib/ai/suggest";
-import { CATEGORIES, getPlace } from "@/lib/api/data";
+import { CATEGORIES, getGroups, getPlace } from "@/lib/api/data";
 import type { Category } from "@/lib/types";
-import { useProfile } from "@/store/account-store";
+import { useIsNewUser, useProfile } from "@/store/account-store";
 import { CURRENT_USER_ID, planActions, usePlans } from "@/store/plan-store";
 
 /** One labelled step of the Scout form. */
@@ -52,6 +52,7 @@ export default function ScoutPage() {
   const router = useRouter();
   const profile = useProfile();
   const { plans } = usePlans();
+  const isNew = useIsNewUser();
   const [location, setLocation] = useState("");
   const [budget, setBudget] = useState<number | null>(null);
   const [distance, setDistance] = useState<number | null>(null);
@@ -68,17 +69,11 @@ export default function ScoutPage() {
   const types = categories ?? profile.preferences.categories;
 
   // Groups still choosing a place: the picks can be added to their shortlist.
-  const groups = plans
-    .filter(
-      (p) =>
-        p.created &&
-        !p.archived &&
-        !p.decided &&
-        !p.locked &&
-        p.memberIds.includes(CURRENT_USER_ID) &&
-        p.invites[CURRENT_USER_ID] !== "invited",
-    )
+  // Every group you are in (not pending invites), newest first.
+  const myGroups = plans
+    .filter((p) => p.created && p.memberIds.includes(CURRENT_USER_ID) && p.invites[CURRENT_USER_ID] !== "invited")
     .sort((a, b) => b.createdAt - a.createdAt);
+  const savedGroups = isNew ? [] : getGroups();
 
   const scout = async () => {
     const query: AiQuery = { prompt: "", location: from, budget: perHead, distance: maxKm, categories: types };
@@ -102,23 +97,72 @@ export default function ScoutPage() {
 
   const toggle = (id: string) => setPicked((list) => (list.includes(id) ? list.filter((x) => x !== id) : [...list, id]));
 
+  const planWithFriends = () => newPlanWith();
+
+  const pickedCategories = () =>
+    [...new Set(picked.map((id) => getPlace(id)?.category).filter(Boolean))] as Category[];
+
   /** New plan with all picked places shortlisted; next step is adding friends. */
-  const planWithFriends = () => {
+  const newPlanWith = (memberIds: string[] = [], name = "") => {
     if (!picked.length) return;
-    planActions.start("popular", [], picked[0]);
+    planActions.start("popular", memberIds, picked[0]);
     planActions.setShortlist(picked);
-    const cats = [...new Set(picked.map((id) => getPlace(id)?.category).filter(Boolean))] as Category[];
-    planActions.setCategories(cats);
+    planActions.setCategories(pickedCategories());
+    if (name) planActions.setGroupName(name);
+    setSending(false);
     router.push("/plan/friends");
   };
 
-  /** Adds the picked places to an existing group's shortlist and opens its chat. */
-  const sendToGroup = (planId: string) => {
+  /**
+   * Adds the picked places to a group. A group still choosing gets them on its
+   * shortlist (voting reopens if you had closed it). A group that has already
+   * booked or been out starts its next plan with the same people instead.
+   */
+  const addToGroup = (planId: string) => {
+    const g = plans.find((p) => p.id === planId);
+    if (!g) return;
+    if (g.locked || g.archived) {
+      newPlanWith(g.memberIds, g.groupName);
+      return;
+    }
     planActions.select(planId);
+    if (g.decided && g.adminId === CURRENT_USER_ID) planActions.reopenVoting();
     picked.forEach((id) => planActions.addPlaceFromChat(id));
     setSending(false);
     router.push(`/chat/${planId}`);
   };
+
+  const n = picked.length;
+  const placesText = `${n} place${n === 1 ? "" : "s"}`;
+  const targets = [
+    ...myGroups.map((g) => {
+      const done = g.archived;
+      const booked = !done && g.locked;
+      return {
+        key: g.id,
+        name: g.groupName,
+        memberIds: g.memberIds,
+        tag: done ? "Past" : booked ? "Booked" : g.decided ? "Deciding" : "Voting",
+        tagClass: done ? "bg-ink/10 text-ink/70" : booked ? "bg-[#E3F7EA] text-[#1a7f45]" : "bg-cream text-ink",
+        hint:
+          done || booked
+            ? `Starts their next plan with these ${placesText}`
+            : g.decided && g.adminId === CURRENT_USER_ID
+              ? `Reopens voting and adds ${placesText}`
+              : `Adds ${placesText} to the shortlist`,
+        go: () => addToGroup(g.id),
+      };
+    }),
+    ...savedGroups.map((g) => ({
+      key: `saved-${g.id}`,
+      name: g.name,
+      memberIds: [CURRENT_USER_ID, ...g.memberIds],
+      tag: "Saved",
+      tagClass: "bg-navy/10 text-navy",
+      hint: `New plan with this group and ${placesText}`,
+      go: () => newPlanWith(g.memberIds, g.name),
+    })),
+  ];
 
   return (
     <Screen
@@ -148,38 +192,36 @@ export default function ScoutPage() {
               )}
             </StickyFooter>
           )}
-          <Sheet open={sending} onClose={() => setSending(false)} title="Send to a group">
+          <Sheet open={sending} onClose={() => setSending(false)} title="Add to a group">
             <p className="-mt-1 text-[12px] text-muted">
-              {picked.length} place{picked.length === 1 ? "" : "s"} will be added to the group&apos;s shortlist for
-              voting.
+              {picked.length} place{picked.length === 1 ? "" : "s"} selected. Pick any group you&apos;re in.
             </p>
-            {groups.length ? (
+            {targets.length ? (
               <ul className="mt-3 divide-y divide-ink/10">
-                {groups.map((g) => (
-                  <li key={g.id}>
-                    <button
-                      onClick={() => sendToGroup(g.id)}
-                      className="flex w-full items-center gap-3 py-3 text-left"
-                    >
-                      <GroupFaces ids={g.memberIds} size={44} />
+                {targets.map((t) => (
+                  <li key={t.key}>
+                    <button onClick={t.go} className="flex w-full items-center gap-3 py-3 text-left">
+                      <GroupFaces ids={t.memberIds} size={44} />
                       <span className="min-w-0 flex-1">
-                        <span className="block truncate text-[15px] font-semibold">{g.groupName}</span>
-                        <span className="block text-[12px] text-muted">
-                          {g.shortlist.length} place{g.shortlist.length === 1 ? "" : "s"} shortlisted ·{" "}
-                          {g.memberIds.length} going
+                        <span className="flex items-center gap-2">
+                          <span className="truncate text-[15px] font-semibold">{t.name}</span>
+                          <span className={`shrink-0 rounded-full px-2 text-[10px] font-semibold leading-[18px] ${t.tagClass}`}>
+                            {t.tag}
+                          </span>
                         </span>
+                        <span className="block truncate text-[12px] text-muted">{t.hint}</span>
                       </span>
-                      <Send size={17} className="text-brand" />
+                      <Send size={17} className="shrink-0 text-brand" />
                     </button>
                   </li>
                 ))}
               </ul>
             ) : (
               <div className="mt-4 rounded-[14px] bg-cream p-4 text-center">
-                <p className="text-[14px] font-semibold">No group is choosing a place right now</p>
+                <p className="text-[14px] font-semibold">You&apos;re not in any group yet</p>
                 <p className="mt-1 text-[12px] text-muted">Start a new plan with these places instead.</p>
                 <Button block className="mt-4" onClick={planWithFriends}>
-                  <UsersRound size={18} /> Plan with friends
+                  <UsersRound size={18} /> New plan
                 </Button>
               </div>
             )}

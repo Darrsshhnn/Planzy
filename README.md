@@ -34,7 +34,7 @@ Lint: `npm run lint`
 | Your interests | `/onboarding/interests` | New accounts pick the kinds of outings they like, budget and timing; then a ~2 s logo animation opens Home |
 | Forgot password | `/auth/forgot` | Number/email → 4-digit code (demo code **1234**) → new password |
 | Home | `/` | Confirmed booking / ongoing chat, recents (new users: **Places you might like**, from their interests), Planzy Scout, recommendations, groups, nearby places |
-| Scout (Planzy Scout) | `/ai` | Pick your area, type, budget and distance; get places that fit, closest first, with a reason each. Select one or more, then plan them with friends or send them to an existing group |
+| Scout (Planzy Scout) | `/ai` | Pick your area, type, budget and distance; get places that fit, closest first, with a reason each. Select one or more, then start a new plan or add them to any group you are in (voting groups get them on the shortlist; booked, past and saved groups start their next plan with the same people) |
 | Notifications | `/notifications` | Group invites to accept/decline, replies to your invites (Home bell) |
 | Add Friends | `/plan/friends` | The + tab starts here. Top picks, more friends, search; Continue sends invites |
 | Group Details | `/plan/group` | Group name, invited friends with live Accepted / Waiting / Declined, categories, date |
