@@ -14,7 +14,7 @@ export default function HomePage() {
     <Screen padded={false}>
       <HomeHeader />
 
-      {/* Hierarchy: active plan > Recents > Planzy AI > Recommended for you > Groups > Nearby */}
+      {/* Hierarchy: active plan > Recents > Planzy Scout > Recommended for you > Groups > Nearby */}
       <ActivePlanCard />
       <HomeRecents />
 

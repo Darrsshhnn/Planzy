@@ -166,7 +166,7 @@ export function MapLink({ place, className = "" }: { place: Place; className?: s
   );
 }
 
-/** Horizontal row card used on Recommendation, Planzy AI and the popular-place picker. */
+/** Horizontal row card used on Recommendation, Planzy Scout and the popular-place picker. */
 export function PlaceRowCard({
   place,
   selected,

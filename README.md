@@ -33,8 +33,8 @@ Lint: `npm run lint`
 | Your area | `/onboarding/location` | After any sign-up / first Google sign-in: searchable dropdown of all Ahmedabad and Gandhinagar areas, or current location |
 | Your interests | `/onboarding/interests` | New accounts pick the kinds of outings they like, budget and timing; then a ~2 s logo animation opens Home |
 | Forgot password | `/auth/forgot` | Number/email → 4-digit code (demo code **1234**) → new password |
-| Home | `/` | Confirmed booking / ongoing chat, recents (new users: **Places you might like**, from their interests), Planzy AI, recommendations, groups, nearby places |
-| Planzy AI | `/ai` | Pick your area, type, budget and distance; get places that fit, closest first, with a reason each, then plan one with friends |
+| Home | `/` | Confirmed booking / ongoing chat, recents (new users: **Places you might like**, from their interests), Planzy Scout, recommendations, groups, nearby places |
+| Scout (Planzy Scout) | `/ai` | Pick your area, type, budget and distance; get places that fit, closest first, with a reason each. Select one or more, then plan them with friends or send them to an existing group |
 | Notifications | `/notifications` | Group invites to accept/decline, replies to your invites (Home bell) |
 | Add Friends | `/plan/friends` | The + tab starts here. Top picks, more friends, search; Continue sends invites |
 | Group Details | `/plan/group` | Group name, invited friends with live Accepted / Waiting / Declined, categories, date |
@@ -49,7 +49,7 @@ Lint: `npm run lint`
 | Review & Confirm | `/booking/review` | Booking summary; pay now (mocked) or pay on reach (cash / UPI) |
 | Locked In | `/locked` | Confirmation, timing, price details, directions, share |
 | Place Detail | `/place/[id]` | Photos, live status, rating breakdown, reviews with photos, Location opens the map |
-| Explore | `/search` | Search, filter mini screen, map, new spots, new areas |
+| Explore | `/search` | Search, filter mini screen, map button (search the map by area), Scout, new spots, new areas |
 | Map | `/map`, `/map?place=id` | OpenStreetMap: your live location, search an area, places within 3 km |
 | History | `/history`, `/history/[id]` | Upcoming, ongoing and past outings; a past outing shows the place, group, your rating and Revisit |
 | Profile | `/profile` | Photo, name, age, location, number, email; sections below open their own screens |
@@ -108,7 +108,7 @@ A new account (sign-up or a first Google sign-in) goes: area → interests → l
 
 The first plan is guided: a coach card on each step (Home → friends → group → preferences → recommendations → chat and votes → decision → booking → Locked In) says what to do. It can be folded, skipped, or turned back on in Profile → Settings.
 
-## Planzy AI
+## Planzy Scout
 
 `POST /api/ai/suggest` takes `{ location, budget, distance, categories }` (plus optional `prompt`). Results come back closest first. With `ANTHROPIC_API_KEY` set on the server, Claude (`claude-opus-5-5`, structured JSON output) picks places from the catalogue and writes a reason for each; the key stays on the server.
 
@@ -133,7 +133,7 @@ Firebase setup (already done for `planzy-01`):
 ## Mocked parts and where a backend plugs in
 
 - **Places and people:** read from `src/data/*.json` through `src/lib/api/data.ts`. Replace those functions with API calls.
-- **Planzy AI:** `src/app/api/ai/suggest/route.ts` (Claude when `ANTHROPIC_API_KEY` is set, built-in matcher otherwise).
+- **Planzy Scout:** `src/app/api/ai/suggest/route.ts` (Claude when `ANTHROPIC_API_KEY` is set, built-in matcher otherwise).
 - **Accounts:** `src/store/account-store.ts` keeps accounts per browser (password stored as a SHA-256 hash). Replace with a real auth service.
 - **Plans, invites, notifications:** `src/store/plan-store.ts` (multi-plan, simulated friends and admins).
 - **Personal chats:** `src/store/dm-store.ts`.

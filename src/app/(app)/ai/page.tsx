@@ -1,40 +1,65 @@
 "use client";
 
-import { ArrowDownWideNarrow, Loader2, RotateCcw } from "lucide-react";
+import { ArrowDownWideNarrow, Check, Loader2, MapPin, RotateCcw, Send, Shapes, UsersRound, Wallet } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useState, type ReactNode } from "react";
 import { LocationPicker } from "@/components/auth/location-picker";
 import { AiIcon } from "@/components/brand/ai-icon";
 import { PageHeader } from "@/components/layout/page-header";
 import { Screen } from "@/components/layout/screen";
 import { StickyFooter } from "@/components/layout/sticky-footer";
-import { PlaceRowCard } from "@/components/place/place-cards";
-import { CATEGORY_ICON } from "@/components/place/place-image";
+import { PlaceImage, CATEGORY_ICON } from "@/components/place/place-image";
 import { Button } from "@/components/ui/button";
-import { FieldBox, PlanCard } from "@/components/ui/card";
+import { FieldBox } from "@/components/ui/card";
 import { Chip } from "@/components/ui/chip";
+import { GroupFaces } from "@/components/ui/group-faces";
 import { RangeField } from "@/components/ui/range-field";
+import { Sheet } from "@/components/ui/sheet";
 import { suggestLocally, type AiQuery, type AiResult } from "@/lib/ai/suggest";
 import { CATEGORIES, getPlace } from "@/lib/api/data";
 import type { Category } from "@/lib/types";
 import { useProfile } from "@/store/account-store";
-import { planActions } from "@/store/plan-store";
+import { CURRENT_USER_ID, planActions, usePlans } from "@/store/plan-store";
+
+/** One labelled step of the Scout form. */
+function Step({ n, icon, title, children }: { n: number; icon: ReactNode; title: string; children: ReactNode }) {
+  return (
+    <div className="flex gap-3.5">
+      <div className="flex flex-col items-center">
+        <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-ink text-[13px] font-bold text-brand">
+          {n}
+        </span>
+        <span className="mt-1.5 w-px flex-1 bg-ink/15" aria-hidden />
+      </div>
+      <div className="min-w-0 flex-1 pb-6">
+        <h3 className="flex items-center gap-1.5 pt-1 text-[15px] font-semibold">
+          {icon}
+          {title}
+        </h3>
+        <div className="mt-2.5">{children}</div>
+      </div>
+    </div>
+  );
+}
 
 /**
- * Planzy AI: pick where you're starting from, what kind of place, your budget
- * and how far you'll go. It suggests places that fit, listed closest first,
- * with a reason for each. Pick one to start a plan with friends.
+ * Planzy Scout: pick where you're starting from, what kind of place, your
+ * budget and how far you'll go. Scout suggests places, closest first, with a
+ * reason each. Select one or more, then plan them with friends or send them
+ * to a group you already have.
  */
-export default function PlanzyAiPage() {
+export default function ScoutPage() {
   const router = useRouter();
   const profile = useProfile();
+  const { plans } = usePlans();
   const [location, setLocation] = useState("");
   const [budget, setBudget] = useState<number | null>(null);
   const [distance, setDistance] = useState<number | null>(null);
   const [categories, setCategories] = useState<Category[] | null>(null);
   const [busy, setBusy] = useState(false);
   const [result, setResult] = useState<AiResult | null>(null);
-  const [picked, setPicked] = useState<string | null>(null);
+  const [picked, setPicked] = useState<string[]>([]);
+  const [sending, setSending] = useState(false);
 
   // Until the person changes them, the filters follow their profile.
   const from = location || profile.location || "Ahmedabad, Ahmedabad";
@@ -42,10 +67,23 @@ export default function PlanzyAiPage() {
   const maxKm = distance ?? Math.max(profile.preferences.distance, 10);
   const types = categories ?? profile.preferences.categories;
 
-  const ask = async () => {
+  // Groups still choosing a place: the picks can be added to their shortlist.
+  const groups = plans
+    .filter(
+      (p) =>
+        p.created &&
+        !p.archived &&
+        !p.decided &&
+        !p.locked &&
+        p.memberIds.includes(CURRENT_USER_ID) &&
+        p.invites[CURRENT_USER_ID] !== "invited",
+    )
+    .sort((a, b) => b.createdAt - a.createdAt);
+
+  const scout = async () => {
     const query: AiQuery = { prompt: "", location: from, budget: perHead, distance: maxKm, categories: types };
     setBusy(true);
-    setPicked(null);
+    setPicked([]);
     try {
       const res = await fetch("/api/ai/suggest", {
         method: "POST",
@@ -62,52 +100,116 @@ export default function PlanzyAiPage() {
     }
   };
 
-  const plan = () => {
-    if (!picked) return;
-    planActions.start("popular", [], picked);
+  const toggle = (id: string) => setPicked((list) => (list.includes(id) ? list.filter((x) => x !== id) : [...list, id]));
+
+  /** New plan with all picked places shortlisted; next step is adding friends. */
+  const planWithFriends = () => {
+    if (!picked.length) return;
+    planActions.start("popular", [], picked[0]);
+    planActions.setShortlist(picked);
+    const cats = [...new Set(picked.map((id) => getPlace(id)?.category).filter(Boolean))] as Category[];
+    planActions.setCategories(cats);
     router.push("/plan/friends");
+  };
+
+  /** Adds the picked places to an existing group's shortlist and opens its chat. */
+  const sendToGroup = (planId: string) => {
+    planActions.select(planId);
+    picked.forEach((id) => planActions.addPlaceFromChat(id));
+    setSending(false);
+    router.push(`/chat/${planId}`);
   };
 
   return (
     <Screen
       withFooter={!!result}
       overlay={
-        result && (
-          <StickyFooter>
-            <Button block disabled={!picked} onClick={plan}>
-              {picked ? `Plan ${getPlace(picked)?.name} with friends` : "Pick a place to plan it"}
-            </Button>
-          </StickyFooter>
-        )
+        <>
+          {result && (
+            <StickyFooter>
+              {picked.length === 0 ? (
+                <p className="rounded-[14px] bg-ink/85 px-4 py-3 text-center text-[13px] font-medium text-cream">
+                  Tap places to select them, one or more
+                </p>
+              ) : (
+                <div className="flex gap-2">
+                  <Button block onClick={planWithFriends} className="flex-1 whitespace-nowrap !px-3 !text-[15px]">
+                    <UsersRound size={17} /> New plan ({picked.length})
+                  </Button>
+                  <Button
+                    block
+                    variant="outline"
+                    onClick={() => setSending(true)}
+                    className="flex-1 whitespace-nowrap !bg-white !px-3 !text-[15px]"
+                  >
+                    <Send size={16} /> Add to group
+                  </Button>
+                </div>
+              )}
+            </StickyFooter>
+          )}
+          <Sheet open={sending} onClose={() => setSending(false)} title="Send to a group">
+            <p className="-mt-1 text-[12px] text-muted">
+              {picked.length} place{picked.length === 1 ? "" : "s"} will be added to the group&apos;s shortlist for
+              voting.
+            </p>
+            {groups.length ? (
+              <ul className="mt-3 divide-y divide-ink/10">
+                {groups.map((g) => (
+                  <li key={g.id}>
+                    <button
+                      onClick={() => sendToGroup(g.id)}
+                      className="flex w-full items-center gap-3 py-3 text-left"
+                    >
+                      <GroupFaces ids={g.memberIds} size={44} />
+                      <span className="min-w-0 flex-1">
+                        <span className="block truncate text-[15px] font-semibold">{g.groupName}</span>
+                        <span className="block text-[12px] text-muted">
+                          {g.shortlist.length} place{g.shortlist.length === 1 ? "" : "s"} shortlisted ·{" "}
+                          {g.memberIds.length} going
+                        </span>
+                      </span>
+                      <Send size={17} className="text-brand" />
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <div className="mt-4 rounded-[14px] bg-cream p-4 text-center">
+                <p className="text-[14px] font-semibold">No group is choosing a place right now</p>
+                <p className="mt-1 text-[12px] text-muted">Start a new plan with these places instead.</p>
+                <Button block className="mt-4" onClick={planWithFriends}>
+                  <UsersRound size={18} /> Plan with friends
+                </Button>
+              </div>
+            )}
+          </Sheet>
+        </>
       }
     >
-      <PageHeader title="Planzy AI" backHref="/" />
+      <PageHeader title="Scout" backHref="/" />
 
-      <section className="reveal card-dark relative flex items-center gap-4 overflow-hidden p-5 text-white">
-        <div className="pointer-events-none absolute -right-10 -top-12 h-36 w-36 rounded-full bg-brand/30 blur-2xl" />
-        <span className="relative flex h-14 w-14 shrink-0 items-center justify-center rounded-[16px] bg-brand">
+      <section className="reveal scout-ring flex items-center gap-4 p-5 text-white">
+        <span className="scout-glow relative flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-brand">
           <AiIcon size={30} />
         </span>
         <div className="relative min-w-0">
-          <p className="font-heading text-[19px] font-bold">Find the right place</p>
-          <p className="mt-1 text-[12px] leading-[18px] text-white/75">
-            Set where you&apos;re starting, your budget and how far you&apos;ll go. We&apos;ll pick places for you.
+          <p className="flex items-center gap-2 font-heading text-[20px] font-bold">
+            Planzy Scout
+            <span className="rounded-full bg-cream px-1.5 text-[9px] font-bold uppercase tracking-wider text-ink">AI</span>
+          </p>
+          <p className="mt-1 text-[12px] leading-[18px] text-white/70">
+            Four quick answers and Scout finds the spots, closest first.
           </p>
         </div>
       </section>
 
-      <PlanCard className="mt-6 space-y-6 !pb-6 !pt-5">
-        <div>
-          <h3 className="text-[15px] font-semibold">Starting from</h3>
-          <div className="mt-2.5">
-            <LocationPicker value={from} onChange={setLocation} />
-          </div>
-        </div>
-        <div>
-          <h3 className="text-[15px] font-semibold">
-            Type <span className="text-[12px] font-normal text-muted">(any if none)</span>
-          </h3>
-          <div className="mt-2.5 flex flex-wrap gap-2">
+      <section className="mt-7 px-1">
+        <Step n={1} icon={<MapPin size={15} className="text-brand" />} title="Starting from">
+          <LocationPicker value={from} onChange={setLocation} />
+        </Step>
+        <Step n={2} icon={<Shapes size={15} className="text-brand" />} title="What kind of place">
+          <div className="flex flex-wrap gap-2">
             {CATEGORIES.map((c) => {
               const Icon = CATEGORY_ICON[c];
               const on = types.includes(c);
@@ -123,10 +225,10 @@ export default function PlanzyAiPage() {
               );
             })}
           </div>
-        </div>
-        <div>
-          <h3 className="text-[15px] font-semibold">Budget / person</h3>
-          <FieldBox className="mt-2.5">
+          <p className="mt-1.5 text-[11px] text-muted">None picked = anything</p>
+        </Step>
+        <Step n={3} icon={<Wallet size={15} className="text-brand" />} title="Budget per person">
+          <FieldBox>
             <RangeField
               label="Budget per person"
               value={perHead}
@@ -138,10 +240,9 @@ export default function PlanzyAiPage() {
               onChange={setBudget}
             />
           </FieldBox>
-        </div>
-        <div>
-          <h3 className="text-[15px] font-semibold">How far you&apos;ll go</h3>
-          <FieldBox className="mt-2.5">
+        </Step>
+        <Step n={4} icon={<ArrowDownWideNarrow size={15} className="text-brand" />} title="How far you'll go">
+          <FieldBox>
             <RangeField
               label="Maximum distance"
               value={maxKm}
@@ -154,22 +255,20 @@ export default function PlanzyAiPage() {
               onChange={setDistance}
             />
           </FieldBox>
-        </div>
-        <Button block onClick={ask} disabled={busy}>
-          {busy ? (
-            <>
-              <Loader2 size={18} className="animate-spin" /> Finding places…
-            </>
-          ) : (
-            <>
-              <AiIcon size={18} /> {result ? "Suggest again" : "Suggest places"}
-            </>
-          )}
-        </Button>
-      </PlanCard>
+        </Step>
+      </section>
+
+      <button
+        onClick={scout}
+        disabled={busy}
+        className="scout-cta flex h-[54px] w-full items-center justify-center gap-2 rounded-[14px] text-[17px] font-semibold text-white transition active:translate-y-[2px] disabled:opacity-80"
+      >
+        {busy ? <Loader2 size={20} className="animate-spin" /> : <AiIcon size={20} />}
+        {busy ? "Scouting…" : result ? "Scout again" : "Scout places"}
+      </button>
 
       {result && (
-        <section className="mt-9" aria-live="polite">
+        <section className="mt-10" aria-live="polite">
           <div className="flex items-start gap-3">
             <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-ink text-brand">
               <AiIcon size={20} />
@@ -181,12 +280,12 @@ export default function PlanzyAiPage() {
               <p className="mt-1.5 flex items-center gap-2 text-[11px] text-muted">
                 <ArrowDownWideNarrow size={12} /> Closest first
                 <span aria-hidden>·</span>
-                {result.source === "claude" ? "Picked by Claude" : "Planzy matcher"}
+                {picked.length ? `${picked.length} selected` : "Select one or more"}
                 <button
                   type="button"
                   onClick={() => {
                     setResult(null);
-                    setPicked(null);
+                    setPicked([]);
                   }}
                   className="ml-auto inline-flex items-center gap-0.5 text-navy underline underline-offset-2"
                 >
@@ -195,29 +294,44 @@ export default function PlanzyAiPage() {
               </p>
             </div>
           </div>
-          <ol className="mt-5 space-y-6">
+
+          <ol className="mt-5 space-y-4">
             {result.suggestions.map((s, i) => {
               const place = getPlace(s.placeId);
               if (!place) return null;
+              const on = picked.includes(s.placeId);
               return (
                 <li key={s.placeId}>
-                  <p className="mb-2 flex items-center gap-2 px-1 text-[12px] font-semibold text-ink/70">
-                    <span className="flex h-5 w-5 items-center justify-center rounded-full bg-ink text-[10px] text-cream">
-                      {i + 1}
+                  <button
+                    type="button"
+                    onClick={() => toggle(s.placeId)}
+                    aria-pressed={on}
+                    className={`reveal card relative flex w-full gap-3.5 overflow-hidden p-0! text-left transition ${on ? "border-brand! ring-2 ring-brand" : ""}`}
+                  >
+                    <span className="relative h-[124px] w-[112px] shrink-0">
+                      <PlaceImage place={place} className="h-full w-full" sizes="120px" />
+                      <span className="absolute left-2 top-2 flex h-6 min-w-6 items-center justify-center rounded-full bg-ink/85 px-1.5 text-[11px] font-bold text-cream">
+                        {i + 1}
+                      </span>
                     </span>
-                    {s.km} km away
-                  </p>
-                  <PlaceRowCard
-                    place={place}
-                    match={s.match}
-                    km={s.km}
-                    selected={picked === s.placeId}
-                    onSelect={() => setPicked((p) => (p === s.placeId ? null : s.placeId))}
-                  />
-                  <p className="mt-2 flex gap-2 px-1 text-[12px] leading-[17px] text-ink/75">
-                    <AiIcon size={14} className="mt-px shrink-0 text-brand" />
-                    {s.reason}
-                  </p>
+                    <span className="flex min-w-0 flex-1 flex-col py-3 pr-3">
+                      <span className="flex items-start justify-between gap-2">
+                        <span className="line-clamp-2 font-heading text-[16px] font-bold leading-tight">{place.name}</span>
+                        <span
+                          className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-full border-2 transition ${on ? "border-brand bg-brand text-white" : "border-ink/30 bg-white"}`}
+                        >
+                          {on && <Check size={14} strokeWidth={3} />}
+                        </span>
+                      </span>
+                      <span className="mt-1 text-[12px] text-ink/70">
+                        {s.km} km away · {place.area}
+                      </span>
+                      <span className="mt-auto flex items-start gap-1.5 pt-2 text-[11px] leading-[15px] text-ink/75">
+                        <AiIcon size={13} className="mt-px shrink-0 text-brand" />
+                        <span className="line-clamp-2">{s.reason}</span>
+                      </span>
+                    </span>
+                  </button>
                 </li>
               );
             })}

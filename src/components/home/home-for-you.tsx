@@ -120,24 +120,25 @@ function whyPicked(r: Recommendation, budget: number) {
   return `${p.category} you'll like, ${price}, ${fits}.`;
 }
 
-/** Entry to Planzy AI, on Home for every user. */
+/** Entry to Planzy Scout, on Home for every user. */
 export function AiCard() {
   return (
-    <Link
-      href="/ai"
-      className="reveal card-dark relative mx-5 flex items-center gap-4 overflow-hidden p-4 text-white"
-    >
-      <span className="pointer-events-none absolute -left-6 -top-8 h-24 w-24 rounded-full bg-brand/35 blur-2xl" />
-      <span className="relative flex h-12 w-12 shrink-0 items-center justify-center rounded-[14px] bg-brand">
+    <Link href="/ai" className="reveal scout-ring mx-5 flex items-center gap-4 p-4 text-white">
+      <span className="scout-glow relative flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-brand">
         <AiIcon size={26} />
       </span>
       <span className="relative min-w-0 flex-1">
-        <span className="block font-heading text-[16px] font-bold">Ask Planzy AI</span>
+        <span className="flex items-center gap-2">
+          <span className="font-heading text-[17px] font-bold">Scout</span>
+          <span className="rounded-full bg-cream px-1.5 text-[9px] font-bold uppercase tracking-wider text-ink">AI</span>
+        </span>
         <span className="mt-0.5 block text-[12px] leading-[16px] text-white/70">
-          Your area, budget and distance in. Places out.
+          Pick an area, budget and distance. Scout finds the spots.
         </span>
       </span>
-      <ChevronRight size={22} className="relative shrink-0 text-brand" />
+      <span className="relative flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-white/10">
+        <ChevronRight size={20} className="text-brand" />
+      </span>
     </Link>
   );
 }

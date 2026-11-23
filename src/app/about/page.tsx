@@ -66,7 +66,7 @@ export default function AboutPage() {
             <AiIcon size={24} />
           </span>
           <span>
-            <span className="block font-heading text-[17px] font-bold">Planzy AI</span>
+            <span className="block font-heading text-[17px] font-bold">Planzy Scout</span>
             <span className="mt-1 block text-[13px] leading-[20px] text-white/75">
               Tell Planzy where you&apos;re starting from, your budget and how far you&apos;ll go, and it picks places
               for your group, closest first.

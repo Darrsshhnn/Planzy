@@ -1,7 +1,7 @@
 import type { SVGProps } from "react";
 
 /**
- * Planzy AI mark: a map pin with a spark inside, drawn as a single path
+ * Planzy Scout mark: a map pin with a spark inside, drawn as a single path
  * (one vector) in the same line style as the rest of the app's icons.
  */
 export const AI_ICON_PATH =

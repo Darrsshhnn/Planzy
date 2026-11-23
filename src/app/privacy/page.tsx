@@ -45,7 +45,7 @@ export default function PrivacyPage() {
       <h2>Where it is stored</h2>
       <p>
         In this version of Planzy, your account, plans and chats are saved in your own browser on your device. When
-        you ask Planzy AI for suggestions, your chosen area, budget, distance and categories are sent to our server to
+        you ask Planzy Scout for suggestions, your chosen area, budget, distance and categories are sent to our server to
         pick places; they are not stored.
       </p>
 
@@ -53,7 +53,7 @@ export default function PrivacyPage() {
       <ul>
         <li>Google Identity Services, for Sign in with Google.</li>
         <li>OpenStreetMap, for maps and area search.</li>
-        <li>Anthropic (Claude), when Planzy AI suggestions are switched on.</li>
+        <li>Anthropic (Claude), when Planzy Scout suggestions are switched on.</li>
       </ul>
 
       <h2>Your choices</h2>

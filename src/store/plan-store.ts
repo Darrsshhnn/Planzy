@@ -627,6 +627,10 @@ export const planActions = {
     set((s) => ({ ...s, categories: toggle(s.categories, category) }));
   },
 
+  setCategories(categories: Category[]) {
+    set((s) => ({ ...s, categories }));
+  },
+
   setDate(date: string) {
     set((s) => ({ ...s, date }));
   },

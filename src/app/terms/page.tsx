@@ -37,7 +37,7 @@ export default function TermsPage() {
 
       <h2>Suggestions</h2>
       <p>
-        Recommendations and Planzy AI suggestions are there to help you decide. They can be wrong, so use your own
+        Recommendations and Planzy Scout suggestions are there to help you decide. They can be wrong, so use your own
         judgement.
       </p>
 

@@ -1,6 +1,6 @@
 "use client";
 
-import { ChevronLeft, Loader2, LocateFixed, Navigation, Search, X } from "lucide-react";
+import { ChevronLeft, Loader2, LocateFixed, MapPin, Navigation, Search, X } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
@@ -9,11 +9,14 @@ import { PlaceImage } from "@/components/place/place-image";
 import { RatingBadge } from "@/components/ui/rating";
 import { getPlace, getPlaces } from "@/lib/api/data";
 import { mapsUrl, priceLabel } from "@/lib/format";
-import { findArea, getAreas, kmBetween, nearestArea } from "@/lib/geo";
+import { findArea, getAreas, kmBetween, nearestArea, searchAreas } from "@/lib/geo";
+import type { Area } from "@/lib/types";
 import { useProfile } from "@/store/account-store";
 import { LiveMap, type LiveMapHandle } from "./live-map";
 
 const AREA_RADIUS_KM = 3;
+/** Shortcuts shown under the search bar. */
+const QUICK_AREAS = ["Bodakdev", "Satellite", "Bopal", "Navrangpura", "Thaltej", "Maninagar", "Gandhinagar"];
 
 /** Asks OpenStreetMap for anything that isn't one of our known areas. */
 async function geocode(q: string) {
@@ -39,6 +42,7 @@ export function MapScreen({ focusPlaceId }: { focusPlaceId?: string }) {
   const [query, setQuery] = useState("");
   const [searching, setSearching] = useState(false);
   const [notice, setNotice] = useState("");
+  const [focused, setFocused] = useState(false);
   const centred = useRef(false);
 
   const selected = getPlace(selectedId);
@@ -112,6 +116,17 @@ export function MapScreen({ focusPlaceId }: { focusPlaceId?: string }) {
     } else setNotice(`Couldn't find "${q}" in Ahmedabad.`);
   };
 
+  const q = query.trim().toLowerCase();
+  const areaHits = q ? searchAreas(q).slice(0, 6) : getAreas().slice(0, 6);
+  const placeHits = q ? places.filter((p) => p.name.toLowerCase().includes(q) || p.area.toLowerCase().includes(q)).slice(0, 4) : [];
+  const placesNear = (a: Area) => places.filter((p) => kmBetween(a, p) <= AREA_RADIUS_KM);
+  const goToArea = (a: Area) => {
+    setFocused(false);
+    setQuery(a.name);
+    setSelectedId(null);
+    mapRef.current?.flyTo(a.lat, a.lng, 14);
+  };
+
   const areaName = center ? nearestArea(center).name : "Ahmedabad";
   const around = center
     ? places
@@ -143,6 +158,7 @@ export function MapScreen({ focusPlaceId }: { focusPlaceId?: string }) {
         <form
           onSubmit={(e) => {
             e.preventDefault();
+            setFocused(false);
             search();
           }}
           className="card flex h-11 min-w-0 flex-1 items-center gap-2 px-3"
@@ -151,16 +167,13 @@ export function MapScreen({ focusPlaceId }: { focusPlaceId?: string }) {
           <input
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            list="planzy-map-areas"
-            placeholder="Search an area or place"
+            onFocus={() => setFocused(true)}
+            onBlur={() => setFocused(false)}
+            placeholder="Search an area, e.g. Bopal"
             aria-label="Search an area or place"
+            autoComplete="off"
             className="min-w-0 flex-1 bg-transparent text-[14px] outline-none placeholder:text-ink/40"
           />
-          <datalist id="planzy-map-areas">
-            {getAreas().map((a) => (
-              <option key={a.name} value={a.name} />
-            ))}
-          </datalist>
           {query && (
             <button type="button" onClick={() => setQuery("")} aria-label="Clear search">
               <X size={16} />
@@ -168,6 +181,78 @@ export function MapScreen({ focusPlaceId }: { focusPlaceId?: string }) {
           )}
         </form>
       </div>
+
+      {/* Area suggestions while typing; quick area chips otherwise */}
+      {focused ? (
+        <div className="card absolute inset-x-4 top-[64px] z-[501] max-h-[300px] overflow-y-auto p-0!" role="listbox" aria-label="Areas and places">
+          {areaHits.length > 0 && (
+            <p className="px-4 pb-1 pt-3 text-[11px] font-semibold uppercase tracking-wide text-muted">Areas</p>
+          )}
+          {areaHits.map((a) => (
+            <button
+              key={`${a.name}-${a.city}`}
+              type="button"
+              role="option"
+              aria-selected={false}
+              onMouseDown={(e) => e.preventDefault()}
+              onClick={() => goToArea(a)}
+              className="flex w-full items-center gap-3 px-4 py-2.5 text-left hover:bg-cream"
+            >
+              <MapPin size={17} className="shrink-0 text-brand" />
+              <span className="min-w-0 flex-1 truncate text-[14px]">{a.name}</span>
+              <span className="text-[11px] text-muted">
+                {placesNear(a).length ? `${placesNear(a).length} place${placesNear(a).length === 1 ? "" : "s"} · ` : ""}
+                {a.city}
+              </span>
+            </button>
+          ))}
+          {placeHits.length > 0 && (
+            <p className="px-4 pb-1 pt-3 text-[11px] font-semibold uppercase tracking-wide text-muted">Places</p>
+          )}
+          {placeHits.map((p) => (
+            <button
+              key={p.id}
+              type="button"
+              role="option"
+              aria-selected={false}
+              onMouseDown={(e) => e.preventDefault()}
+              onClick={() => {
+                setFocused(false);
+                setQuery(p.name);
+                setSelectedId(p.id);
+                mapRef.current?.flyTo(p.lat, p.lng, 15);
+              }}
+              className="flex w-full items-center gap-3 px-4 py-2.5 text-left hover:bg-cream"
+            >
+              <Navigation size={16} className="shrink-0 text-navy" />
+              <span className="min-w-0 flex-1 truncate text-[14px]">{p.name}</span>
+              <span className="text-[11px] text-muted">{p.area}</span>
+            </button>
+          ))}
+          {areaHits.length + placeHits.length === 0 && (
+            <p className="px-4 py-4 text-[13px] text-muted">Press search to look for &ldquo;{query}&rdquo; on the map.</p>
+          )}
+        </div>
+      ) : (
+        !notice && (
+          <div className="no-scrollbar absolute inset-x-0 top-[64px] z-[500] flex gap-2 overflow-x-auto px-4">
+            {QUICK_AREAS.map((name) => {
+              const a = findArea(name);
+              if (!a) return null;
+              return (
+                <button
+                  key={name}
+                  type="button"
+                  onClick={() => goToArea(a)}
+                  className="shrink-0 rounded-full border border-ink bg-paper px-3 py-1 text-[12px] font-medium shadow-[0_2px_0_#242a2f]"
+                >
+                  {name}
+                </button>
+              );
+            })}
+          </div>
+        )
+      )}
 
       {notice && (
         <div className="absolute inset-x-4 top-[72px] z-[500] flex items-start gap-2 rounded-[10px] bg-ink/90 px-3 py-2 text-[12px] text-white">

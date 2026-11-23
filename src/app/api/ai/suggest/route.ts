@@ -1,5 +1,5 @@
 /**
- * POST /api/ai/suggest: Planzy AI place suggestions.
+ * POST /api/ai/suggest: Planzy Scout place suggestions.
  *
  * With ANTHROPIC_API_KEY set on the server, Claude reads the request and the
  * place catalogue and picks the places, with a reason for each. Without a key,
@@ -24,7 +24,7 @@ import type { Category } from "@/lib/types";
 
 const MODEL = "claude-opus-5-5";
 
-const SYSTEM = `You are Planzy AI, the place finder inside Planzy, an app for planning group outings in Ahmedabad and Gandhinagar, India.
+const SYSTEM = `You are Planzy Scout, the place finder inside Planzy, an app for planning group outings in Ahmedabad and Gandhinagar, India.
 Pick the places from the catalogue that best fit what the person asks for: the kind of outing, their area, their budget per person in rupees, group size and timing.
 Rules:
 - Only use place ids from the catalogue. Return 3 or 4 places, best first.
@@ -137,10 +137,10 @@ export async function POST(request: Request) {
       const result = await askClaude(q);
       if (result) return Response.json(result);
     } catch (error) {
-      if (error instanceof Anthropic.AuthenticationError) console.error("Planzy AI: invalid ANTHROPIC_API_KEY");
-      else if (error instanceof Anthropic.RateLimitError) console.error("Planzy AI: rate limited, using built-in engine");
-      else if (error instanceof Anthropic.APIError) console.error(`Planzy AI: API error ${error.status}`, error.message);
-      else console.error("Planzy AI: falling back to built-in engine", error);
+      if (error instanceof Anthropic.AuthenticationError) console.error("Planzy Scout: invalid ANTHROPIC_API_KEY");
+      else if (error instanceof Anthropic.RateLimitError) console.error("Planzy Scout: rate limited, using built-in engine");
+      else if (error instanceof Anthropic.APIError) console.error(`Planzy Scout: API error ${error.status}`, error.message);
+      else console.error("Planzy Scout: falling back to built-in engine", error);
     }
   }
   return Response.json(suggestLocally(q));

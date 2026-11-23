@@ -1,5 +1,5 @@
 /**
- * Planzy AI: turns "cricket for 8 under ₹300 near Bopal" into ranked places.
+ * Planzy Scout: turns "cricket for 8 under ₹300 near Bopal" into ranked places.
  * The parsing and scoring here run anywhere (browser or server). They are the
  * offline engine, and they also give each Claude pick its match score and
  * check its place ids.

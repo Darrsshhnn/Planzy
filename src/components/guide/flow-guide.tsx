@@ -19,7 +19,7 @@ const STEPS: GuideStep[] = [
     id: "home",
     match: (p) => p === "/",
     title: "Make your first plan",
-    body: "Tap the orange + in the bar below to start a plan. Not sure where to go? Ask Planzy AI on this screen.",
+    body: "Tap the orange + in the bar below to start a plan. Not sure where to go? tap Scout on this screen.",
   },
   {
     id: "friends",

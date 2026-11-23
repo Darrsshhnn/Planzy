@@ -1,6 +1,6 @@
 "use client";
 
-import { Compass, Search, SlidersHorizontal, Sparkles, X } from "lucide-react";
+import { Compass, Map as MapIcon, Search, SlidersHorizontal, Sparkles, X } from "lucide-react";
 import Link from "next/link";
 import { AiIcon } from "@/components/brand/ai-icon";
 import { useState } from "react";
@@ -81,6 +81,14 @@ export default function SearchPage() {
             className="min-w-0 flex-1 bg-transparent text-[15px] outline-none placeholder:text-ink/40"
           />
         </FieldBox>
+        <Link
+          href="/map"
+          aria-label="Explore on the map: search by area"
+          title="Explore on the map"
+          className="card flex h-[48px] w-[48px] shrink-0 items-center justify-center bg-ink! text-cream"
+        >
+          <MapIcon size={22} />
+        </Link>
         <button
           onClick={() => setFiltersOpen(true)}
           aria-label={`Filters${activeFilters ? `, ${activeFilters} active` : ""}`}
@@ -110,13 +118,15 @@ export default function SearchPage() {
 
       {!query && activeFilters === 0 && (
         <>
-          <Link href="/ai" className="card mt-5 flex items-center gap-3.5 bg-cream! p-4">
-            <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-ink text-brand">
+          <Link href="/ai" className="scout-ring mt-5 flex items-center gap-3.5 p-4 text-white">
+            <span className="scout-glow relative flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-brand">
               <AiIcon size={22} />
             </span>
-            <span className="min-w-0 flex-1">
-              <span className="block text-[15px] font-semibold">Ask Planzy AI</span>
-              <span className="block text-[12px] text-ink/70">Area, budget and distance in. Places out.</span>
+            <span className="relative min-w-0 flex-1">
+              <span className="flex items-center gap-2 text-[15px] font-semibold">
+                Scout <span className="rounded-full bg-cream px-1.5 text-[9px] font-bold uppercase tracking-wider text-ink">AI</span>
+              </span>
+              <span className="block text-[12px] text-white/70">Area, budget and distance in. Spots out.</span>
             </span>
           </Link>
           <section className="mt-8">
